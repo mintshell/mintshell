@@ -41,12 +41,11 @@
 
   <modules>
     <module>mintshell-core</module>
-    <module>mintshell-system</module>
-    <module>mintshell-system-jcurses</module>
-    <module>mintshell-parser</module>
     <module>mintshell-terminal</module>
-    <module>mintshell-ssh</module>
-    <module>mintshell-test</module>
+    <module>mintshell-terminal-ncurses</module>
+    <module>mintshell-terminal-ssh</module>
+    <!--module>mintshell-parser</module-->
+    <module>mintshell-examples</module>
   </modules>
 
   <dependencyManagement>
