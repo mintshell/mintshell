@@ -43,9 +43,9 @@
     <module>mintshell-core</module>
     <module>mintshell-terminal</module>
     <module>mintshell-terminal-ncurses</module>
-    <module>mintshell-terminal-ssh</module>
+    <!--module>mintshell-terminal-ssh</module-->
     <!--module>mintshell-parser</module-->
-    <module>mintshell-examples</module>
+    <!--module>mintshell-examples</module-->
   </modules>
 
   <dependencyManagement>
@@ -59,29 +59,14 @@
       </dependency>      
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mintshell-system</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>mintshell-system-jcurses</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>mintshell-parser</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-terminal</artifactId>
         <version>${project.version}</version>
       </dependency>      
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mintshell-ssh</artifactId>
+        <artifactId>mintshell-terminal-ncurses</artifactId>
         <version>${project.version}</version>
-      </dependency>
+      </dependency>         
 
 
       <!-- technical -->
