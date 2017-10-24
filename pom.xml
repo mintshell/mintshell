@@ -43,7 +43,7 @@
     <module>mintshell-core</module>
     <module>mintshell-terminal</module>
     <module>mintshell-terminal-ncurses</module>
-    <!--module>mintshell-terminal-ssh</module-->
+    <module>mintshell-terminal-ssh</module>
     <!--module>mintshell-parser</module-->
     <!--module>mintshell-examples</module-->
   </modules>
