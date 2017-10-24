@@ -24,26 +24,19 @@
 package org.mintshell.terminal.ssh.interfaces;
 
 import static java.lang.String.format;
+import static org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface.DEFAULT_COMMAND_SUBMISSION_KEY;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.EnumSet;
+import java.util.Collection;
 
-import org.apache.sshd.common.channel.PtyMode;
-import org.apache.sshd.server.Command;
-import org.apache.sshd.server.Environment;
-import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.apache.sshd.server.shell.TtyFilterInputStream;
 import org.mintshell.CommandDispatcher;
 import org.mintshell.CommandInterpreter;
 import org.mintshell.annotation.Nullable;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
-import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,33 +47,37 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-public class SshCommandInterface extends AbstractTerminalCommandInterface implements TerminalCommandInterface, Command {
+public class SshCommandInterface implements TerminalCommandInterface {
 
   public static final int DEFAULT_PORT = 8022;
   private static final Logger LOG = LoggerFactory.getLogger(SshCommandInterface.class);
 
   private final int port;
   private final SshServer sshServer;
-  private AnsiKeyFilterInputStream in;
-  private OutputStream out;
-
-  public SshCommandInterface(final int port, final String prompt) {
-    this(port, prompt, null);
-  }
-
-  public SshCommandInterface(final int port, final String prompt, @Nullable final String banner) {
-    this(port, prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
-  }
+  private CommandInterpreter commandInterpreter;
+  private CommandDispatcher commandDispatcher;
 
   public SshCommandInterface(final int port, final String prompt, @Nullable final String banner, final Key commandSubmissionKey,
       @Nullable final KeyBinding... keyBindings) {
-    super(prompt, banner, commandSubmissionKey, keyBindings);
     this.port = port;
     this.sshServer = SshServer.setUpDefaultServer();
     this.sshServer.setPort(port);
     this.sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File("hostkey.ser")));
     this.sshServer.setPublickeyAuthenticator(new AlwaysAuthenticatedlPublicKeyAuthenticator());
-    this.sshServer.setShellFactory(() -> this);
+    this.sshServer.setShellFactory(
+        () -> new SshCommandInterfaceSession(this.getCommandInterpreter(), this.getCommandDispatcher(), prompt, banner, commandSubmissionKey, keyBindings));
+  }
+
+  public SshCommandInterface(final String prompt) {
+    this(prompt, null);
+  }
+
+  public SshCommandInterface(final String prompt, @Nullable final String banner) {
+    this(DEFAULT_PORT, prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
+  }
+
+  public SshCommandInterface(final String prompt, @Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
+    this(DEFAULT_PORT, prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
   }
 
   /**
@@ -91,7 +88,8 @@ public class SshCommandInterface extends AbstractTerminalCommandInterface implem
    */
   @Override
   public void activate(final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher) throws IllegalStateException {
-    super.activate(commandInterpreter, commandDispatcher);
+    this.commandInterpreter = commandInterpreter;
+    this.commandDispatcher = commandDispatcher;
     try {
       this.sshServer.start();
       LOG.info("SSH server running on port [{}]", this.sshServer.getPort());
@@ -101,8 +99,24 @@ public class SshCommandInterface extends AbstractTerminalCommandInterface implem
   }
 
   @Override
-  public void destroy() throws Exception {
-    // currently not used
+  public void addKeyBindings(final KeyBinding... keyBindings) {
+    // TODO forward keybinding operations to sessions
+  }
+
+  @Override
+  public void clearKeyBindings() {
+    // TODO forward keybinding operations to sessions
+  }
+
+  @Override
+  public Collection<KeyBinding> getKeyBindings() {
+    // TODO forward keybinding operations to sessions
+    return null;
+  }
+
+  @Override
+  public boolean isActivated() {
+    return this.getCommandInterpreter() != null && this.getCommandDispatcher() != null;
   }
 
   /**
@@ -112,12 +126,7 @@ public class SshCommandInterface extends AbstractTerminalCommandInterface implem
    */
   @Override
   public void print(final String text) {
-    try {
-      this.out.write(text.getBytes());
-      this.out.flush();
-    } catch (final IOException e) {
-      throw new IllegalStateException(String.format("Failed to print text [%s]", text));
-    }
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
   }
 
   /**
@@ -127,13 +136,7 @@ public class SshCommandInterface extends AbstractTerminalCommandInterface implem
    */
   @Override
   public void println(final String text) {
-    try {
-      this.out.write(text.getBytes());
-      this.out.write("\n".getBytes());
-      this.out.flush();
-    } catch (final IOException e) {
-      throw new IllegalStateException(String.format("Failed to print text [%s]", text));
-    }
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
   }
 
   /**
@@ -143,66 +146,19 @@ public class SshCommandInterface extends AbstractTerminalCommandInterface implem
    */
   @Override
   public Key readKey() {
-    try {
-      final AnsiKey ansiKey = this.in.readKey();
-      return ansiKey.getKey();
-    } catch (final IOException e) {
-      return Key.UNDEFINED;
-    }
-  }
-
-  /**
-   *
-   * @{inheritDoc}
-   * @see org.apache.sshd.server.Command#setErrorStream(java.io.OutputStream)
-   */
-  @Override
-  public void setErrorStream(final OutputStream err) {
-    // TODO: find usage of STDERR
-  }
-
-  /**
-   *
-   * @{inheritDoc}
-   * @see org.apache.sshd.server.Command#setExitCallback(org.apache.sshd.server.ExitCallback)
-   */
-  @Override
-  public void setExitCallback(final ExitCallback callback) {
-    // TODO: make sure that an exit command also notifies this callback
-  }
-
-  /**
-   *
-   * @{inheritDoc}
-   * @see org.apache.sshd.server.Command#setInputStream(java.io.InputStream)
-   */
-  @Override
-  public void setInputStream(final InputStream in) {
-    this.in = new AnsiKeyFilterInputStream(new TtyFilterInputStream(in, EnumSet.of(PtyMode.ECHO, PtyMode.ICRNL, PtyMode.ONLCR)));
-  }
-
-  /**
-   *
-   * @{inheritDoc}
-   * @see org.apache.sshd.server.Command#setOutputStream(java.io.OutputStream)
-   */
-  @Override
-  public void setOutputStream(final OutputStream out) {
-    this.out = out;
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
   }
 
   @Override
-  public void start(final Environment env) throws IOException {
-    // currently not used
+  public void removeKeyBinding(final KeyBinding keyBinding) {
+    // TODO forward keybinding operations to sessions
   }
 
-  @Override
-  protected void clearScreen() {
-    // TODO : issue the correct command to the output stream
+  CommandDispatcher getCommandDispatcher() {
+    return this.commandDispatcher;
   }
 
-  @Override
-  protected void moveCursor(final int row, final int col) {
-    // TODO : issue the correct command to the output stream
+  CommandInterpreter getCommandInterpreter() {
+    return this.commandInterpreter;
   }
 }

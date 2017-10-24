@@ -29,9 +29,11 @@
     <!-- versioning of maven plugins -->
     <version.mvn.compiler>3.7.0</version.mvn.compiler>
 
+    <!-- versioning of technical dependencies -->
     <version.slf4j>1.7.25</version.slf4j>
     <version.sshd>1.6.0</version.sshd>
 
+    <!-- versioning of test dependencies -->
     <version.junit>4.12</version.junit>
     <version.hamcrest>1.3</version.hamcrest>
     <version.assertj>3.8.0</version.assertj>
@@ -44,8 +46,7 @@
     <module>mintshell-terminal</module>
     <module>mintshell-terminal-ncurses</module>
     <module>mintshell-terminal-ssh</module>
-    <!--module>mintshell-parser</module-->
-    <!--module>mintshell-examples</module-->
+    <module>mintshell-examples</module>
   </modules>
 
   <dependencyManagement>
@@ -66,7 +67,12 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-terminal-ncurses</artifactId>
         <version>${project.version}</version>
-      </dependency>         
+      </dependency>      
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mintshell-terminal-ssh</artifactId>
+        <version>${project.version}</version>
+      </dependency>           
 
 
       <!-- technical -->
@@ -109,7 +115,7 @@
 
   <dependencies>
 
-    <!-- functional -->
+    <!-- technical -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>

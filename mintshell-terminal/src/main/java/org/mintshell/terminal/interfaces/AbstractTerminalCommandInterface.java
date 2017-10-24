@@ -236,9 +236,34 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
    * @since 0.1.0
    */
   protected synchronized void handleKey(final Key key) {
-    if (!this.handleCommandSubmission(key) && !this.handleKeyBinding(key) && key.isPrintableKey()) {
-      this.lineBuffer.append(key.getValue());
-      this.print(key.getValue());
+    if (!this.handleCommandSubmission(key) && !this.handleKeyBinding(key)) {
+      if (key.isPrintableKey()) {
+        this.lineBuffer.append(key.getValue());
+        this.print(key.getValue());
+      }
+      else {
+        switch (key) {
+          case LEFT:
+            this.lineBuffer.moveCursorLeft();
+            // moveCursorLeft();
+            break;
+          case RIGHT:
+            this.lineBuffer.moveCursorRight();
+            // moveCursorRight();
+            break;
+          case BACK_SPACE:
+          case DEL:
+            this.lineBuffer.removeLeft();
+            // moveCursorLeft();
+            break;
+          case DELETE:
+            this.lineBuffer.removeRight();
+            break;
+          // moveCursorRight();
+          default:
+            LOG.warn("Unsupported key [{}]", key);
+        }
+      }
     }
   }
 
