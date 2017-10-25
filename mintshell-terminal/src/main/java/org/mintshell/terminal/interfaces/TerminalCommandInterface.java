@@ -57,6 +57,22 @@ public abstract interface TerminalCommandInterface extends CommandInterface {
   public abstract void clearKeyBindings();
 
   /**
+   * Erases the next (right of cursor) character.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract void eraseNext();
+
+  /**
+   * Erases the previous (left of cursor) character.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract void erasePrevious();
+
+  /**
    * Returns the active {@link KeyBinding}s
    *
    * @return active {@link KeyBinding}s
@@ -65,6 +81,30 @@ public abstract interface TerminalCommandInterface extends CommandInterface {
    * @since 0.1.0
    */
   public abstract Collection<KeyBinding> getKeyBindings();
+
+  /**
+   * Moves the cursor to the next (right of cursor) character.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract void moveNext();
+
+  /**
+   * Moves the cursor to the previous (left of cursor) character.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract void movePrevious();
+
+  /**
+   * Inserts a new line and places the cursor at the beginning.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract void newLine();
 
   /**
    * Displays the given text to the screen of the underlying terminal.
@@ -86,7 +126,10 @@ public abstract interface TerminalCommandInterface extends CommandInterface {
    * @author Noqmar
    * @since 0.1.0
    */
-  public abstract void println(String text);
+  public default void println(final String text) {
+    print(text);
+    newLine();
+  }
 
   /**
    * Reads a {@link Key} from the underlying terminal. This method blocks, until a {@link Key} was read.

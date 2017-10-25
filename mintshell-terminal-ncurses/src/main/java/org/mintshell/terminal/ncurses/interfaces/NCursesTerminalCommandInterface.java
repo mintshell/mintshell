@@ -109,21 +109,61 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
   /**
    *
    * @{inheritDoc}
-   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#print(java.lang.String)
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#eraseNext()
    */
   @Override
-  public void print(final String output) {
-    this.nCurses.print(output);
+  public void eraseNext() {
+    this.nCurses.deleteChar();
   }
 
   /**
    *
    * @{inheritDoc}
-   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#println(java.lang.String)
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#erasePrevious()
    */
   @Override
-  public void println(final String text) {
-    this.print(new StringBuffer(text).append("\n\r").toString());
+  public void erasePrevious() {
+    this.nCurses.deleteCharAt(this.nCurses.getCol() - 1, this.nCurses.getRow());
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#moveNext()
+   */
+  @Override
+  public void moveNext() {
+    this.nCurses.moveCursor(this.nCurses.getCol() + 1, this.nCurses.getRow());
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#movePrevious()
+   */
+  @Override
+  public void movePrevious() {
+    this.nCurses.moveCursor(this.nCurses.getCol() - 1, this.nCurses.getRow());
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#newLine()
+   */
+  @Override
+  public void newLine() {
+    this.print("\n\r");
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#print(java.lang.String)
+   */
+  @Override
+  public void print(final String output) {
+    this.nCurses.print(output);
   }
 
   /**
@@ -153,7 +193,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
    * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#moveCursor(int, int)
    */
   @Override
-  protected void moveCursor(final int row, final int col) {
-    // TODO implement method moveCursor
+  protected void moveCursor(final int col, final int row) {
+    this.nCurses.moveCursor(col, row);
   }
 }

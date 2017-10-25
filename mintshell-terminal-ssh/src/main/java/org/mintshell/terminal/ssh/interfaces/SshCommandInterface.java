@@ -28,7 +28,11 @@ import static org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
@@ -37,6 +41,7 @@ import org.mintshell.CommandInterpreter;
 import org.mintshell.annotation.Nullable;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
+import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +61,25 @@ public class SshCommandInterface implements TerminalCommandInterface {
   private final SshServer sshServer;
   private CommandInterpreter commandInterpreter;
   private CommandDispatcher commandDispatcher;
+  private final List<KeyBinding> keyBindings;
 
+  /**
+   * Creates a new instance.
+   *
+   * @param port
+   *          port number to bind the SSH server to
+   * @param prompt
+   *          shell prompt
+   * @param banner
+   *          welcome banner
+   * @param commandSubmissionKey
+   *          key that issues command submission
+   * @param keyBindings
+   *          (optional) {@link KeyBinding}s
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
   public SshCommandInterface(final int port, final String prompt, @Nullable final String banner, final Key commandSubmissionKey,
       @Nullable final KeyBinding... keyBindings) {
     this.port = port;
@@ -64,18 +87,26 @@ public class SshCommandInterface implements TerminalCommandInterface {
     this.sshServer.setPort(port);
     this.sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File("hostkey.ser")));
     this.sshServer.setPublickeyAuthenticator(new AlwaysAuthenticatedlPublicKeyAuthenticator());
-    this.sshServer.setShellFactory(
-        () -> new SshCommandInterfaceSession(this.getCommandInterpreter(), this.getCommandDispatcher(), prompt, banner, commandSubmissionKey, keyBindings));
+    this.keyBindings = new ArrayList<>(Arrays.asList(keyBindings));
+    this.sshServer.setShellFactory(() -> new SshCommandInterfaceSession(this.getCommandInterpreter(), this.getCommandDispatcher(), prompt, banner,
+        commandSubmissionKey, this.getKeyBindingsArray()));
+
   }
 
-  public SshCommandInterface(final String prompt) {
-    this(prompt, null);
-  }
-
-  public SshCommandInterface(final String prompt, @Nullable final String banner) {
-    this(DEFAULT_PORT, prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
-  }
-
+  /**
+   * Creates a new instance using the {@link #DEFAULT_PORT} and the
+   * {@link AbstractTerminalCommandInterface#DEFAULT_COMMAND_SUBMISSION_KEY}.
+   *
+   * @param prompt
+   *          shell prompt
+   * @param banner
+   *          welcome banner
+   * @param keyBindings
+   *          (optional) {@link KeyBinding}s
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
   public SshCommandInterface(final String prompt, @Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
     this(DEFAULT_PORT, prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
   }
@@ -98,25 +129,96 @@ public class SshCommandInterface implements TerminalCommandInterface {
     }
   }
 
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#addKeyBindings(org.mintshell.terminal.KeyBinding[])
+   */
   @Override
   public void addKeyBindings(final KeyBinding... keyBindings) {
-    // TODO forward keybinding operations to sessions
+    this.keyBindings.addAll(Arrays.stream(keyBindings).collect(Collectors.toList()));
+    // TODO: #6 forward keybinding operations to sessions
   }
 
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#clearKeyBindings()
+   */
   @Override
   public void clearKeyBindings() {
-    // TODO forward keybinding operations to sessions
+    this.keyBindings.clear();
+    // TODO: #6 forward keybinding operations to sessions
   }
 
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#eraseNext()
+   */
+  @Override
+  public void eraseNext() {
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#erasePrevious()
+   */
+  @Override
+  public void erasePrevious() {
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#getKeyBindings()
+   */
   @Override
   public Collection<KeyBinding> getKeyBindings() {
-    // TODO forward keybinding operations to sessions
-    return null;
+    return new ArrayList<>(this.keyBindings);
   }
 
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.CommandInterface#isActivated()
+   */
   @Override
   public boolean isActivated() {
     return this.getCommandInterpreter() != null && this.getCommandDispatcher() != null;
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#moveNext()
+   */
+  @Override
+  public void moveNext() {
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#movePrevious()
+   */
+  @Override
+  public void movePrevious() {
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#newLine()
+   */
+  @Override
+  public void newLine() {
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
   }
 
   /**
@@ -132,16 +234,6 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * @{inheritDoc}
-   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#println(java.lang.String)
-   */
-  @Override
-  public void println(final String text) {
-    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
-  }
-
-  /**
-   *
-   * @{inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#readKey()
    */
   @Override
@@ -149,9 +241,15 @@ public class SshCommandInterface implements TerminalCommandInterface {
     throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
   }
 
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#removeKeyBinding(org.mintshell.terminal.KeyBinding)
+   */
   @Override
   public void removeKeyBinding(final KeyBinding keyBinding) {
-    // TODO forward keybinding operations to sessions
+    this.keyBindings.remove(keyBinding);
+    // TODO: #6 forward keybinding operations to sessions
   }
 
   CommandDispatcher getCommandDispatcher() {
@@ -160,5 +258,11 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   CommandInterpreter getCommandInterpreter() {
     return this.commandInterpreter;
+  }
+
+  private KeyBinding[] getKeyBindingsArray() {
+    final Collection<KeyBinding> currentBindings = this.getKeyBindings();
+    final KeyBinding[] bindings = new KeyBinding[currentBindings.size()];
+    return currentBindings.toArray(bindings);
   }
 }

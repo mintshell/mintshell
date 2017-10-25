@@ -213,11 +213,12 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
    */
   protected boolean handleCommandSubmission(final Key key) {
     if (key.equals(this.commandSubmissionKey)) {
+      this.moveCursorToEndOfLine();
       final String commandMessage = this.lineBuffer.toString();
       this.lineBuffer.clear();
-      this.print("\n\r");
+      this.newLine();
       if (!commandMessage.trim().isEmpty()) {
-        final String result = this.performCommand(commandMessage).replace("\n", "\n\r");
+        final String result = this.performCommand(commandMessage);
         this.println(result);
       }
       this.printPrompt();
@@ -238,28 +239,35 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   protected synchronized void handleKey(final Key key) {
     if (!this.handleCommandSubmission(key) && !this.handleKeyBinding(key)) {
       if (key.isPrintableKey()) {
-        this.lineBuffer.append(key.getValue());
+        this.lineBuffer.insertLeft(key.getValue());
         this.print(key.getValue());
       }
       else {
         switch (key) {
           case LEFT:
-            this.lineBuffer.moveCursorLeft();
-            // moveCursorLeft();
+            if (this.lineBuffer.getCursorPosition() > 0) {
+              this.lineBuffer.moveCursorLeft();
+              this.movePrevious();
+            }
             break;
           case RIGHT:
-            this.lineBuffer.moveCursorRight();
-            // moveCursorRight();
+            if (this.lineBuffer.getCursorPosition() < this.lineBuffer.length()) {
+              this.lineBuffer.moveCursorRight();
+              this.moveNext();
+            }
             break;
-          case BACK_SPACE:
           case DEL:
-            this.lineBuffer.removeLeft();
-            // moveCursorLeft();
+            if (this.lineBuffer.getCursorPosition() > 0) {
+              this.lineBuffer.removeLeft();
+              this.erasePrevious();
+            }
             break;
           case DELETE:
-            this.lineBuffer.removeRight();
+            if (this.lineBuffer.getCursorPosition() < this.lineBuffer.length()) {
+              this.lineBuffer.removeRight();
+              this.eraseNext();
+            }
             break;
-          // moveCursorRight();
           default:
             LOG.warn("Unsupported key [{}]", key);
         }
@@ -296,15 +304,15 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   /**
    * Moves the cursor of the underlying terminal to the given position. Position is zero-based.
    *
-   * @param row
-   *          row number of the new position
    * @param col
    *          column number of the new position
+   * @param row
+   *          row number of the new position
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  protected abstract void moveCursor(int row, int col);
+  protected abstract void moveCursor(int col, int row);
 
   /**
    * Prints the prompt.
@@ -314,5 +322,12 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
    */
   protected void printPrompt() {
     this.print(this.prompt);
+  }
+
+  private void moveCursorToEndOfLine() {
+    while (this.lineBuffer.getCursorPosition() < this.lineBuffer.length()) {
+      this.lineBuffer.moveCursorRight();
+      this.moveNext();
+    }
   }
 }

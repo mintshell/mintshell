@@ -46,6 +46,12 @@ public final class NCursesTerminal {
 
   private static final NCursesTerminal INSTANCE = new NCursesTerminal();
 
+  /**
+   * Initializes the ncurses native library.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
   private NCursesTerminal() {
     loadLibrary();
     Runtime.getRuntime().addShutdownHook(new Thread(() -> NCursesTerminal.endwin()));
@@ -60,6 +66,55 @@ public final class NCursesTerminal {
    */
   void clearScreen() {
     clear();
+  }
+
+  /**
+   * Deletes the character under the cursor.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  void deleteChar() {
+    delCh();
+  }
+
+  /**
+   * Deletes a character at the given position.
+   *
+   * @param col
+   *          column number
+   * @param row
+   *          row number
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  void deleteCharAt(final int col, final int row) {
+    mvDelCh(col, row);
+  }
+
+  /**
+   * Returns the current column number of the cursor.
+   *
+   * @return column number
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  int getCol() {
+    return getX();
+  }
+
+  /**
+   * Returns the current row number of the cursor.
+   *
+   * @return row number
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  int getRow() {
+    return getY();
   }
 
   /**
@@ -164,6 +219,14 @@ public final class NCursesTerminal {
    * @since 0.1.0
    */
   private static native void clear();
+
+  /**
+   * Calls {@code ncurses#delch()}.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  private static native void delCh();
 
   /**
    * Calls {@code ncurses#endwin()}.
@@ -292,6 +355,18 @@ public final class NCursesTerminal {
    * @since 0.1.0
    */
   private static native void move(int col, int row);
+
+  /**
+   * Calls {@code ncurses#mvdelch()}.
+   *
+   * @param col
+   *          column number
+   * @param row
+   *          row number
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  private static native void mvDelCh(int col, int row);
 
   /**
    * Calls {@code ncurses#refresh()}.
