@@ -25,12 +25,15 @@ package org.mintshell.dispatcher;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,11 +63,15 @@ public class ReflectionCommandDispatcher extends AbstractCommandDispatcher imple
   @Override
   protected Set<Command> determineCommands(final CommandTarget commandTarget) {
     final Map<Command, Method> commandMethods = new HashMap<>();
-    stream(commandTarget.getTargetClass().getMethods()) //
+    this.findSupportedMethods(commandTarget.getTargetClass()).stream() //
         .filter(method -> (commandTarget.isInstance() || !commandTarget.isInstance() && Modifier.isStatic(method.getModifiers()))) //
         .forEach(method -> commandMethods.put(this.createCommandFromMethod(method), method));
     this.commandTargetCommandMethods.put(commandTarget, commandMethods);
     return commandMethods.keySet();
+  }
+
+  protected List<Method> findSupportedMethods(final Class<?> target) throws SecurityException {
+    return stream(target.getMethods()).filter(m -> this.isMethodSupported(m)).collect(toList());
   }
 
   /**
@@ -98,6 +105,22 @@ public class ReflectionCommandDispatcher extends AbstractCommandDispatcher imple
     } finally {
       method.setAccessible(accessible);
     }
+  }
+
+  protected boolean isMethodSupported(final Method method) {
+    final Parameter[] parameters = method.getParameters();
+    for (final Parameter parameter : parameters) {
+      // ... either as an option or as an operand
+      if (!this.isParameterSupported(parameter)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  protected boolean isParameterSupported(final Parameter parameter) {
+    // TODO: implement parameter support check
+    return true;
   }
 
   private Command createCommandFromMethod(final Method method) {

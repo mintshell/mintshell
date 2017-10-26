@@ -25,6 +25,7 @@ package org.mintshell.command;
 
 import java.util.Optional;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 
 /**
@@ -52,8 +53,8 @@ public final class CommandResult<T> {
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandResult(final T value) {
-    this.value = Optional.of(Assert.ARG.isNotNull(value, "[value] must not be [null]"));
+  public CommandResult(final @Nullable T value) {
+    this.value = Optional.ofNullable(value);
     this.state = State.SUCCEEDED;
     this.cause = Optional.empty();
   }

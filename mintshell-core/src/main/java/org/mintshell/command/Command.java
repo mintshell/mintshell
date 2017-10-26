@@ -29,6 +29,7 @@ import static java.util.Collections.unmodifiableList;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.mintshell.CommandInterface;
@@ -63,6 +64,19 @@ public final class Command {
    */
   public Command(final List<CommandParameter> parameters) {
     this(DEFAULT, null, parameters);
+  }
+
+  /**
+   * Creates a new {@link Command}.
+   *
+   * @param name
+   *          name
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public Command(final String name) {
+    this(name, null, Collections.emptyList());
   }
 
   /**
