@@ -7,13 +7,13 @@ The basic concept consists of four main components which are arranged as kind of
 CommandInterface -&gt; CommandInterpreter -&gt; CommandDispatcher -&gt; CommandTarget
 TODO: picture 
 
-###Command Interface
+### Command Interface
 The _CommandInterface_ is a somehow natured technical interface, that is able to accept command lines. Usually command lines are strings consisting of a command and optionally one or more parameters. However, this is not a hard requirement, because the only important thing is that the used _CommandInterpreter_ is able to understand the accepted kind of command line.
 
-###Command Interpreter
+### Command Interpreter
 The _CommandInterpreter_ is responsible to transform an accepted command line into a **Command** object, that is provided to the _CommandDispatcher_ in order to be executed.
 
-###Command Dispatcher
+### Command Dispatcher
 The _CommandDispatcher_ manages one ore more _CommandTargets_ and is responsible to dispatch incoming **Commands** to the corresponding _CommandTarget_ or in other words to execute a **Command** "upon" the _CommandTarget_.
 
 ## Abount commands
