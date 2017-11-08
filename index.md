@@ -4,7 +4,7 @@ Mintshell is a Java library which allows to provide Java applications with a com
 
 The basic concept consists of four main components which are arranged as kind of a pipeline:
 
-CommandInterface -> CommandInterpreter -> CommandDispatcher -> CommandTarget
+CommandInterface -&gt; CommandInterpreter -&gt; CommandDispatcher -&gt; CommandTarget
 TODO: picture 
 
 ###Command Interface
