@@ -32,6 +32,22 @@ package org.mintshell.examples;
  */
 public class SimpleCommandTarget {
 
+  /**
+   * Adds the given arguments.
+   * 
+   * @param a
+   *          first argument
+   * @param b
+   *          second argument
+   * @return sum of both arguments
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public int add(final int a, final int b) {
+    return a + b;
+  }
+
   public void exit() {
     System.exit(0);
   }

@@ -10,8 +10,8 @@
 
   <artifactId>mintshell-examples</artifactId>
 
-  <name>Mintshell Test</name>
-  <description>Facility to test components of Mintshell</description>
+  <name>Mintshell Examples</name>
+  <description>Facility to demonstrate capabilities of components of Mintshell</description>
 
   <properties>
 

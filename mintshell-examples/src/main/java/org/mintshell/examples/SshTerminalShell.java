@@ -24,7 +24,7 @@
 package org.mintshell.examples;
 
 import org.mintshell.Mintshell;
-import org.mintshell.dispatcher.ReflectionCommandDispatcher;
+import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
 import org.mintshell.interpreter.StringTokenCommandInterpreter;
 import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
 import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
