@@ -1,10 +1,28 @@
-## Welcome to GitHub Pages
+## Mintshell
 
-You can use the [editor on GitHub](https://github.com/mintshell/mintshell/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+Mintshell is a Java library which allows to provide Java applications with a comfortable, interactive command line shell in a very easy way. MINT stands for **M**ultiple **INT**erface. This means, that commands can be provided by many different interfaces to control the (same) application. By default there are several kinds of interfaces available, including terminal-based interfaces (Console, SSH) and network-based interfaces (REST/HTTP). Because of Mintshell's open architecture it's easily possible to extend or replace components - especially interfaces - with custom implementations.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The basic concept consists of four main components which are arranged as kind of a pipeline:
 
-### Markdown
+CommandInterface -> CommandInterpreter -> CommandDispatcher -> CommandTarget
+<todo: picture> 
+
+###Command Interface
+The _CommandInterface_ is a somehow natured technical interface, that is able to accept command lines. Usually command lines are strings consisting of a command and optionally one or more parameters. However, this is not a hard requirement, because the only important thing is that the used _CommandInterpreter_ is able to understand the accepted kind of command line.
+
+###Command Interpreter
+The _CommandInterpreter_ is responsible to transform an accepted command line into a **Command** object, that is provided to the _CommandDispatcher_ in order to be executed.
+
+###Command Dispatcher
+The _CommandDispatcher_ manages one ore more _CommandTargets_ and is responsible to dispatch incoming **Commands** to the corresponding _CommandTarget_ or in other words to execute a **Command** "upon" the _CommandTarget_.
+
+## Abount commands
+TODO
+
+## Next steps
+1. [Getting started](getting-started.md)
+2. [Command Interfaces](command-interfaces.md)
+
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
