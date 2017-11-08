@@ -26,7 +26,8 @@ package org.mintshell.command.parameter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.mintshell.command.UnsupportedParameterTypeException;
+import org.mintshell.dispatcher.reflection.StaticStringConstructionMethodParameter;
+import org.mintshell.dispatcher.reflection.UnsupportedParameterTypeException;
 
 /**
  * Tests the functionality of {@link StaticStringConstructionMethodParameter}.
@@ -40,21 +41,21 @@ public class StaticStringConstructionMethodParameterTest {
   public void testIntegerObject() throws Exception {
     final String value = "42";
     final Class<?> type = Integer.class;
-    assertThat(new StaticStringConstructionMethodParameter(type).of(value)).isEqualTo(Integer.valueOf(42));
+    assertThat(new StaticStringConstructionMethodParameter(0, type).of(value)).isEqualTo(Integer.valueOf(42));
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testIntegerPrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = int.class;
-    new StaticStringConstructionMethodParameter(type).of(value);
+    new StaticStringConstructionMethodParameter(0, type).of(value);
   }
 
   @Test
   public void testNull() throws Exception {
     final String value = null;
     final Class<?> type = Integer.class;
-    assertThat(new StaticStringConstructionMethodParameter(type).of(value)).isNull();
+    assertThat(new StaticStringConstructionMethodParameter(0, type).of(value)).isNull();
   }
 
 }

@@ -43,9 +43,9 @@ public abstract interface CommandInterpreter {
    * @return translated command
    * @throws CommandInterpreteException
    *           if the given command message cannot be interpreted
-   * 
+   *
    * @author Noqmar
    * @since 0.1.0
    */
-  public abstract Command interprete(String commandMessage) throws CommandInterpreteException;
+  public abstract Command<?> interprete(String commandMessage) throws CommandInterpreteException;
 }

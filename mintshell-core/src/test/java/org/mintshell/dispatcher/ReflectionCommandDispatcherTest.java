@@ -30,8 +30,10 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mintshell.CommandDispatchException;
 import org.mintshell.CommandTarget;
 import org.mintshell.command.Command;
+import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -62,40 +64,36 @@ public class ReflectionCommandDispatcherTest {
     doReturn(PublicCommandTarget.class).when(this.classTargetMock).getTargetClass();
   }
 
-  @Test
+  @Test(expected = CommandDispatchException.class)
   public void testPackagePrivateVoidParamless() throws Exception {
     this.sut.addCommandTargets(this.instanceTargetMock);
-    final Command command = new Command("invokeMePackagePrivate");
+    final Command<?> command = new Command<>("invokeMePackagePrivate");
     assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isZero();
     this.sut.dispatch(command);
-    assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isOne();
   }
 
-  @Test
+  @Test(expected = CommandDispatchException.class)
   public void testPrivateVoidParamless() throws Exception {
     this.sut.addCommandTargets(this.instanceTargetMock);
-    final Command command = new Command("invokeMePrivate");
+    final Command<?> command = new Command<>("invokeMePrivate");
     assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isZero();
     this.sut.dispatch(command);
-    assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isOne();
   }
 
-  @Test
+  @Test(expected = CommandDispatchException.class)
   public void testProtectedVoidParamless() throws Exception {
     this.sut.addCommandTargets(this.instanceTargetMock);
-    final Command command = new Command("invokeMeProtected");
+    final Command<?> command = new Command<>("invokeMeProtected");
     assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isZero();
     this.sut.dispatch(command);
-    assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isOne();
   }
 
   @Test
   public void testPublicVoidParamless() throws Exception {
     this.sut.addCommandTargets(this.instanceTargetMock);
-    final Command command = new Command("invokeMePublic");
+    final Command<?> command = new Command<>("invokeMePublic");
     assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isZero();
     this.sut.dispatch(command);
     assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isOne();
   }
-
 }

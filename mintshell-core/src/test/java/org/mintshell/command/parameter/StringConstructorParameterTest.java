@@ -30,7 +30,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.junit.Test;
-import org.mintshell.command.ParameterConversionException;
+import org.mintshell.dispatcher.reflection.ParameterConversionException;
+import org.mintshell.dispatcher.reflection.StringConstructorParameter;
 
 /**
  * Tests the functionality of {@link StringConstructorParameter}.
@@ -45,7 +46,7 @@ public class StringConstructorParameterTest {
     final String value = "";
     final Class<?> type = URL.class;
     try {
-      new StringConstructorParameter(type).of(value);
+      new StringConstructorParameter(0, type).of(value);
       fail("ParameterConversionException expected");
     } catch (final ParameterConversionException expected) {
       assertThat(expected.getCause()).isInstanceOf(MalformedURLException.class);
@@ -56,14 +57,14 @@ public class StringConstructorParameterTest {
   public void testNull() throws Exception {
     final String value = null;
     final Class<?> type = URL.class;
-    assertThat(new StringConstructorParameter(type).of(value)).isNull();
+    assertThat(new StringConstructorParameter(0, type).of(value)).isNull();
   }
 
   @Test
   public void testUrl() throws Exception {
     final String value = "http://fooo.bar";
     final Class<?> type = URL.class;
-    final URL url = (URL) new StringConstructorParameter(type).of(value);
+    final URL url = (URL) new StringConstructorParameter(0, type).of(value);
     assertThat(url.toString()).isEqualTo(value);
   }
 }

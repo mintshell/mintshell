@@ -21,15 +21,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.command.parameter;
+package org.mintshell.dispatcher.reflection;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.mintshell.annotation.Nullable;
 import org.mintshell.command.CommandParameter;
-import org.mintshell.command.ParameterConversionException;
-import org.mintshell.command.UnsupportedParameterTypeException;
 
 /**
  * Implementation of a {@link CommandParameter} that is able to handle classes, that provide a
@@ -38,13 +36,20 @@ import org.mintshell.command.UnsupportedParameterTypeException;
  * @author Noqmar
  * @since 0.1.0
  */
-public class StringConstructorParameter extends CommandParameter {
+public class StringConstructorParameter extends ReflectionCommandParameter {
+
+  /**
+   * {@link ReflectionCommandParameterFactory} that creates instance of {@link StringConstructorParameter}s.
+   */
+  public static final ReflectionCommandParameterFactory FACTORY = (index, type) -> new StringConstructorParameter(index, type);
 
   private final Constructor<?> stringConstructor;
 
   /**
    * Creates a new command parameter.
-   *
+   * 
+   * @param index
+   *          index of the parameter in the originating methods's signature
    * @param type
    *          type of the parameter
    * @throws UnsupportedParameterTypeException
@@ -53,8 +58,8 @@ public class StringConstructorParameter extends CommandParameter {
    * @author Noqmar
    * @since 0.1.0
    */
-  public StringConstructorParameter(final Class<?> type) throws UnsupportedParameterTypeException {
-    super(type);
+  public StringConstructorParameter(final int index, final Class<?> type) throws UnsupportedParameterTypeException {
+    super(index, type);
     try {
       this.stringConstructor = this.getType().getConstructor(String.class);
     } catch (NoSuchMethodException | SecurityException e) {

@@ -21,43 +21,38 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.interpreter;
+package org.mintshell.dispatcher.reflection;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.mintshell.CommandInterpreteException;
-import org.mintshell.CommandInterpreter;
-import org.mintshell.command.Command;
 import org.mintshell.command.CommandParameter;
 
 /**
- * Simple implementation of a {@link CommandInterpreter} that splits a given command message on it's spaces using the
- * first token as command and all following as parameters.
- *
+ * Exception indicating that converting a {@link String} value to a {@link CommandParameter}'s type via
+ * {@link CommandParameter#of(Class, String)} failed. The causing {@link Exception} is available via
+ * {@link #getCause()}.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class StringTokenCommandInterpreter implements CommandInterpreter {
+public class ParameterConversionException extends Exception {
+
+  private static final long serialVersionUID = -8763781502544965227L;
 
   /**
+   * Constructs a new exception with the specified detail message and cause.
+   * <p>
+   * Note that the detail message associated with {@code cause} is <i>not</i> automatically incorporated in this
+   * exception's detail message.
    *
-   * @{inheritDoc}
-   * @see org.mintshell.CommandInterpreter#interprete(java.lang.String)
+   * @param message
+   *          the detail message (which is saved for later retrieval by the {@link #getMessage()} method).
+   * @param cause
+   *          the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt> value
+   *          is permitted, and indicates that the cause is nonexistent or unknown.)
+   *
+   * @author Noqmar
+   * @since 0.1.0
    */
-  @Override
-  public Command<?> interprete(final String commandMessage) throws CommandInterpreteException {
-    if (commandMessage == null || commandMessage.trim().isEmpty()) {
-      throw new CommandInterpreteException("The command message doesn't contain a command");
-    }
-    final String[] parts = commandMessage.trim().split(" ");
-    final String name = parts[0].trim();
-
-    final List<CommandParameter> parameters = new ArrayList<>();
-    for (int i = 1; i < parts.length; i++) {
-      parameters.add(new CommandParameter(i - 1, parts[i]));
-    }
-    return new Command<>(name, parameters);
+  public ParameterConversionException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 }

@@ -37,34 +37,25 @@ import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 
 /**
+ * <p>
  * A {@link Command} is the intent to invoke an operation within the application, in Java usually a method, which is
  * induced by a {@link CommandInterface}. One or more {@link CommandParameter}s may be provided together with the
  * {@link Command}. A {@link Command} always produces a {@link CommandResult}.
+ * </p>
+ * <p>
+ * <b>Note:</b> {@link Command}s are identified by their name attribute which means that two {@link Command}s are equal
+ * when their names are equal, no matter of their other attributes.
+ * </p>
  *
  * @author Noqmar
  * @since 0.1.0
  * @see CommandResult
  */
-public final class Command {
-
-  public static final String DEFAULT = "default";
+public class Command<P extends CommandParameter> {
 
   private final String description;
   private final String name;
-  private final List<CommandParameter> parameters;
-
-  /**
-   * Creates a new {@link Command}.
-   *
-   * @param parameters
-   *          {@link List} of {@link CommandParameter}s
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public Command(final List<CommandParameter> parameters) {
-    this(DEFAULT, null, parameters);
-  }
+  private final List<P> parameters;
 
   /**
    * Creates a new {@link Command}.
@@ -84,6 +75,21 @@ public final class Command {
    *
    * @param name
    *          name
+   * @param parameters
+   *          {@link List} of {@link CommandParameter}s
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public Command(final String name, final List<P> parameters) {
+    this(name, null, parameters);
+  }
+
+  /**
+   * Creates a new {@link Command}.
+   *
+   * @param name
+   *          name
    * @param description
    *          description text
    * @param parameters
@@ -92,7 +98,7 @@ public final class Command {
    * @author Noqmar
    * @since 0.1.0
    */
-  public Command(final String name, final @Nullable String description, final List<CommandParameter> parameters) {
+  public Command(final String name, final @Nullable String description, final List<P> parameters) {
     this.name = Assert.ARG.isNotNull(name, "[name] must not be [null]");
     this.description = description;
     this.parameters = new ArrayList<>(Assert.ARG.isNotNull(parameters, "[parameters] must not be [null]"));
@@ -114,7 +120,7 @@ public final class Command {
     if (this.getClass() != other.getClass()) {
       return false;
     }
-    final Command that = (Command) other;
+    final Command<?> that = (Command<?>) other;
     return deepEquals(new Object[] { this.name }, new Object[] { that.name });
   }
 
@@ -143,6 +149,18 @@ public final class Command {
   }
 
   /**
+   * Returns the number of parameters this command can take.
+   *
+   * @return number of parameters
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public int getParameterCount() {
+    return this.getParameters().size();
+  }
+
+  /**
    * Returns the ordered {@link List} of {@link CommandParameter}s that are supported by the {@link Command}.
    *
    * @return {@link List} of supported {@link CommandParameter}s or an empty {@link List}, if the {@link Command} needs
@@ -151,7 +169,7 @@ public final class Command {
    * @author Noqmar
    * @since 0.1.0
    */
-  public List<CommandParameter> getParameters() {
+  public List<P> getParameters() {
     return unmodifiableList(this.parameters);
   }
 
@@ -163,6 +181,16 @@ public final class Command {
   @Override
   public int hashCode() {
     return deepHashCode(new Object[] { this.name });
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.name;
   }
 
   /**
@@ -204,8 +232,8 @@ public final class Command {
      * @author Noqmar
      * @since 0.1.0
      */
-    public Command build() {
-      return new Command(this.name, this.description, this.parameters);
+    public Command<CommandParameter> build() {
+      return new Command<>(this.name, this.description, this.parameters);
     }
 
     /**

@@ -29,6 +29,8 @@ import static java.util.Arrays.asList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.mintshell.CommandDispatchException;
@@ -37,48 +39,31 @@ import org.mintshell.CommandTarget;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Basic implementation of a {@link CommandDispatcher} managing {@link CommandTarget}s. It is possible to enforce that
- * {@link Command}s determined from added {@link CommandTarget}s are unique. In this case adding a {@link CommandTarget}
- * providing an already managed {@link Command} an Ill duplicated {@link Command} will cause an
- * {@link IllegalStateException} will be thrown. In the other case the {@link CommandDispatcher} accepts duplicated
- * {@link Command}s but doesn't ensure any order for exection.
+ * Basic implementation of a {@link CommandDispatcher} managing {@link CommandTarget}s. Each {@link CommandTarget} that
+ * is added to this {@link CommandDispatcher} is inspected to get all available {@link Command}s supported by that
+ * {@link CommandTarget} using the {@link #determineCommands(CommandTarget)} method. It also enforces that
+ * {@link Command}s determined from added {@link CommandTarget}s are unique, which means when adding a
+ * {@link CommandTarget} providing an already managed {@link Command} an {@link IllegalStateException} will be thrown.
+ * Dispatching {@link Command}s means to find a supported {@link Command} and the corresponding managed
+ * {@link CommandTarget} and execute it via the {@link #invokeCommand(Command, CommandTarget)} method. These two methods
+ * have to be provided by subclasses.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public abstract class AbstractCommandDispatcher implements CommandDispatcher {
+public abstract class AbstractCommandDispatcher<C extends Command<?>> implements CommandDispatcher {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AbstractCommandDispatcher.class);
-
-  private final Map<Command, CommandTarget> commands;
-  private final boolean forceUniqueCommands;
+  private final Map<C, CommandTarget> commands;
 
   /**
-   * Creates a new instance with enforcement of unique {@link Command}s by added {@link CommandTarget}s.‚
+   * Creates a new instance.
    *
    * @author Noqmar
    * @since 0.1.0
    */
   protected AbstractCommandDispatcher() {
-    this(true);
-  }
-
-  /**
-   * Creates a new instance.
-   *
-   * @param forceUniqueCommands
-   *          {@code true} if unique {@link Command}s are enforced on adding {@link CommandTarget}s, {@code false}
-   *          otherwise
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  protected AbstractCommandDispatcher(final boolean forceUniqueCommands) {
-    this.forceUniqueCommands = forceUniqueCommands;
     this.commands = new HashMap<>();
   }
 
@@ -110,12 +95,12 @@ public abstract class AbstractCommandDispatcher implements CommandDispatcher {
    * @see org.mintshell.CommandDispatcher#dispatch(org.mintshell.command.Command)
    */
   @Override
-  public CommandResult<?> dispatch(final Command command) throws CommandDispatchException {
-    if (!this.commands.containsKey(command)) {
-      throw new CommandDispatchException(format("Command [%s] is unknown", command));
-    }
-    final CommandTarget commandTarget = this.commands.get(command);
-    return this.invokeCommand(command, commandTarget);
+  public CommandResult<?> dispatch(final Command<?> command) throws CommandDispatchException {
+    final Optional<Entry<C, CommandTarget>> entryCandidate = this.commands.entrySet().stream() //
+        .filter(entry -> entry.getKey().getName().equals(command.getName())) //
+        .findFirst();
+    final Entry<C, CommandTarget> entry = entryCandidate.orElseThrow(() -> new CommandDispatchException(format("%s: command not found", command)));
+    return this.invokeCommand(command, entry.getKey(), entry.getValue());
   }
 
   /**
@@ -130,39 +115,35 @@ public abstract class AbstractCommandDispatcher implements CommandDispatcher {
    */
   protected void addCommandTarget(final CommandTarget commandTarget) {
     Assert.ARG.isNotNull(commandTarget, "[commandTarget] must not be [null]");
-    final Set<Command> commandTargetCommands = this.determineCommands(commandTarget);
-    for (final Command commandTargetCommand : commandTargetCommands) {
+    final Set<C> commandTargetCommands = this.determineCommands(commandTarget);
+    for (final C commandTargetCommand : commandTargetCommands) {
       if (this.commands.containsKey(commandTargetCommand)) {
-        final String message = String.format("Command [%s] is duplicated");
-        if (this.forceUniqueCommands) {
-          throw new IllegalStateException(message);
-        }
-        else {
-          LOG.warn(message);
-        }
+        throw new IllegalStateException(format("Command [%s] is duplicated"));
       }
       this.commands.put(commandTargetCommand, commandTarget);
     }
   }
 
   /**
-   * Inspects the given {@link CommandTarget} and determines all available {@link Command}s for this
+   * Inspects the given {@link CommandTarget} and determines all available {@link Command} names for this
    * {@link CommandTarget}.
    *
    * @param commandTarget
    *          command target to be inspected
-   * @return {@link Set} of determined {@link Command}s
+   * @return {@link Set} of determined {@link Command} names
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  protected abstract Set<Command> determineCommands(final CommandTarget commandTarget);
+  protected abstract Set<C> determineCommands(final CommandTarget commandTarget);
 
   /**
    * Performs the invokation of the given {@link Command} with it's corresponding {@link CommandTarget}.
    *
    * @param command
    *          command to be performed
+   * @param targetCommand
+   *          command determined from command target
    * @param commandTarget
    *          target on which the command will be performed
    * @return result of the invokation
@@ -172,17 +153,6 @@ public abstract class AbstractCommandDispatcher implements CommandDispatcher {
    * @author Noqmar
    * @since 0.1.0
    */
-  protected abstract CommandResult<?> invokeCommand(final Command command, final CommandTarget commandTarget) throws CommandDispatchException;
-
-  /**
-   * Returns whether unique {@link Command}s are enforced.
-   * 
-   * @return {@code true} if unique {@link Command}s are enforced, {@code false} otherwise
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  protected boolean isForceUniqueCommands() {
-    return this.forceUniqueCommands;
-  }
+  protected abstract CommandResult<?> invokeCommand(final Command<?> command, final C targetCommand, final CommandTarget commandTarget)
+      throws CommandDispatchException;
 }

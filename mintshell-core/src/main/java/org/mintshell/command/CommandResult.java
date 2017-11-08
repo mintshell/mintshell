@@ -38,7 +38,7 @@ import org.mintshell.assertion.Assert;
  * @author Noqmar
  * @since 0.1.0
  */
-public final class CommandResult<T> {
+public class CommandResult<T> {
 
   private final State state;
   private final Optional<T> value;

@@ -26,7 +26,9 @@ package org.mintshell;
 import java.util.Set;
 
 import org.mintshell.command.Command;
+import org.mintshell.command.CommandParameter;
 import org.mintshell.command.CommandResult;
+import org.mintshell.dispatcher.reflection.ReflectionCommandParameterFactory;
 
 /**
  * The {@link CommandDispatcher} is responsible to manage {@link CommandTarget}s and dispatch given {@link Command}s to
@@ -71,5 +73,16 @@ public abstract interface CommandDispatcher {
    * @author Noqmar
    * @since 0.1.0
    */
-  public abstract CommandResult<?> dispatch(final Command command) throws CommandDispatchException;
+  public abstract CommandResult<?> dispatch(final Command<?> command) throws CommandDispatchException;
+
+  /**
+   * Returns a {@link Set} of supported {@link ReflectionCommandParameterFactory}s and thereby supported types of
+   * {@link CommandParameter}s.
+   *
+   * @return supported {@link ReflectionCommandParameterFactory}s aka {@link CommandParameter}s
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract Set<ReflectionCommandParameterFactory> getSupportedParameters();
 }

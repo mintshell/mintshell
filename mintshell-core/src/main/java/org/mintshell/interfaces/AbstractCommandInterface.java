@@ -128,10 +128,10 @@ public abstract class AbstractCommandInterface implements CommandInterface {
       return "";
     } catch (final CommandInterpreteException e) {
       this.LOG.warn("Failed to interprete command [{}]", commandMessage, e);
-      return format("%s: command not found", commandMessage);
+      return e.getMessage();
     } catch (final CommandDispatchException e) {
       this.LOG.warn("Failed to dispatch command [{}]", commandMessage, e);
-      return format("%s: command not found", commandMessage);
+      return e.getMessage();
     } catch (final RuntimeException e) {
       this.LOG.error("Failed to perform command [{}]", commandMessage, e);
       return format("%s: command failure: %s", commandMessage, e.getMessage());
@@ -139,7 +139,7 @@ public abstract class AbstractCommandInterface implements CommandInterface {
   }
 
   private CommandResult<?> handleCommand(final String commandMessage) throws CommandInterpreteException, CommandDispatchException {
-    final Command command = this.commandInterpreter.interprete(commandMessage);
+    final Command<?> command = this.commandInterpreter.interprete(commandMessage);
     return this.commandDispatcher.dispatch(command);
   }
 }

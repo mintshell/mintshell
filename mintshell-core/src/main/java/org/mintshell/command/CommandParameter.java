@@ -23,74 +23,119 @@
  */
 package org.mintshell.command;
 
+import java.util.Optional;
+
 import org.mintshell.annotation.Nullable;
-import org.mintshell.assertion.Assert;
 
 /**
- * A {@link CommandParameter} is used to provide data for the execution of a {@link Command}.
+ * A {@link CommandParameter} is used to provide data for the execution of a {@link Command}. A {@link CommandParameter}
+ * provides at least an index and optional additional references like a name, a short name and of course a value.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public abstract class CommandParameter {
+public class CommandParameter {
 
-  private final Class<?> type;
+  private final int index;
+  private final Optional<String> name;
+  private final Optional<Character> shortName;
+  private final Optional<String> value;
 
   /**
-   * Creates a new command parameter.
+   * Creates a new instance with an index.
    *
-   * @param type
-   *          type of the parameter
-   * @throws UnsupportedParameterTypeException
-   *           if the given parameter type isn's supported
+   * @param index
+   *          parameter index
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandParameter(final Class<?> type) throws UnsupportedParameterTypeException {
-    this.type = Assert.ARG.isNotNull(type, "[type] must not be [null]");
-    if (!this.isTypeSupported(type)) {
-      throw new UnsupportedParameterTypeException(String.format("Type [%s] is not supported by [%s]", type.getName(), this.getClass().getName()));
-    }
+  public CommandParameter(final int index) {
+    this(index, null);
   }
 
   /**
-   * Returns the type of the {@link CommandParameter}.
+   * Creates a new instance with an index and an (optional) value.
    *
-   * @return parameter type
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public Class<?> getType() {
-    return this.type;
-  }
-
-  /**
-   * Converts the given {@link String} value into an instance of the {@link CommandParameter}'s type.
-   *
+   * @param index
+   *          parameter index
    * @param value
-   *          {@link String} value to convert, may be {@code null}
-   * @return type instance or {@code null}, if the given value was {@code null}
-   * @throws ParameterConversionException
-   *           if the conversion failed
+   *          (optional) parameter value
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public abstract Object of(@Nullable String value) throws ParameterConversionException;
+  public CommandParameter(final int index, final @Nullable String value) {
+    this(index, null, null, value);
+  }
 
   /**
-   * Returns whether this {@link CommandParameter} supports the given type, where 'support' means technical support and
-   * doesn't exclude any exeptions when trying to convert a concrete {@link String} value via the
-   * {@link #of(Class, String)} method.
-   *
-   * @param type
-   *          type to be checked
-   * @return {@code true} if this {@link CommandParameter} supports the given type, {@code false} otherwise
+   * Creates a new instance.
+   * 
+   * @param index
+   *          parameter index
+   * @param name
+   *          (optional) parameter (long) name
+   * @param shortName
+   *          (optional) parameter short name
+   * @param value
+   *          (optional) parameter value
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  protected abstract boolean isTypeSupported(Class<?> type);
+  public CommandParameter(final int index, final @Nullable String name, final @Nullable Character shortName, final @Nullable String value) {
+    this.index = index;
+    this.name = Optional.ofNullable(name);
+    this.shortName = Optional.ofNullable(shortName);
+    this.value = Optional.ofNullable(value);
+  }
+
+  /**
+   * Returns the index of this parameter as the corresponding {@link Command} expects it.
+   *
+   * @return parameter index
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public int getIndex() {
+    return this.index;
+  }
+
+  /**
+   * Returns the parameter's (full) name, if available.
+   *
+   * @return (full) name of the parameter or {@link Optional#empty()}, if the parameter isn't named
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public Optional<String> getName() {
+    return this.name;
+  }
+
+  /**
+   * Returns the parameter's short name, if available.
+   *
+   * @return short name of the parameter or {@link Optional#empty()}, if the parameter has not short named
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public Optional<Character> getShortName() {
+    return this.shortName;
+  }
+
+  /**
+   * Returns the parameter's value if available.
+   *
+   * @return value of the parameter or {@link Optional#empty()}, if the parameter has no value
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public Optional<String> getValue() {
+    return this.value;
+  }
 }

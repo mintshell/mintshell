@@ -21,36 +21,33 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.command;
+package org.mintshell.dispatcher.reflection;
+
+import java.lang.reflect.Parameter;
+
+import org.mintshell.command.CommandParameter;
 
 /**
- * Exception indicating that converting a {@link String} value to a {@link CommandParameter}'s type via
- * {@link CommandParameter#of(Class, String)} failed. The causing {@link Exception} is available via
- * {@link #getCause()}.
+ * Factory responsible to create {@link CommandParameter} instances from reflection {@link Parameter}.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class ParameterConversionException extends Exception {
-
-  private static final long serialVersionUID = -8763781502544965227L;
+@FunctionalInterface
+public abstract interface ReflectionCommandParameterFactory {
 
   /**
-   * Constructs a new exception with the specified detail message and cause.
-   * <p>
-   * Note that the detail message associated with {@code cause} is <i>not</i> automatically incorporated in this
-   * exception's detail message.
-   *
-   * @param message
-   *          the detail message (which is saved for later retrieval by the {@link #getMessage()} method).
-   * @param cause
-   *          the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt> value
-   *          is permitted, and indicates that the cause is nonexistent or unknown.)
-   *
+   * Creates a new {@link CommandParameter} from the given {@link Parameter} and index.
+   * 
+   * @param index
+   *          paramter index within the method's signature
+   * @param type
+   *          type of the parameter
+   * @return {@link CommandParameter} instance
+   * @throws UnsupportedParameterTypeException
+   *           if the given type is not supported
    * @author Noqmar
    * @since 0.1.0
    */
-  public ParameterConversionException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
+  public abstract ReflectionCommandParameter create(int index, Class<?> type) throws UnsupportedParameterTypeException;
 }

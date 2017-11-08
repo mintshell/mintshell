@@ -21,26 +21,42 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.command.parameter;
+package org.mintshell.dispatcher.reflection;
 
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.mintshell.annotation.Nullable;
 import org.mintshell.command.CommandParameter;
-import org.mintshell.command.ParameterConversionException;
-import org.mintshell.command.UnsupportedParameterTypeException;
 
 /**
- * Implementation of a {@link CommandParameter} that is able to handle primitive Types and it Box-Classes.
+ * Implementation of a {@link CommandParameter} that is able to handle classes, that provide a static Method that takes
+ * a single {@link String} as parameter and returns an instance of that class.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class PrimitiveParameter extends CommandParameter {
+public class StaticStringConstructionMethodParameter extends ReflectionCommandParameter {
+
+  /**
+   * {@link ReflectionCommandParameterFactory} that creates instance of
+   * {@link StaticStringConstructionMethodParameter}s.
+   */
+  public static final ReflectionCommandParameterFactory FACTORY = (index, type) -> new StaticStringConstructionMethodParameter(index, type);
+
+  private final List<Method> candidates;
 
   /**
    * Creates a new command parameter.
-   *
+   * 
+   * @param index
+   *          index of the parameter in the originating methods's signature
    * @param type
    *          type of the parameter
    * @throws UnsupportedParameterTypeException
@@ -49,8 +65,9 @@ public class PrimitiveParameter extends CommandParameter {
    * @author Noqmar
    * @since 0.1.0
    */
-  public PrimitiveParameter(final Class<?> type) throws UnsupportedParameterTypeException {
-    super(type);
+  public StaticStringConstructionMethodParameter(final int index, final Class<?> type) throws UnsupportedParameterTypeException {
+    super(index, type);
+    this.candidates = this.findCandidates(type);
   }
 
   /**
@@ -64,36 +81,16 @@ public class PrimitiveParameter extends CommandParameter {
       if (value == null) {
         return null;
       }
-      if (this.getType() == boolean.class) {
-        return Boolean.parseBoolean(value);
-      }
-      if (this.getType() == byte.class) {
-        return Byte.parseByte(value);
-      }
-      if (this.getType() == char.class) {
-        return value.charAt(0);
-      }
-      if (this.getType() == double.class) {
-        return Double.parseDouble(value);
-      }
-      if (this.getType() == float.class) {
-        return Float.parseFloat(value);
-      }
-      if (this.getType() == int.class) {
-        return Integer.parseInt(value);
-      }
-      if (this.getType() == long.class) {
-        return Long.parseLong(value);
-      }
-      if (this.getType() == short.class) {
-        return Short.parseShort(value);
-      }
-      if (this.getType() == String.class) {
-        return value;
+      for (final Method candidate : this.candidates) {
+        try {
+          return this.getType().cast(candidate.invoke(null, value));
+        } catch (final IllegalAccessException | RuntimeException e) {
+          throw new ParameterConversionException("Conversion of [%s] into instance of [%s] failed", e);
+        } catch (final InvocationTargetException e) {
+          throw new ParameterConversionException("Conversion of [%s] into instance of [%s] failed", e.getCause());
+        }
       }
       throw new UnsupportedParameterTypeException(format("Type [%s] is not supported by [%s]", this.getType().getName(), this.getClass().getName()));
-    } catch (final RuntimeException e) {
-      throw new ParameterConversionException(format("Conversion of [%s] into instance of [%s] failed", value, this.getType().getName()), e);
     } catch (final Exception e) {
       throw new ParameterConversionException("Conversion of [%s] into instance of [%s] failed", e);
     }
@@ -106,15 +103,15 @@ public class PrimitiveParameter extends CommandParameter {
    */
   @Override
   protected boolean isTypeSupported(final Class<?> type) {
-    return false //
-        || type == boolean.class //
-        || type == byte.class //
-        || type == char.class //
-        || type == double.class //
-        || type == float.class //
-        || type == int.class //
-        || type == long.class //
-        || type == short.class //
-        || type == String.class;
+    return !this.findCandidates(type).isEmpty();
+  }
+
+  private final List<Method> findCandidates(final Class<?> type) {
+    return stream(type.getMethods()) //
+        .filter(method -> Modifier.isStatic(method.getModifiers())) //
+        .filter(method -> method.getParameterTypes().length == 1) //
+        .filter(method -> method.getParameterTypes()[0] == String.class) //
+        .filter(method -> method.getReturnType() == type) //
+        .collect(Collectors.toList());
   }
 }

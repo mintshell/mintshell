@@ -21,7 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.command;
+package org.mintshell.dispatcher.reflection;
+
+import org.mintshell.command.CommandParameter;
 
 /**
  * Exception indicating an unsupported {@link CommandParameter} value type, meaning the {@link CommandParameter} cannot
