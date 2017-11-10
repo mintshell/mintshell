@@ -47,6 +47,15 @@ public abstract interface CommandInterface {
   public abstract void activate(CommandInterpreter commandInterpreter, CommandDispatcher commandDispatcher) throws IllegalStateException;
 
   /**
+   * Deactivates the {@link CommandInterface}. Whether the same interface instance can be (re-)activated again is
+   * implementation specific.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract void deactivate();
+
+  /**
    * Returns whether this {@link CommandInterface} was activated using
    * {@link #activate(CommandInterpreter, CommandDispatcher)}.
    *

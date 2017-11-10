@@ -40,6 +40,7 @@ import org.mintshell.assertion.Assert;
  */
 public class CommandResult<T> {
 
+  private final Command<?> command;
   private final State state;
   private final Optional<T> value;
   private final Optional<Throwable> cause;
@@ -47,13 +48,16 @@ public class CommandResult<T> {
   /**
    * Creates a new {@link State#SUCCEEDED} command result.
    *
+   * @param command
+   *          command that produced this result
    * @param value
    *          value of the command execution
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandResult(final @Nullable T value) {
+  public CommandResult(final Command<?> command, final @Nullable T value) {
+    this.command = Assert.ARG.isNotNull(command, "[cause] must not be [null]");
     this.value = Optional.ofNullable(value);
     this.state = State.SUCCEEDED;
     this.cause = Optional.empty();
@@ -62,13 +66,16 @@ public class CommandResult<T> {
   /**
    * Creates a new {@link State#FAILED} command result.
    *
+   * @param command
+   *          command that produced this result
    * @param cause
    *          cause of the command failure
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandResult(final Throwable cause) {
+  public CommandResult(final Command<?> command, final Throwable cause) {
+    this.command = Assert.ARG.isNotNull(command, "[cause] must not be [null]");
     this.value = Optional.empty();
     this.state = State.FAILED;
     this.cause = Optional.of(Assert.ARG.isNotNull(cause, "[cause] must not be [null]"));
@@ -85,6 +92,18 @@ public class CommandResult<T> {
    */
   public Optional<Throwable> getCause() {
     return this.cause;
+  }
+
+  /**
+   * Returns the command, that produced this result.
+   *
+   * @return command, that produced this result
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public Command<?> getCommand() {
+    return this.command;
   }
 
   /**
@@ -109,6 +128,30 @@ public class CommandResult<T> {
    */
   public Optional<T> getValue() {
     return this.value;
+  }
+
+  /**
+   * Returns whether this result represents a failed {@link Command} execution.
+   * 
+   * @return {@code true} if this result represents a failed {@link Command} execution, {@code false} otherwise
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public boolean isFailed() {
+    return State.FAILED.equals(this.state);
+  }
+
+  /**
+   * Returns whether this result represents a succeeded {@link Command} execution.
+   * 
+   * @return {@code true} if this result represents a succeeded {@link Command} execution, {@code false} otherwise
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public boolean isSucceeded() {
+    return State.SUCCEEDED.equals(this.state);
   }
 
   /**

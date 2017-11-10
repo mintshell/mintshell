@@ -38,6 +38,7 @@ import org.mintshell.CommandDispatcher;
 import org.mintshell.CommandTarget;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
+import org.mintshell.command.CommandAlias;
 import org.mintshell.command.CommandResult;
 
 /**
@@ -100,7 +101,8 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
         .filter(entry -> entry.getKey().getName().equals(command.getName())) //
         .findFirst();
     final Entry<C, CommandTarget> entry = entryCandidate.orElseThrow(() -> new CommandDispatchException(format("%s: command not found", command)));
-    return this.invokeCommand(command, entry.getKey(), entry.getValue());
+    final C targetCommand = this.resolveAliases(entry.getKey());
+    return this.invokeCommand(command, targetCommand, entry.getValue());
   }
 
   /**
@@ -155,4 +157,24 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
    */
   protected abstract CommandResult<?> invokeCommand(final Command<?> command, final C targetCommand, final CommandTarget commandTarget)
       throws CommandDispatchException;
+
+  /**
+   * Resolves recursively {@link CommandAlias}es.
+   *
+   * @param command
+   *          (possible) {@link CommandAlias} to be resolved
+   * @return resolved {@link Command}
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  @SuppressWarnings("unchecked")
+  protected C resolveAliases(final C command) {
+    if (!CommandAlias.class.isInstance(command)) {
+      return command;
+    }
+    final CommandAlias<?> alias = CommandAlias.class.cast(command);
+    final C aliasedCommand = (C) alias.getCommand();
+    return this.resolveAliases(aliasedCommand);
+  }
 }

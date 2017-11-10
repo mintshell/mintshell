@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.mintshell.CommandDispatcher;
@@ -57,6 +58,8 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   private static final Logger LOG = LoggerFactory.getLogger(AbstractTerminalCommandInterface.class);
 
   private final ExecutorService executor;
+  private Future<?> task;
+  private Future<?> keyTask;
   private final String prompt;
   private final Optional<String> banner;
   private final List<KeyBinding> keyBindings;
@@ -126,11 +129,11 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   @Override
   public void activate(final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher) throws IllegalStateException {
     super.activate(commandInterpreter, commandDispatcher);
-    this.executor.submit(() -> {
+    this.task = this.executor.submit(() -> {
       while (!Thread.interrupted()) {
         try {
           final Key key = this.readKey();
-          this.executor.submit(() -> {
+          this.keyTask = this.executor.submit(() -> {
             try {
               this.handleKey(key);
             } catch (final Exception e) {
@@ -170,6 +173,22 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   @Override
   public void clearKeyBindings() {
     this.keyBindings.clear();
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.interfaces.AbstractCommandInterface#deactivate()
+   */
+  @Override
+  public void deactivate() {
+    if (this.task != null) {
+      this.task.cancel(true);
+    }
+    if (this.keyTask != null) {
+      this.keyTask.cancel(true);
+    }
+    this.executor.shutdownNow();
   }
 
   /**

@@ -213,9 +213,9 @@ public class ReflectionCommandDispatcher extends AbstractCommandDispatcher<Refle
     try {
       method.setAccessible(true);
       final Object result = method.invoke(commandTarget.isInstance() ? commandTarget.getTargetInstance() : null, args);
-      return new CommandResult<>(result);
+      return new CommandResult<>(command, result);
     } catch (final InvocationTargetException e) {
-      return new CommandResult<>(e.getTargetException());
+      return new CommandResult<>(command, e.getTargetException());
     } catch (final IllegalAccessException e) {
       throw new CommandDispatchException(format("Failed to execute command [%s]", command), e);
     } catch (final RuntimeException e) {

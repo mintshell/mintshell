@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.sshd.server.SshServer;
@@ -39,6 +41,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.mintshell.CommandDispatcher;
 import org.mintshell.CommandInterpreter;
 import org.mintshell.annotation.Nullable;
+import org.mintshell.command.Command;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
@@ -55,8 +58,10 @@ import org.slf4j.LoggerFactory;
 public class SshCommandInterface implements TerminalCommandInterface {
 
   public static final int DEFAULT_PORT = 8022;
+  public static final String DEFAULT_EXIT_COMMAND_NAME = "exit";
   private static final Logger LOG = LoggerFactory.getLogger(SshCommandInterface.class);
 
+  private final ExecutorService executor;
   private final int port;
   private final SshServer sshServer;
   private CommandInterpreter commandInterpreter;
@@ -68,6 +73,8 @@ public class SshCommandInterface implements TerminalCommandInterface {
    *
    * @param port
    *          port number to bind the SSH server to
+   * @param exitCommandName
+   *          Name of the command that is recognized and leads to close a SSH session
    * @param prompt
    *          shell prompt
    * @param banner
@@ -80,16 +87,17 @@ public class SshCommandInterface implements TerminalCommandInterface {
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterface(final int port, final String prompt, @Nullable final String banner, final Key commandSubmissionKey,
+  public SshCommandInterface(final int port, final String exitCommandName, final String prompt, @Nullable final String banner, final Key commandSubmissionKey,
       @Nullable final KeyBinding... keyBindings) {
+    this.executor = Executors.newCachedThreadPool();
     this.port = port;
     this.sshServer = SshServer.setUpDefaultServer();
     this.sshServer.setPort(port);
     this.sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File("hostkey.ser")));
     this.sshServer.setPublickeyAuthenticator(new AlwaysAuthenticatedlPublicKeyAuthenticator());
     this.keyBindings = new ArrayList<>(Arrays.asList(keyBindings));
-    this.sshServer.setShellFactory(() -> new SshCommandInterfaceSession(this.getCommandInterpreter(), this.getCommandDispatcher(), prompt, banner,
-        commandSubmissionKey, this.getKeyBindingsArray()));
+    this.sshServer.setShellFactory(() -> new SshCommandInterfaceSession(this.executor, this.getCommandInterpreter(), this.getCommandDispatcher(),
+        new Command<>(exitCommandName), prompt, banner, commandSubmissionKey, this.getKeyBindingsArray()));
 
   }
 
@@ -108,7 +116,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
    * @since 0.1.0
    */
   public SshCommandInterface(final String prompt, @Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
-    this(DEFAULT_PORT, prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
+    this(DEFAULT_PORT, DEFAULT_EXIT_COMMAND_NAME, prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
   }
 
   /**
@@ -149,6 +157,16 @@ public class SshCommandInterface implements TerminalCommandInterface {
   public void clearKeyBindings() {
     this.keyBindings.clear();
     // TODO: #6 forward keybinding operations to sessions
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.CommandInterface#deactivate()
+   */
+  @Override
+  public void deactivate() {
+    // TODO: #6 forward deactivation to sessions
   }
 
   /**

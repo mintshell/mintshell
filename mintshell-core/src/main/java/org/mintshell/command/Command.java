@@ -47,6 +47,9 @@ import org.mintshell.assertion.Assert;
  * when their names are equal, no matter of their other attributes.
  * </p>
  *
+ * @param <P>
+ *          type of the command parameters
+ *
  * @author Noqmar
  * @since 0.1.0
  * @see CommandResult

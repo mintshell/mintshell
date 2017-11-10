@@ -21,7 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.examples;
+package org.mintshell.examples.terminal.ssh;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple class that can be used as instance command target providing nothing more that (not annotated) methods to grab
@@ -30,11 +33,13 @@ package org.mintshell.examples;
  * @author Noqmar
  * @since 0.1.0
  */
-public class SimpleCommandTarget {
+public class SimpleSshCommandTarget {
+
+  private static final Logger LOG = LoggerFactory.getLogger(SimpleSshCommandTarget.class);
 
   /**
    * Adds the given arguments.
-   * 
+   *
    * @param a
    *          first argument
    * @param b
@@ -45,11 +50,12 @@ public class SimpleCommandTarget {
    * @since 0.1.0
    */
   public int add(final int a, final int b) {
+    LOG.info("Called add({}, {})", a, b);
     return a + b;
   }
 
   public void exit() {
-    System.exit(0);
+    LOG.info("Called exit()");
   }
 
   /**
@@ -61,6 +67,7 @@ public class SimpleCommandTarget {
    * @since 0.1.0
    */
   public long mem() {
+    LOG.info("Called mem()");
     final Runtime runtime = Runtime.getRuntime();
     return runtime.totalMemory();
   }
@@ -74,6 +81,7 @@ public class SimpleCommandTarget {
    * @since 0.1.0
    */
   public long memfree() {
+    LOG.info("Called memfree()");
     final Runtime runtime = Runtime.getRuntime();
     return runtime.freeMemory();
   }
@@ -87,6 +95,7 @@ public class SimpleCommandTarget {
    * @since 0.1.0
    */
   public long memused() {
+    LOG.info("Called memused()");
     final Runtime runtime = Runtime.getRuntime();
     return runtime.totalMemory() - runtime.freeMemory();
   }

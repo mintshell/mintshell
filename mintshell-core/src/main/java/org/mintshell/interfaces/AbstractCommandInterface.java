@@ -32,6 +32,7 @@ import org.mintshell.CommandDispatcher;
 import org.mintshell.CommandInterface;
 import org.mintshell.CommandInterpreteException;
 import org.mintshell.CommandInterpreter;
+import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandResult;
@@ -114,9 +115,12 @@ public abstract class AbstractCommandInterface implements CommandInterface {
    * @since 0.1.0
    */
   protected synchronized String performCommand(final String commandMessage) {
+    CommandResult<?> result = null;
     try {
-      final CommandResult<?> result = Assert.ARG.isNotNull(this.handleCommand(commandMessage),
-          String.format("Performing command [%s] doesn't lead to a valid command result", commandMessage));
+      final Command<?> command = this.preCommand(this.commandInterpreter.interprete(commandMessage));
+      result = Assert.ARG.isNotNull(this.commandDispatcher.dispatch(command),
+          format("Performing command [%s] doesn't lead to a valid command result", commandMessage));
+
       switch (result.getState()) {
         case SUCCEEDED:
           final Optional<?> resultValue = result.getValue();
@@ -135,11 +139,48 @@ public abstract class AbstractCommandInterface implements CommandInterface {
     } catch (final RuntimeException e) {
       this.LOG.error("Failed to perform command [{}]", commandMessage, e);
       return format("%s: command failure: %s", commandMessage, e.getMessage());
+    } finally {
+      this.postCommand(result);
     }
   }
 
-  private CommandResult<?> handleCommand(final String commandMessage) throws CommandInterpreteException, CommandDispatchException {
-    final Command<?> command = this.commandInterpreter.interprete(commandMessage);
-    return this.commandDispatcher.dispatch(command);
+  /**
+   * <p>
+   * Handles the given {@link Command} <b>after</b> it got passed to the {@link CommandDispatcher}.
+   * </p>
+   * <p>
+   * This method is intended to be overwritten by subclasses, if they need to get notified about certain
+   * {@link CommandResult}s to treat them in a special way.
+   * </p>
+   *
+   * @param result
+   *          result of {@link Command} execution or {@code null} if the execution failed and did not produce a
+   *          {@link CommandResult}
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  protected void postCommand(final @Nullable CommandResult<?> result) {
+    // does nothing here
+  }
+
+  /**
+   * <p>
+   * Handles the given {@link Command} <b>before</b> it gets passed to the {@link CommandDispatcher}.
+   * </p>
+   * <p>
+   * This method is intended to be overwritten by subclasses, if they need to get notified about certain {@link Command}
+   * to treat them in a special way.
+   * </p>
+   *
+   * @param command
+   *          command to be handled
+   * @return the handled command, maybe the given command itself, if no (manipulating) treatment is necessary
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  protected Command<?> preCommand(final Command<?> command) {
+    return command;
   }
 }

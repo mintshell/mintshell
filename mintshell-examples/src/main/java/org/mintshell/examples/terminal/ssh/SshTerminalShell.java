@@ -21,32 +21,33 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.examples;
+package org.mintshell.examples.terminal.ssh;
 
 import org.mintshell.Mintshell;
 import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
 import org.mintshell.interpreter.StringTokenCommandInterpreter;
-import org.mintshell.terminal.ncurses.interfaces.NCursesTerminalCommandInterface;
+import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
+import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
 
 /**
- * This class demonstrates the usage of a shell using the {@link NCursesTerminalCommandInterface}.
+ * This class demonstrates the usage of a shell using the {@link SshCommandInterface}.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class NCursesTerminalShell {
+public class SshTerminalShell {
 
-  public NCursesTerminalShell(final String[] args) throws Exception {
+  public SshTerminalShell(final String[] args) throws Exception {
     Mintshell //
-        .from(new NCursesTerminalCommandInterface("Mintshell> ", "Welcome to Mintshell with ncursrs\r\n", NCursesTerminalCommandInterface.KEYBINDING_EXIT)) //
+        .from(new SshCommandInterface("Mintshell> ", "Welcome to Mintshell with SSH\r\n", AbstractTerminalCommandInterface.KEYBINDING_EXIT)) //
         .interpretedBy(new StringTokenCommandInterpreter()) //
         .dispatchedBy(new ReflectionCommandDispatcher()) //
-        .to(new SimpleCommandTarget()) //
+        .to(new SimpleSshCommandTarget()) //
         .apply();
     Thread.sleep(Long.MAX_VALUE);
   }
 
   public static void main(final String[] args) throws Exception {
-    new NCursesTerminalShell(args);
+    new SshTerminalShell(args);
   }
 }

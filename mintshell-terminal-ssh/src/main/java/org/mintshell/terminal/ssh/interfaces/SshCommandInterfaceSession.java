@@ -23,19 +23,24 @@
  */
 package org.mintshell.terminal.ssh.interfaces;
 
+import static java.lang.String.format;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.EnumSet;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.apache.sshd.common.channel.PtyMode;
-import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.shell.TtyFilterInputStream;
 import org.mintshell.CommandDispatcher;
 import org.mintshell.CommandInterpreter;
+import org.mintshell.assertion.Assert;
+import org.mintshell.command.Command;
+import org.mintshell.command.CommandResult;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
@@ -47,23 +52,30 @@ import org.mintshell.terminal.interfaces.TerminalCommandInterface;
  * @author Noqmar
  * @since 0.1.0
  */
-public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface implements Command {
+public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface implements org.apache.sshd.server.Command {
 
   private AnsiKeyFilterInputStream in;
   private OutputStream out;
   private Future<?> task;
+  private ExitCallback exitCallback;
+  private final ExecutorService executor;
   private final CommandInterpreter commandInterpreter;
   private final CommandDispatcher commandDispatcher;
+  private final Command<?> exitCommand;
 
   /**
    * Creates a new instance.
    *
+   * @param executor
+   *          executor service to run within
    * @param commandInterpreter
    *          {@link CommandInterpreter} which would be usually propagated though
    *          {@link #activate(CommandInterpreter, CommandDispatcher)}
    * @param commandDispatcher
    *          {@link CommandDispatcher} which would be usually propagated though
    *          {@link #activate(CommandInterpreter, CommandDispatcher)}
+   * @param exitCommand
+   *          {@link Command} that leads to termination of this session
    * @param prompt
    *          shell prompt
    * @param banner
@@ -76,11 +88,26 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterfaceSession(final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher, final String prompt,
-      final String banner, final Key commandSubmissionKey, final KeyBinding... keyBindings) {
+  public SshCommandInterfaceSession(final ExecutorService executor, final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher,
+      final Command<?> exitCommand, final String prompt, final String banner, final Key commandSubmissionKey, final KeyBinding... keyBindings) {
     super(prompt, banner, commandSubmissionKey, keyBindings);
-    this.commandInterpreter = commandInterpreter;
-    this.commandDispatcher = commandDispatcher;
+    this.executor = Assert.ARG.isNotNull(executor, "[executor] must not be [null]");
+    this.commandInterpreter = Assert.ARG.isNotNull(commandInterpreter, "[commandInterpreter] must not be [null]");
+    this.commandDispatcher = Assert.ARG.isNotNull(commandDispatcher, "[commandDispatcher] must not be [null]");
+    this.exitCommand = Assert.ARG.isNotNull(exitCommand, "[exitCommand] must not be [null]");
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#deactivate()
+   */
+  @Override
+  public void deactivate() {
+    if (this.task != null) {
+      this.task.cancel(true);
+    }
+    super.deactivate();
   }
 
   /**
@@ -180,11 +207,9 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
         this.out.write(AnsiControlCommand.INSERT_SINGLE_CHARACTER.getSequence());
         this.out.write(b);
       }
-
-      // this.out.write(text.getBytes());
       this.out.flush();
     } catch (final IOException e) {
-      throw new IllegalStateException(String.format("Failed to print text [%s]", text));
+      throw new IllegalStateException(format("Failed to print text [%s]", text));
     }
   }
 
@@ -219,8 +244,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
    * @see org.apache.sshd.server.Command#setExitCallback(org.apache.sshd.server.ExitCallback)
    */
   @Override
-  public void setExitCallback(final ExitCallback callback) {
-    // TODO: #4 make sure that an exit command also notifies this callback
+  public void setExitCallback(final ExitCallback exitCallback) {
+    this.exitCallback = exitCallback;
   }
 
   /**
@@ -250,13 +275,16 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
    */
   @Override
   public void start(final Environment env) throws IOException {
-    super.activate(this.commandInterpreter, this.commandDispatcher);
-    try {
-      this.out.write(AnsiControlCommand.SET_EDIT_EXTEND_MODE.getSequence());
-      this.out.flush();
-    } catch (final IOException e) {
-      throw new IllegalStateException("Failed to set edit extend mode");
-    }
+    this.task = this.executor.submit(() -> {
+      SshCommandInterfaceSession.this.activate(SshCommandInterfaceSession.this.commandInterpreter, SshCommandInterfaceSession.this.commandDispatcher);
+      try {
+        SshCommandInterfaceSession.this.out.write(AnsiControlCommand.SET_EDIT_EXTEND_MODE.getSequence());
+        SshCommandInterfaceSession.this.out.flush();
+      } catch (final IOException e) {
+        throw new IllegalStateException("Failed to set edit extend mode");
+      }
+      return null;
+    });
   }
 
   /**
@@ -277,5 +305,21 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
   @Override
   protected void moveCursor(final int row, final int col) {
     // TODO: #7 implement method moveCursor
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.interfaces.AbstractCommandInterface#postCommand(org.mintshell.command.CommandResult)
+   */
+  @Override
+  protected void postCommand(final CommandResult<?> result) {
+    if (result != null && this.exitCommand != null && this.exitCommand.equals(result.getCommand())) {
+      this.deactivate();
+      if (this.exitCallback != null) {
+        this.exitCallback.onExit(result.isSucceeded() ? 0 : 1);
+      }
+    }
+    super.postCommand(result);
   }
 }
