@@ -206,7 +206,9 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
   public void print(final String text) {
     try {
       for (final byte b : text.getBytes()) {
-        this.out.write(AnsiControlCommand.INSERT_SINGLE_CHARACTER.getSequence());
+        if (this.getCursorColumn() > 0) {
+          this.out.write(AnsiControlCommand.INSERT_SINGLE_CHARACTER.getSequence());
+        }
         this.out.write(b);
       }
       this.out.flush();

@@ -220,6 +220,18 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   protected abstract void clearScreen();
 
   /**
+   * Returns the zero-based column number of the current cursor position.
+   * 
+   * @return current column number
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  protected int getCursorColumn() {
+    return this.lineBuffer.getCursorPosition();
+  }
+
+  /**
    * Checks if the given {@link Key} is the command submission key and handles it by issuing a command. May be
    * overwritten by subclasses.
    *
