@@ -58,6 +58,7 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
   private OutputStream out;
   private Future<?> task;
   private ExitCallback exitCallback;
+  private final SessionRegistry sessionRegistry;
   private final ExecutorService executor;
   private final CommandInterpreter commandInterpreter;
   private final CommandDispatcher commandDispatcher;
@@ -88,13 +89,16 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterfaceSession(final ExecutorService executor, final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher,
-      final Command<?> exitCommand, final String prompt, final String banner, final Key commandSubmissionKey, final KeyBinding... keyBindings) {
+  public SshCommandInterfaceSession(final SessionRegistry sessionRegistry, final ExecutorService executor, final CommandInterpreter commandInterpreter,
+      final CommandDispatcher commandDispatcher, final Command<?> exitCommand, final String prompt, final String banner, final Key commandSubmissionKey,
+      final KeyBinding... keyBindings) {
     super(prompt, banner, commandSubmissionKey, keyBindings);
+    this.sessionRegistry = Assert.ARG.isNotNull(sessionRegistry, "[sessionRegistry] must not be [null]");
     this.executor = Assert.ARG.isNotNull(executor, "[executor] must not be [null]");
     this.commandInterpreter = Assert.ARG.isNotNull(commandInterpreter, "[commandInterpreter] must not be [null]");
     this.commandDispatcher = Assert.ARG.isNotNull(commandDispatcher, "[commandDispatcher] must not be [null]");
     this.exitCommand = Assert.ARG.isNotNull(exitCommand, "[exitCommand] must not be [null]");
+    sessionRegistry.register(this);
   }
 
   /**
@@ -117,10 +121,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
    */
   @Override
   public void destroy() throws Exception {
-    if (this.task != null && !this.task.isDone() && !this.task.isCancelled()) {
-      this.task.cancel(true);
-    }
-    this.task = null;
+    this.deactivate();
+    this.sessionRegistry.unregister(this);
   }
 
   /**

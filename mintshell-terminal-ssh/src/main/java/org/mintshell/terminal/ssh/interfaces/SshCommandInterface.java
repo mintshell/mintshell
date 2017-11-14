@@ -67,6 +67,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   private CommandInterpreter commandInterpreter;
   private CommandDispatcher commandDispatcher;
   private final List<KeyBinding> keyBindings;
+  private final SessionRegistry sessionRegistry;
 
   /**
    * Creates a new instance.
@@ -96,9 +97,9 @@ public class SshCommandInterface implements TerminalCommandInterface {
     this.sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File("hostkey.ser")));
     this.sshServer.setPublickeyAuthenticator(new AlwaysAuthenticatedlPublicKeyAuthenticator());
     this.keyBindings = new ArrayList<>(Arrays.asList(keyBindings));
-    this.sshServer.setShellFactory(() -> new SshCommandInterfaceSession(this.executor, this.getCommandInterpreter(), this.getCommandDispatcher(),
-        new Command<>(exitCommandName), prompt, banner, commandSubmissionKey, this.getKeyBindingsArray()));
-
+    this.sessionRegistry = new SessionRegistry();
+    this.sshServer.setShellFactory(() -> new SshCommandInterfaceSession(this.sessionRegistry, this.executor, this.getCommandInterpreter(),
+        this.getCommandDispatcher(), new Command<>(exitCommandName), prompt, banner, commandSubmissionKey, this.getKeyBindingsArray()));
   }
 
   /**
@@ -145,7 +146,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   @Override
   public void addKeyBindings(final KeyBinding... keyBindings) {
     this.keyBindings.addAll(Arrays.stream(keyBindings).collect(Collectors.toList()));
-    // TODO: #6 forward keybinding operations to sessions
+    this.sessionRegistry.getSessions().forEach(session -> session.addKeyBindings(keyBindings));
   }
 
   /**
@@ -156,7 +157,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   @Override
   public void clearKeyBindings() {
     this.keyBindings.clear();
-    // TODO: #6 forward keybinding operations to sessions
+    this.sessionRegistry.getSessions().forEach(SshCommandInterfaceSession::clearKeyBindings);
   }
 
   /**
@@ -166,7 +167,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
    */
   @Override
   public void deactivate() {
-    // TODO: #6 forward deactivation to sessions
+    this.sessionRegistry.getSessions().forEach(session -> session.deactivate());
   }
 
   /**
@@ -267,7 +268,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   @Override
   public void removeKeyBinding(final KeyBinding keyBinding) {
     this.keyBindings.remove(keyBinding);
-    // TODO: #6 forward keybinding operations to sessions
+    this.sessionRegistry.getSessions().forEach(session -> session.removeKeyBinding(keyBinding));
   }
 
   CommandDispatcher getCommandDispatcher() {
