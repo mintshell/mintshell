@@ -37,25 +37,31 @@ public enum AnsiControlCommand {
 
   ERASE_SINGLE_CHARACTER("\u001B[X"),
 
+  ERASE_ENTIRE_SCREEN("\u001B[2J"),
+
+  MOVE_CURSOR("\u001B[%d;%dH"),
+
   SET_EDIT_EXTEND_MODE("\u001B[Q"),
 
   ;
 
-  private final byte[] sequence;
+  private final String sequence;
 
   private AnsiControlCommand(final String sequence) {
-    this.sequence = sequence.getBytes();
+    this.sequence = sequence;
   }
 
   /**
    * Returns the byte sequence of this control command.
-   * 
+   *
+   * @param args
+   *          arguments
    * @return byte sequence
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public byte[] getSequence() {
-    return this.sequence;
+  public byte[] getSequence(final Object... args) {
+    return String.format(this.sequence, args).getBytes();
   }
 }

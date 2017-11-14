@@ -296,7 +296,13 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
    */
   @Override
   protected void clearScreen() {
-    // TODO: #7 implement method clearScreen
+    try {
+      this.out.write(AnsiControlCommand.ERASE_ENTIRE_SCREEN.getSequence());
+      this.out.flush();
+    } catch (final IOException e) {
+      throw new IllegalStateException("Failed to clear screen");
+    }
+    this.moveCursor(0, 0);
   }
 
   /**
@@ -306,7 +312,12 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
    */
   @Override
   protected void moveCursor(final int row, final int col) {
-    // TODO: #7 implement method moveCursor
+    try {
+      this.out.write(AnsiControlCommand.MOVE_CURSOR.getSequence(row, col));
+      this.out.flush();
+    } catch (final IOException e) {
+      throw new IllegalStateException("Failed to move cursor");
+    }
   }
 
   /**
