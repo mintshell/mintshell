@@ -25,10 +25,13 @@ package org.mintshell.terminal.ncurses.interfaces;
 
 import org.mintshell.CommandInterface;
 import org.mintshell.annotation.Nullable;
+import org.mintshell.terminal.Cursor;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of a {@link TerminalCommandInterface} using a native interface to the ncursrs library.
@@ -38,7 +41,10 @@ import org.mintshell.terminal.interfaces.TerminalCommandInterface;
  */
 public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInterface implements CommandInterface {
 
+  private static final Logger LOG = LoggerFactory.getLogger(NCursesTerminalCommandInterface.class);
+
   private final NCursesTerminal nCurses;
+  private final Cursor cursor;
 
   /**
    * Creates a new instance using the given command prompt.
@@ -87,6 +93,8 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
       @Nullable final KeyBinding... keyBindings) {
     super(prompt, banner, commandSubmissionKey, keyBindings);
     this.nCurses = NCursesTerminal.getInstance();
+    this.cursor = new Cursor(this.nCurses.getCol(), this.nCurses.getRow());
+    this.logPositions();
   }
 
   /**
@@ -114,6 +122,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
   @Override
   public void eraseNext() {
     this.nCurses.deleteChar();
+    this.logPositions();
   }
 
   /**
@@ -123,7 +132,10 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
    */
   @Override
   public void erasePrevious() {
-    this.nCurses.deleteCharAt(this.nCurses.getCol() - 1, this.nCurses.getRow());
+    this.cursor.moveLeft();
+    this.nCurses.deleteCharAt(this.cursor.getColumn(), this.cursor.getRow());
+    this.logPositions();
+
   }
 
   /**
@@ -133,7 +145,9 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
    */
   @Override
   public void moveNext() {
-    this.nCurses.moveCursor(this.nCurses.getCol() + 1, this.nCurses.getRow());
+    this.cursor.moveRight();
+    this.nCurses.moveCursor(this.cursor.getColumn(), this.cursor.getRow());
+    this.logPositions();
   }
 
   /**
@@ -143,7 +157,9 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
    */
   @Override
   public void movePrevious() {
-    this.nCurses.moveCursor(this.nCurses.getCol() - 1, this.nCurses.getRow());
+    this.cursor.moveLeft();
+    this.nCurses.moveCursor(this.cursor.getColumn(), this.cursor.getRow());
+    this.logPositions();
   }
 
   /**
@@ -154,6 +170,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
   @Override
   public void newLine() {
     this.print("\n\r");
+    this.logPositions();
   }
 
   /**
@@ -163,7 +180,21 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
    */
   @Override
   public void print(final String output) {
+    output.chars().forEach(i -> {
+      final char c = (char) i;
+      switch (c) {
+        case '\r':
+          this.cursor.setColumn(0);
+          break;
+        case '\n':
+          this.cursor.moveDown();
+          break;
+        default:
+          this.cursor.moveRight();
+      }
+    });
     this.nCurses.print(output);
+    this.logPositions();
   }
 
   /**
@@ -184,7 +215,9 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
    */
   @Override
   protected void clearScreen() {
+    this.cursor.setPosition(0, 0);
     this.nCurses.clearScreen();
+    this.logPositions();
   }
 
   /**
@@ -194,6 +227,12 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
    */
   @Override
   protected void moveCursor(final int col, final int row) {
-    this.nCurses.moveCursor(col, row);
+    this.cursor.setPosition(col, row);
+    this.nCurses.moveCursor(this.cursor.getColumn(), this.cursor.getRow());
+    this.logPositions();
+  }
+
+  private void logPositions() {
+    LOG.trace("Cursor [{}/{}]  Terminal [{}/{}]", this.cursor.getColumn(), this.cursor.getRow(), this.nCurses.getCol(), this.nCurses.getRow());
   }
 }
