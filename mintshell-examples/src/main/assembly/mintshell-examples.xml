@@ -12,9 +12,13 @@
       <destName>mintshell-examples.jar</destName>
     </file>
     <file>
-      <source>target/classes/logback.xml</source>
+      <source>logback-ncurses.xml</source>
       <outputDirectory>conf</outputDirectory>
     </file>
+    <file>
+      <source>logback-ssh.xml</source>
+      <outputDirectory>conf</outputDirectory>
+    </file>    
   </files>
   <dependencySets>
     <dependencySet>

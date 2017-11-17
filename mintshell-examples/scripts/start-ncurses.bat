@@ -1,1 +1,1 @@
-"%JAVA_HOME%/bin/java" -Dlogback.configurationFile=conf/logback.xml -cp mintshell-examples.jar;libs/* org.mintshell.examples.terminal.ncurses.NCursesTerminalShell
+"%JAVA_HOME%/bin/java" -Dlogback.configurationFile=conf/logback-ncurses.xml -cp mintshell-examples.jar;libs/* org.mintshell.examples.terminal.ncurses.NCursesTerminalShell

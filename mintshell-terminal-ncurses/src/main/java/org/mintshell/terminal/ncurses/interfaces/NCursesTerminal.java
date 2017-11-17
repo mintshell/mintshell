@@ -377,6 +377,14 @@ public final class NCursesTerminal {
   private static native void refresh();
 
   /**
+   * Calls {@code ncurses#scroll()}.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  private static native void scroll();
+
+  /**
    * {@link InputStream} connected to the {@link NCursesTerminal}.
    *
    * @author Noqmar
