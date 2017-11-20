@@ -93,7 +93,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
       @Nullable final KeyBinding... keyBindings) {
     super(prompt, banner, commandSubmissionKey, keyBindings);
     this.nCurses = NCursesTerminal.getInstance();
-    this.cursor = new Cursor(this.nCurses.getCol(), this.nCurses.getRow());
+    this.cursor = new Cursor(this.nCurses.getCol(), this.nCurses.getRow(), this.nCurses.getMaxCol(), this.nCurses.getMaxRow());
     this.logPositions();
   }
 
@@ -233,6 +233,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
   }
 
   private void logPositions() {
-    LOG.trace("Cursor [{}/{}]  Terminal [{}/{}]", this.cursor.getColumn(), this.cursor.getRow(), this.nCurses.getCol(), this.nCurses.getRow());
+    LOG.trace("Cursor [{}/{}:[{}][{}]]  Terminal [{}/{}]:[{}][{}]", this.cursor.getColumn(), this.cursor.getRow(), this.cursor.getMaxColumn(),
+        this.cursor.getMaxRow(), this.nCurses.getCol(), this.nCurses.getRow(), this.nCurses.getMaxCol(), this.nCurses.getMaxRow());
   }
 }

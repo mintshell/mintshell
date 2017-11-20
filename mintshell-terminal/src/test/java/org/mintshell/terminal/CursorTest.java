@@ -37,7 +37,7 @@ public class CursorTest {
 
   @Test
   public void testMoveDown() {
-    final Cursor sut = new Cursor(0, 42);
+    final Cursor sut = new Cursor(0, 42, 100, 100);
     assertThat(sut.getRow()).isEqualTo(42);
     sut.moveDown();
     assertThat(sut.getRow()).isEqualTo(43);
@@ -45,7 +45,7 @@ public class CursorTest {
 
   @Test
   public void testMoveLeft() {
-    final Cursor sut = new Cursor(42, 0);
+    final Cursor sut = new Cursor(42, 0, 100, 100);
     assertThat(sut.getColumn()).isEqualTo(42);
     sut.moveLeft();
     assertThat(sut.getColumn()).isEqualTo(41);
@@ -53,7 +53,7 @@ public class CursorTest {
 
   @Test
   public void testMoveLeftFromZero() {
-    final Cursor sut = new Cursor();
+    final Cursor sut = new Cursor(100, 100);
     assertThat(sut.getColumn()).isEqualTo(0);
     sut.moveLeft();
     assertThat(sut.getColumn()).isEqualTo(0);
@@ -61,7 +61,7 @@ public class CursorTest {
 
   @Test
   public void testMoveRight() {
-    final Cursor sut = new Cursor(42, 0);
+    final Cursor sut = new Cursor(42, 0, 100, 100);
     assertThat(sut.getColumn()).isEqualTo(42);
     sut.moveRight();
     assertThat(sut.getColumn()).isEqualTo(43);
@@ -69,7 +69,7 @@ public class CursorTest {
 
   @Test
   public void testMoveUp() {
-    final Cursor sut = new Cursor(0, 42);
+    final Cursor sut = new Cursor(0, 42, 100, 100);
     assertThat(sut.getRow()).isEqualTo(42);
     sut.moveUp();
     assertThat(sut.getRow()).isEqualTo(41);
@@ -77,7 +77,7 @@ public class CursorTest {
 
   @Test
   public void testMoveUpFromZero() {
-    final Cursor sut = new Cursor();
+    final Cursor sut = new Cursor(100, 100);
     assertThat(sut.getRow()).isEqualTo(0);
     sut.moveUp();
     assertThat(sut.getRow()).isEqualTo(0);
@@ -85,17 +85,34 @@ public class CursorTest {
 
   @Test
   public void testSetColumnNegative() {
-    final Cursor sut = new Cursor(42, 42);
+    final Cursor sut = new Cursor(42, 42, 100, 100);
     assertThat(sut.getColumn()).isEqualTo(42);
     sut.setColumn(-42);
     assertThat(sut.getColumn()).isEqualTo(0);
   }
 
   @Test
+  public void testSetColumnTooBig() {
+    final Cursor sut = new Cursor(42, 42, 100, 100);
+    assertThat(sut.getColumn()).isEqualTo(42);
+    sut.setColumn(200);
+    assertThat(sut.getColumn()).isEqualTo(0);
+    assertThat(sut.getRow()).isEqualTo(43);
+  }
+
+  @Test
   public void testSetRowNegative() {
-    final Cursor sut = new Cursor(42, 42);
+    final Cursor sut = new Cursor(42, 42, 100, 100);
     assertThat(sut.getRow()).isEqualTo(42);
     sut.setRow(-42);
     assertThat(sut.getRow()).isEqualTo(0);
+  }
+
+  @Test
+  public void testSetRowTooBig() {
+    final Cursor sut = new Cursor(42, 42, 100, 100);
+    assertThat(sut.getRow()).isEqualTo(42);
+    sut.setRow(200);
+    assertThat(sut.getRow()).isEqualTo(100);
   }
 }

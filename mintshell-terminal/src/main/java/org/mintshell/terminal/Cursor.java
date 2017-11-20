@@ -24,6 +24,7 @@
 package org.mintshell.terminal;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /**
  * Representation of a virtual cursor to track and provide the current position of a terminal cursor. Counting of rows
@@ -34,17 +35,23 @@ import static java.lang.Math.max;
  */
 public class Cursor {
 
+  private final int maxColumn;
+  private final int maxRow;
   private int column;
   private int row;
 
   /**
    * Creates a new cursor instance at position 0/0.
    *
+   * @param maxColumn
+   *          maximum column number
+   * @param maxRow
+   *          maximum row number
    * @author Noqmar
    * @since 0.1.0
    */
-  public Cursor() {
-    this(0, 0);
+  public Cursor(final int maxColumn, final int maxRow) {
+    this(0, 0, maxColumn, maxRow);
   }
 
   /**
@@ -54,13 +61,19 @@ public class Cursor {
    *          initial column number
    * @param initialRow
    *          initial row number
+   * @param maxColumn
+   *          maximum column number
+   * @param maxRow
+   *          maximum row number
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public Cursor(final int initialColumn, final int initialRow) {
+  public Cursor(final int initialColumn, final int initialRow, final int maxColumn, final int maxRow) {
     this.column = initialColumn;
     this.row = initialRow;
+    this.maxColumn = maxColumn;
+    this.maxRow = maxRow;
   }
 
   /**
@@ -76,6 +89,30 @@ public class Cursor {
   }
 
   /**
+   * Returns the maximum number of columns which shoud be related to the terminal's capabilities.
+   *
+   * @return maximum number of columns
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public int getMaxColumn() {
+    return this.maxColumn;
+  }
+
+  /**
+   * Returns the maximum number of rows which shoud be related to the terminal's capabilities.
+   *
+   * @return maximum number of rows
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public int getMaxRow() {
+    return this.maxRow;
+  }
+
+  /**
    * Return the current row number of the cursor.
    *
    * @return row number
@@ -88,13 +125,16 @@ public class Cursor {
   }
 
   /**
-   * Moves the cursor one row down by incrementing the row number by {@code 1}.
+   * Moves the cursor one row down by incrementing the row number by {@code 1} if it was not already
+   * {@link #getMaxRow()}.
    *
    * @author Noqmar
    * @since 0.1.0
    */
   public void moveDown() {
-    this.row += 1;
+    if (this.row < this.maxRow - 1) {
+      this.row += 1;
+    }
   }
 
   /**
@@ -110,13 +150,20 @@ public class Cursor {
   }
 
   /**
-   * Moves the cursor one column right by incrementing the column number by {@code 1}.
+   * Moves the cursor one column right by incrementing the column number by {@code 1}, if it was not already
+   * {@link #getMaxColumn()}.
    *
    * @author Noqmar
    * @since 0.1.0
    */
   public void moveRight() {
-    this.column += 1;
+    if (this.column < this.maxColumn - 1) {
+      this.column += 1;
+    }
+    else {
+      this.moveDown();
+      this.column = 0;
+    }
   }
 
   /**
@@ -132,7 +179,8 @@ public class Cursor {
   }
 
   /**
-   * Sets the cursor to the given column number. If the given number is negative, the cursor is set to column {@code 0}.
+   * Sets the cursor to the given column number. If the given number is negative, the cursor is set to column {@code 0}
+   * and if it is greater than {@link #getMaxColumn()} it is set to this value.
    *
    * @param column
    *          new cursor column
@@ -141,12 +189,19 @@ public class Cursor {
    * @since 0.1.0
    */
   public void setColumn(final int column) {
-    this.column = max(0, column);
+    if (column < this.maxColumn - 1) {
+      this.column = min(max(0, column), this.maxColumn);
+    }
+    else {
+      this.moveDown();
+      this.column = 0;
+    }
   }
 
   /**
-   * Sets the cursor to the given position. Negative values are set to {@code 0}
-   * 
+   * Sets the cursor to the given position. Negative values are set to {@code 0} and values greater than
+   * {@link #getMaxColumn()} or {@link #getMaxRow()} are set to these maximums.
+   *
    * @param col
    *          new column number
    * @param row
@@ -161,7 +216,8 @@ public class Cursor {
   }
 
   /**
-   * Sets the cursor to the given row number. If the given number is negative, the cursor is set to row {@code 0}.
+   * Sets the cursor to the given row number. If the given number is negative, the cursor is set to row {@code 0} and if
+   * it is greater than {@link #getMaxRow()} it is set to this value.
    *
    * @param row
    *          new cursor row
@@ -170,7 +226,6 @@ public class Cursor {
    * @since 0.1.0
    */
   public void setRow(final int row) {
-    this.row = max(0, row);
+    this.row = min(max(0, row), this.maxColumn);
   }
-
 }

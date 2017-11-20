@@ -106,6 +106,30 @@ public final class NCursesTerminal {
   }
 
   /**
+   * Returns the maximum column number of the cursor.
+   *
+   * @return maximum column number
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  int getMaxCol() {
+    return getMaxX();
+  }
+
+  /**
+   * Returns the maximum row number of the cursor.
+   *
+   * @return maximum row number
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  int getMaxRow() {
+    return getMaxY();
+  }
+
+  /**
    * Returns the current row number of the cursor.
    *
    * @return row number
