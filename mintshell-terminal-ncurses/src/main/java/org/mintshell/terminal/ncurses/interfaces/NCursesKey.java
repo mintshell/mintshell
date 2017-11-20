@@ -283,6 +283,8 @@ enum NCursesKey {
 
   F12(276, Key.F12),
 
+  RESIZE(410, Key.UNDEFINED),
+
   UNDEFINED(0, Key.UNDEFINED),
 
   ;

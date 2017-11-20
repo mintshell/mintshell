@@ -44,7 +44,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
   private static final Logger LOG = LoggerFactory.getLogger(NCursesTerminalCommandInterface.class);
 
   private final NCursesTerminal nCurses;
-  private final Cursor cursor;
+  private Cursor cursor;
 
   /**
    * Creates a new instance using the given command prompt.
@@ -205,6 +205,9 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
   @Override
   public Key readKey() {
     final NCursesKey key = this.nCurses.readKey();
+    if (NCursesKey.RESIZE.equals(key)) {
+      this.cursor = new Cursor(this.nCurses.getCol(), this.nCurses.getRow(), this.nCurses.getMaxCol(), this.nCurses.getMaxRow());
+    }
     return key.getKey();
   }
 
