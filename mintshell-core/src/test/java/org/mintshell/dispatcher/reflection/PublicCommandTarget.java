@@ -54,6 +54,7 @@ public class PublicCommandTarget {
     this.trace("invokeMePackagePrivate");
   }
 
+  @SuppressWarnings("unused")
   private void invokeMePrivate() {
     this.trace("invokeMePrivate");
   }
