@@ -69,6 +69,17 @@ public abstract class AbstractCommandInterface implements CommandInterface {
   /**
    *
    * @{inheritDoc}
+   * @see org.mintshell.CommandInterface#deactivate()
+   */
+  @Override
+  public void deactivate() {
+    this.commandInterpreter = null;
+    this.commandDispatcher = null;
+  }
+
+  /**
+   *
+   * @{inheritDoc}
    * @see org.mintshell.CommandInterface#isActivated()
    */
   @Override
@@ -146,7 +157,8 @@ public abstract class AbstractCommandInterface implements CommandInterface {
 
   /**
    * <p>
-   * Handles the given {@link Command} <b>after</b> it got passed to the {@link CommandDispatcher}.
+   * Handles the given {@link Command} <b>after</b> it got passed to the {@link CommandDispatcher} or any
+   * {@link Exception} occured.
    * </p>
    * <p>
    * This method is intended to be overwritten by subclasses, if they need to get notified about certain
@@ -166,7 +178,8 @@ public abstract class AbstractCommandInterface implements CommandInterface {
 
   /**
    * <p>
-   * Handles the given {@link Command} <b>before</b> it gets passed to the {@link CommandDispatcher}.
+   * Handles the given {@link Command} <b>before</b> it gets passed to the {@link CommandDispatcher}. <b>Note</b>: If an
+   * exception occurs during {@link CommandInterpreter#interprete(String)} this method is <b>not</b> invoked.
    * </p>
    * <p>
    * This method is intended to be overwritten by subclasses, if they need to get notified about certain {@link Command}

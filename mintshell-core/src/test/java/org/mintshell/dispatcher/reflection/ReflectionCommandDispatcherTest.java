@@ -21,8 +21,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.dispatcher;
+package org.mintshell.dispatcher.reflection;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -33,10 +34,16 @@ import org.junit.runner.RunWith;
 import org.mintshell.CommandDispatchException;
 import org.mintshell.CommandTarget;
 import org.mintshell.command.Command;
-import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
+import org.mintshell.command.CommandParameter;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+/**
+ * Tests the functionality of {@link ReflectionCommandDispatcher}.
+ *
+ * @author Noqmar
+ * @since 0.1.0
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class ReflectionCommandDispatcherTest {
 
@@ -95,5 +102,21 @@ public class ReflectionCommandDispatcherTest {
     assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isZero();
     this.sut.dispatch(command);
     assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isOne();
+  }
+
+  @Test
+  public void testPublicVoidWithPrimitive() throws Exception {
+    this.sut.addCommandTargets(this.instanceTargetMock);
+    final Command<?> command = new Command<>("invokeMePublicWithPrimitive", asList(new CommandParameter(0, "1")));
+    assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isZero();
+    this.sut.dispatch(command);
+    assertThat(this.publicCommandTarget.getInvokationsOf(command.getName())).isOne();
+  }
+
+  @Test(expected = CommandDispatchException.class)
+  public void testPublicVoidWithPrimitiveNotProvidingParam() throws Exception {
+    this.sut.addCommandTargets(this.instanceTargetMock);
+    final Command<?> command = new Command<>("invokeMePublicWithPrimitive");
+    this.sut.dispatch(command);
   }
 }

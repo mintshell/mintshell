@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.dispatcher;
+package org.mintshell.dispatcher.reflection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +40,10 @@ public class PublicCommandTarget {
 
   public void invokeMePublic() {
     this.trace("invokeMePublic");
+  }
+
+  public void invokeMePublicWithPrimitive(final int x) {
+    this.trace("invokeMePublicWithPrimitive");
   }
 
   protected void invokeMeProtected() {
