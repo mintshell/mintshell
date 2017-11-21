@@ -38,7 +38,7 @@ public class NCursesTerminalShell {
 
   public NCursesTerminalShell(final String[] args) throws Exception {
     Mintshell //
-        .from(new NCursesTerminalCommandInterface("Mintshell> ", "Welcome to Mintshell with ncursrs\r\n", NCursesTerminalCommandInterface.KEYBINDING_EXIT)) //
+        .from(new NCursesTerminalCommandInterface("Mintshell> ", "Welcome to Mintshell with nCurses\n\r", NCursesTerminalCommandInterface.KEYBINDING_EXIT)) //
         .interpretedBy(new StringTokenCommandInterpreter()) //
         .dispatchedBy(new ReflectionCommandDispatcher()) //
         .to(new SimpleNCursesCommandTarget()) //
