@@ -28,6 +28,7 @@
 
     <!-- versioning of maven plugins -->
     <version.mvn.compiler>3.7.0</version.mvn.compiler>
+    <version.mvn.gpg>1.6</version.mvn.gpg>
 
     <!-- versioning of technical dependencies -->
     <version.slf4j>1.7.25</version.slf4j>
@@ -57,22 +58,22 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-core</artifactId>
         <version>${project.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-terminal</artifactId>
         <version>${project.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-terminal-ncurses</artifactId>
         <version>${project.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-terminal-ssh</artifactId>
         <version>${project.version}</version>
-      </dependency>           
+      </dependency>
 
 
       <!-- technical -->
@@ -125,7 +126,7 @@
 
   <build>
     <plugins>
-    
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -135,8 +136,48 @@
           <target>${version.java}</target>
         </configuration>
       </plugin>
-      
+
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>ossrh</id>
+      <activation>
+        <property>
+          <name>gpg.passphrase</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${version.mvn.gpg}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+  </distributionManagement>
 
 </project>
