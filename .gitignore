@@ -17,3 +17,5 @@ Desktop.ini
 .AppleDouble
 *~
 /run.sh
+/ncurses.sh
+/ssh.sh
