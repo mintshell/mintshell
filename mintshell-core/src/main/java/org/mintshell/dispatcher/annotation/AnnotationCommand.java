@@ -21,51 +21,53 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.dispatcher.reflection;
+package org.mintshell.dispatcher.annotation;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
-import org.mintshell.command.Command;
+import org.mintshell.dispatcher.reflection.ReflectionCommand;
+import org.mintshell.dispatcher.reflection.UnsupportedParameterTypeException;
 
 /**
- * Extension of a {@link Command} that uses reflection to map a {@link Method} to a {@link Command}.
- *
+ * Extension of a {@link ReflectionCommand} that uses information of an annotated {@link Method} to map it to a
+ * {@link Command}.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class ReflectionCommand<P extends ReflectionCommandParameter> extends Command<P> {
+public class AnnotationCommand<P extends AnnotationCommandParameter> extends ReflectionCommand<P> {
 
-  private final Method method;
+  private final String name;
+  private final String description;
 
-  /**
-   * Creates a new instance.
-   *
-   * @param method
-   *          method to use
-   * @param supportedCommandParameters
-   *          supported command parameter types (factories)
-   * @throws UnsupportedParameterTypeException
-   *           if at least one of the given method's parameters isn't supported
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public ReflectionCommand(final Method method, final List<P> commandParameters) throws UnsupportedParameterTypeException {
-    super(Assert.ARG.isNotNull(method, "[method] must not be [null]").getName(), commandParameters);
-    this.method = method;
+  public AnnotationCommand(final Method method, final List<P> commandParameters) throws UnsupportedParameterTypeException {
+    super(method, commandParameters);
+    final org.mintshell.annotation.Command annotation = Assert.ARG.isNotNull(method.getAnnotation(org.mintshell.annotation.Command.class),
+        "[@Command annotation] must not be [null]");
+    this.name = annotation.name();
+    this.description = annotation.description();
   }
 
   /**
-   * Returns the method this {@link ReflectionCommand} is derived from.
    *
-   * @return method
-   *
-   * @author Noqmar
-   * @since 0.1.0
+   * @{inheritDoc}
+   * @see org.mintshell.command.Command#getDescription()
    */
-  public Method getMethod() {
-    return this.method;
+  @Override
+  public @Nullable String getDescription() {
+    return this.description;
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.command.Command#getName()
+   */
+  @Override
+  public String getName() {
+    return this.name;
   }
 }
