@@ -45,19 +45,61 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
   /**
    * Creates a new command parameter.
    *
-   * @param index
-   *          index of the parameter in the originating methods's signature
    * @param type
    *          type of the parameter
-   *
+   * @param index
+   *          parameter index
    * @throws UnsupportedParameterTypeException
-   *           if the given parameter type isn's supported
+   *           if the given parameter type isn't supported
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public ReflectionCommandParameter(final int index, final Class<?> type) throws UnsupportedParameterTypeException {
-    super(index);
+  public ReflectionCommandParameter(final Class<?> type, final int index) throws UnsupportedParameterTypeException {
+    this(type, index, null, null, false);
+  }
+
+  /**
+   * Creates a new command parameter.
+   *
+   * @param type
+   *          type of the parameter
+   * @param index
+   *          parameter index
+   * @param required
+   *          {@code true} if the parameter is mandatory, {@code false} sonst
+   * @throws UnsupportedParameterTypeException
+   *           if the given parameter type isn't supported
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public ReflectionCommandParameter(final Class<?> type, final int index, final boolean required) throws UnsupportedParameterTypeException {
+    this(type, index, null, null, required);
+  }
+
+  /**
+   * Creates a new command parameter.
+   *
+   * @param type
+   *          type of the parameter
+   * @param index
+   *          parameter index
+   * @param name
+   *          (optional) parameter (long) name
+   * @param shortName
+   *          (optional) parameter short name
+   * @param required
+   *          {@code true} if the parameter is mandatory, {@code false} sonst
+   * @throws UnsupportedParameterTypeException
+   *           if the given parameter type isn't supported
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public ReflectionCommandParameter(final Class<?> type, final int index, final @Nullable String name, final @Nullable Character shortName,
+      final boolean required) throws UnsupportedParameterTypeException {
+    super(index, name, shortName, required, null);
     this.type = Assert.ARG.isNotNull(type, "[type] must not be [null]");
     if (!this.isTypeSupported(type)) {
       throw new UnsupportedParameterTypeException(String.format("Type [%s] is not supported by [%s]", type.getName(), this.getClass().getName()));
@@ -85,9 +127,24 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @author Noqmar
    * @since 0.1.0
    */
+  @Override
   public boolean isRequired() {
     return this.getType().isPrimitive();
   }
+
+  /**
+   * Returns whether this {@link CommandParameter} supports the given type, where 'support' means technical support and
+   * doesn't exclude any exeptions when trying to convert a concrete {@link String} value via the
+   * {@link #of(Class, String)} method.
+   *
+   * @param type
+   *          type to be checked
+   * @return {@code true} if this {@link CommandParameter} supports the given type, {@code false} otherwise
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract boolean isTypeSupported(Class<?> type);
 
   /**
    * Converts the given {@link String} value into an instance of the {@link CommandParameter}'s type.
@@ -102,18 +159,4 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @since 0.1.0
    */
   public abstract Object of(@Nullable String value) throws ParameterConversionException;
-
-  /**
-   * Returns whether this {@link CommandParameter} supports the given type, where 'support' means technical support and
-   * doesn't exclude any exeptions when trying to convert a concrete {@link String} value via the
-   * {@link #of(Class, String)} method.
-   *
-   * @param type
-   *          type to be checked
-   * @return {@code true} if this {@link CommandParameter} supports the given type, {@code false} otherwise
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  protected abstract boolean isTypeSupported(Class<?> type);
 }

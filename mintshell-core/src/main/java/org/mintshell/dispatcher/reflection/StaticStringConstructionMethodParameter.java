@@ -48,26 +48,36 @@ public class StaticStringConstructionMethodParameter extends ReflectionCommandPa
    * {@link ReflectionCommandParameterFactory} that creates instance of
    * {@link StaticStringConstructionMethodParameter}s.
    */
-  public static final ReflectionCommandParameterFactory FACTORY = (index, type) -> new StaticStringConstructionMethodParameter(index, type);
+  public static final ReflectionCommandParameterFactory FACTORY = (type, index) -> new StaticStringConstructionMethodParameter(type, index);
 
   private final List<Method> candidates;
 
   /**
    * Creates a new command parameter.
-   * 
-   * @param index
-   *          index of the parameter in the originating methods's signature
+   *
    * @param type
    *          type of the parameter
+   * @param index
+   *          index of the parameter in the originating methods's signature
    * @throws UnsupportedParameterTypeException
    *           if the given parameter type isn's supported
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public StaticStringConstructionMethodParameter(final int index, final Class<?> type) throws UnsupportedParameterTypeException {
-    super(index, type);
+  public StaticStringConstructionMethodParameter(final Class<?> type, final int index) throws UnsupportedParameterTypeException {
+    super(type, index);
     this.candidates = this.findCandidates(type);
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.command.CommandParameter#isTypeSupported(java.lang.Class)
+   */
+  @Override
+  public boolean isTypeSupported(final Class<?> type) {
+    return !this.findCandidates(type).isEmpty();
   }
 
   /**
@@ -94,16 +104,6 @@ public class StaticStringConstructionMethodParameter extends ReflectionCommandPa
     } catch (final Exception e) {
       throw new ParameterConversionException("Conversion of [%s] into instance of [%s] failed", e);
     }
-  }
-
-  /**
-   *
-   * @{inheritDoc}
-   * @see org.mintshell.command.CommandParameter#isTypeSupported(java.lang.Class)
-   */
-  @Override
-  protected boolean isTypeSupported(final Class<?> type) {
-    return !this.findCandidates(type).isEmpty();
   }
 
   private final List<Method> findCandidates(final Class<?> type) {

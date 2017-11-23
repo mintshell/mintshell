@@ -39,15 +39,15 @@ public abstract interface ReflectionCommandParameterFactory {
   /**
    * Creates a new {@link CommandParameter} from the given {@link Parameter} and index.
    * 
-   * @param index
-   *          paramter index within the method's signature
    * @param type
    *          type of the parameter
+   * @param index
+   *          paramter index within the method's signature
    * @return {@link CommandParameter} instance
    * @throws UnsupportedParameterTypeException
    *           if the given type is not supported
    * @author Noqmar
    * @since 0.1.0
    */
-  public abstract ReflectionCommandParameter create(int index, Class<?> type) throws UnsupportedParameterTypeException;
+  public abstract ReflectionCommandParameter create(Class<?> type, int index) throws UnsupportedParameterTypeException;
 }

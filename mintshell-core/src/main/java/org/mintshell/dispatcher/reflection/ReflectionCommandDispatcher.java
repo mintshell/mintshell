@@ -121,7 +121,7 @@ public class ReflectionCommandDispatcher extends AbstractReflectionCommandDispat
       final Set<ReflectionCommandParameterFactory> supportedCommandParameters) throws UnsupportedParameterTypeException {
     for (final ReflectionCommandParameterFactory supportedParameter : supportedCommandParameters) {
       try {
-        return supportedParameter.create(index, parameter.getType());
+        return supportedParameter.create(parameter.getType(), index);
       } catch (final UnsupportedParameterTypeException e) {
         LOG.trace("Failed to create command parameter from parameter [{}] with parameter factory [{}]", parameter, supportedParameter, e);
       }

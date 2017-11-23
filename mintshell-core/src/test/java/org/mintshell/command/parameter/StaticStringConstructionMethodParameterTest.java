@@ -41,21 +41,21 @@ public class StaticStringConstructionMethodParameterTest {
   public void testIntegerObject() throws Exception {
     final String value = "42";
     final Class<?> type = Integer.class;
-    assertThat(new StaticStringConstructionMethodParameter(0, type).of(value)).isEqualTo(Integer.valueOf(42));
+    assertThat(new StaticStringConstructionMethodParameter(type, 0).of(value)).isEqualTo(Integer.valueOf(42));
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testIntegerPrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = int.class;
-    new StaticStringConstructionMethodParameter(0, type).of(value);
+    new StaticStringConstructionMethodParameter(type, 0).of(value);
   }
 
   @Test
   public void testNull() throws Exception {
     final String value = null;
     final Class<?> type = Integer.class;
-    assertThat(new StaticStringConstructionMethodParameter(0, type).of(value)).isNull();
+    assertThat(new StaticStringConstructionMethodParameter(type, 0).of(value)).isNull();
   }
 
 }

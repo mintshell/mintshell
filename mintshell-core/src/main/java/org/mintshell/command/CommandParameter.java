@@ -40,6 +40,7 @@ public class CommandParameter {
   private final Optional<String> name;
   private final Optional<Character> shortName;
   private final Optional<String> value;
+  private final boolean required;
 
   /**
    * Creates a new instance with an index.
@@ -66,28 +67,32 @@ public class CommandParameter {
    * @since 0.1.0
    */
   public CommandParameter(final int index, final @Nullable String value) {
-    this(index, null, null, value);
+    this(index, null, null, false, value);
   }
 
   /**
    * Creates a new instance.
-   * 
+   *
    * @param index
    *          parameter index
    * @param name
    *          (optional) parameter (long) name
    * @param shortName
    *          (optional) parameter short name
+   * @param required
+   *          {@code true} if the parameter is mandatory, {@code false} sonst
    * @param value
    *          (optional) parameter value
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandParameter(final int index, final @Nullable String name, final @Nullable Character shortName, final @Nullable String value) {
+  public CommandParameter(final int index, final @Nullable String name, final @Nullable Character shortName, final boolean required,
+      final @Nullable String value) {
     this.index = index;
     this.name = Optional.ofNullable(name);
     this.shortName = Optional.ofNullable(shortName);
+    this.required = required;
     this.value = Optional.ofNullable(value);
   }
 
@@ -137,5 +142,18 @@ public class CommandParameter {
    */
   public Optional<String> getValue() {
     return this.value;
+  }
+
+  /**
+   * Returns whether the parameter is mandatory and therefore must have a value in order to execute the {@link Command}
+   * it belongs to.
+   *
+   * @return {@code true} if the parameter is mandatory, {@code false} otherwise
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public boolean isRequired() {
+    return this.required;
   }
 }

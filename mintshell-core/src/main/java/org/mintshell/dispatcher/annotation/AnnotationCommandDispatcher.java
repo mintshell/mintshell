@@ -23,11 +23,13 @@
  */
 package org.mintshell.dispatcher.annotation;
 
+import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -37,6 +39,7 @@ import org.mintshell.annotation.Command;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.dispatcher.reflection.AbstractReflectionCommandDispatcher;
 import org.mintshell.dispatcher.reflection.PrimitiveParameter;
+import org.mintshell.dispatcher.reflection.ReflectionCommandParameter;
 import org.mintshell.dispatcher.reflection.ReflectionCommandParameterFactory;
 import org.mintshell.dispatcher.reflection.StaticStringConstructionMethodParameter;
 import org.mintshell.dispatcher.reflection.StringConstructorParameter;
@@ -122,9 +125,32 @@ public class AnnotationCommandDispatcher extends AbstractReflectionCommandDispat
         .collect(toList());
   }
 
-  private List<AnnotationCommandParameter> createCommandParameters(final Method method,
-      final Set<ReflectionCommandParameterFactory> supportedCommandParameters) {
-    // TODO: create parameters
-    return Collections.emptyList();
+  private AnnotationCommandParameter createCommandParameter(final Parameter parameter, final int index,
+      final Set<ReflectionCommandParameterFactory> supportedCommandParameters) throws UnsupportedParameterTypeException {
+    for (final ReflectionCommandParameterFactory supportedParameter : supportedCommandParameters) {
+      try {
+        final ReflectionCommandParameter reflectionParameter = supportedParameter.create(parameter.getType(), index);
+        // TODO: parse name, shortname, required from annotation
+        final String name = null;
+        final Character shortName = null;
+        final boolean required = false;
+
+        return new AnnotationCommandParameter(reflectionParameter, name, shortName, required);
+      } catch (final UnsupportedParameterTypeException e) {
+        LOG.trace("Failed to create command parameter from parameter [{}] with parameter factory [{}]", parameter, supportedParameter, e);
+      }
+    }
+    throw new UnsupportedParameterTypeException(format("Failed to create command parameter from reflection parameter [{}]", parameter));
+  }
+
+  private List<AnnotationCommandParameter> createCommandParameters(final Method method, final Set<ReflectionCommandParameterFactory> supportedCommandParameters)
+      throws UnsupportedParameterTypeException {
+    final Parameter[] parameters = method.getParameters();
+    final List<AnnotationCommandParameter> commandParameters = new ArrayList<>();
+    for (int i = 0; i < parameters.length; i++) {
+      final AnnotationCommandParameter commandParameter = this.createCommandParameter(parameters[i], i, supportedCommandParameters);
+      commandParameters.add(commandParameter);
+    }
+    return commandParameters;
   }
 }
