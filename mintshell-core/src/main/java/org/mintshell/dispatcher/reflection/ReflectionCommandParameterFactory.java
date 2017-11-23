@@ -25,6 +25,7 @@ package org.mintshell.dispatcher.reflection;
 
 import java.lang.reflect.Parameter;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.command.CommandParameter;
 
 /**
@@ -38,16 +39,23 @@ public abstract interface ReflectionCommandParameterFactory {
 
   /**
    * Creates a new {@link CommandParameter} from the given {@link Parameter} and index.
-   * 
+   *
    * @param type
    *          type of the parameter
    * @param index
    *          paramter index within the method's signature
+   * @param name
+   *          (optional) parameter (long) name
+   * @param shortName
+   *          (optional) parameter short name
+   * @param required
+   *          {@code true} if the parameter is mandatory, {@code false} otherwise
    * @return {@link CommandParameter} instance
    * @throws UnsupportedParameterTypeException
    *           if the given type is not supported
    * @author Noqmar
    * @since 0.1.0
    */
-  public abstract ReflectionCommandParameter create(Class<?> type, int index) throws UnsupportedParameterTypeException;
+  public abstract ReflectionCommandParameter create(Class<?> type, int index, @Nullable String name, @Nullable Character shortName, boolean required)
+      throws UnsupportedParameterTypeException;
 }

@@ -41,13 +41,14 @@ public class StringConstructorParameter extends ReflectionCommandParameter {
   /**
    * {@link ReflectionCommandParameterFactory} that creates instance of {@link StringConstructorParameter}s.
    */
-  public static final ReflectionCommandParameterFactory FACTORY = (type, index) -> new StringConstructorParameter(type, index);
+  public static final ReflectionCommandParameterFactory FACTORY = (type, index, name, shortName, required) -> new StringConstructorParameter(type, index, name,
+      shortName, required);
 
   private final Constructor<?> stringConstructor;
 
   /**
    * Creates a new command parameter.
-   * 
+   *
    * @param type
    *          type of the parameter
    * @param index
@@ -60,7 +61,32 @@ public class StringConstructorParameter extends ReflectionCommandParameter {
    * @since 0.1.0
    */
   public StringConstructorParameter(final Class<?> type, final int index) throws UnsupportedParameterTypeException {
-    super(type, index);
+    this(type, index, null, null, DEFAULT_REQUIRED);
+
+  }
+
+  /**
+   * Creates a new command parameter.
+   *
+   * @param type
+   *          type of the parameter
+   * @param index
+   *          parameter index
+   * @param name
+   *          (optional) parameter (long) name
+   * @param shortName
+   *          (optional) parameter short name
+   * @param required
+   *          {@code true} if the parameter is mandatory, {@code false} otherwise
+   * @throws UnsupportedParameterTypeException
+   *           if the given parameter type isn't supported
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public StringConstructorParameter(final Class<?> type, final int index, @Nullable final String name, @Nullable final Character shortName,
+      final boolean required) throws UnsupportedParameterTypeException {
+    super(type, index, name, shortName, required);
     try {
       this.stringConstructor = this.getType().getConstructor(String.class);
     } catch (NoSuchMethodException | SecurityException e) {

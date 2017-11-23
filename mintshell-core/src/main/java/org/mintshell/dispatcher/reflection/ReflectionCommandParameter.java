@@ -67,7 +67,7 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @param index
    *          parameter index
    * @param required
-   *          {@code true} if the parameter is mandatory, {@code false} sonst
+   *          {@code true} if the parameter is mandatory, {@code false} otherwise
    * @throws UnsupportedParameterTypeException
    *           if the given parameter type isn't supported
    *
@@ -90,7 +90,7 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @param shortName
    *          (optional) parameter short name
    * @param required
-   *          {@code true} if the parameter is mandatory, {@code false} sonst
+   *          {@code true} if the parameter is mandatory, {@code false} otherwise
    * @throws UnsupportedParameterTypeException
    *           if the given parameter type isn't supported
    *
@@ -159,4 +159,20 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @since 0.1.0
    */
   public abstract Object of(@Nullable String value) throws ParameterConversionException;
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    if (this.getName().isPresent()) {
+      return this.getName().get();
+    }
+    if (this.getShortName().isPresent()) {
+      return this.getShortName().get().toString();
+    }
+    return Integer.toString(this.getIndex());
+  }
 }

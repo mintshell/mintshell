@@ -26,9 +26,11 @@ package org.mintshell.dispatcher.annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.mintshell.annotation.Command;
 import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 import org.mintshell.dispatcher.reflection.ReflectionCommand;
+import org.mintshell.dispatcher.reflection.ReflectionCommandParameter;
 import org.mintshell.dispatcher.reflection.UnsupportedParameterTypeException;
 
 /**
@@ -38,36 +40,37 @@ import org.mintshell.dispatcher.reflection.UnsupportedParameterTypeException;
  * @author Noqmar
  * @since 0.1.0
  */
-public class AnnotationCommand<P extends AnnotationCommandParameter> extends ReflectionCommand<P> {
+public class AnnotationCommand<P extends ReflectionCommandParameter> extends ReflectionCommand<P> {
 
-  private final String name;
-  private final String description;
-
+  /**
+   * Creates a new instance.
+   *
+   * @param method
+   *          method to use
+   * @param commandParameters
+   *          list of command parameters
+   * @throws UnsupportedParameterTypeException
+   *           if at least one of the given method's parameters isn't supported
+   * @author Noqmar
+   * @since 0.1.0
+   */
   public AnnotationCommand(final Method method, final List<P> commandParameters) throws UnsupportedParameterTypeException {
-    super(method, commandParameters);
-    final org.mintshell.annotation.Command annotation = Assert.ARG.isNotNull(method.getAnnotation(org.mintshell.annotation.Command.class),
-        "[@Command annotation] must not be [null]");
-    this.name = annotation.name();
-    this.description = annotation.description();
+    super(Assert.ARG.isNotNull(method, "[method] must not be [null]"), findName(method), findDescription(method), commandParameters);
   }
 
-  /**
-   *
-   * @{inheritDoc}
-   * @see org.mintshell.command.Command#getDescription()
-   */
-  @Override
-  public @Nullable String getDescription() {
-    return this.description;
+  private static @Nullable String findDescription(final Method method) throws UnsupportedParameterTypeException {
+    final org.mintshell.annotation.Command annotation = method.getAnnotation(org.mintshell.annotation.Command.class);
+    if (annotation == null) {
+      throw new UnsupportedParameterTypeException(String.format("[@%s] annotation missing at method [%s]", Command.class.getSimpleName(), method.getName()));
+    }
+    return annotation.description();
   }
 
-  /**
-   *
-   * @{inheritDoc}
-   * @see org.mintshell.command.Command#getName()
-   */
-  @Override
-  public String getName() {
-    return this.name;
+  private static String findName(final Method method) throws UnsupportedParameterTypeException {
+    final org.mintshell.annotation.Command annotation = method.getAnnotation(org.mintshell.annotation.Command.class);
+    if (annotation == null) {
+      throw new UnsupportedParameterTypeException(String.format("[@%s] annotation missing at method [%s]", Command.class.getSimpleName(), method.getName()));
+    }
+    return annotation.value();
   }
 }

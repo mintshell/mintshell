@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mintshell.CommandTarget;
 import org.mintshell.annotation.Command;
+import org.mintshell.annotation.Param;
 
 /**
  * Testclass to be used as {@link CommandTarget} to test the {@link AnnotationCommandDispatcher}.
@@ -39,7 +40,7 @@ import org.mintshell.annotation.Command;
  */
 public class AnnotationCommandTarget {
 
-  private final Map<String, AtomicInteger> invokations = new HashMap<>();
+  final Map<String, AtomicInteger> invokations = new HashMap<>();
 
   public int getInvokationsOf(final String methodName) {
     if (!this.invokations.containsKey(methodName)) {
@@ -48,9 +49,17 @@ public class AnnotationCommandTarget {
     return this.invokations.get(methodName).get();
   }
 
-  @Command(name = "invokeMe")
+  @Command("invokeMe")
   public void m1() {
     this.trace("invokeMe");
+  }
+
+  @Command("invokeMeWithParams")
+  public void m2( //
+      final @Param(name = "flag", shortName = 'f', required = true, description = "A simple boolean flag") boolean flag, //
+      final @Param(name = "number", shortName = 'n', required = false, description = "A number greater than 0") Integer number, //
+      final @Param(name = "description", required = false) String description) {
+    this.trace(String.format("invokeMeWithParams-%s-%s-%s", flag, number, description));
   }
 
   public void notAnnotated() {

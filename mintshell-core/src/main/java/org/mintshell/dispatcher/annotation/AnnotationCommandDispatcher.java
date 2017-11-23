@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.mintshell.CommandDispatcher;
 import org.mintshell.annotation.Command;
+import org.mintshell.annotation.Param;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.dispatcher.reflection.AbstractReflectionCommandDispatcher;
 import org.mintshell.dispatcher.reflection.PrimitiveParameter;
@@ -67,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-public class AnnotationCommandDispatcher extends AbstractReflectionCommandDispatcher<AnnotationCommandParameter, AnnotationCommand<AnnotationCommandParameter>>
+public class AnnotationCommandDispatcher extends AbstractReflectionCommandDispatcher<ReflectionCommandParameter, AnnotationCommand<ReflectionCommandParameter>>
     implements CommandDispatcher {
 
   private static final Logger LOG = LoggerFactory.getLogger(AnnotationCommandDispatcher.class);
@@ -101,9 +102,9 @@ public class AnnotationCommandDispatcher extends AbstractReflectionCommandDispat
    * @see org.mintshell.dispatcher.reflection.AbstractReflectionCommandDispatcher#createCommandFromMethod(java.lang.reflect.Method)
    */
   @Override
-  protected Optional<AnnotationCommand<AnnotationCommandParameter>> createCommandFromMethod(final Method method) {
+  protected Optional<AnnotationCommand<ReflectionCommandParameter>> createCommandFromMethod(final Method method) {
     try {
-      final AnnotationCommand<AnnotationCommandParameter> command = new AnnotationCommand<>(method,
+      final AnnotationCommand<ReflectionCommandParameter> command = new AnnotationCommand<>(method,
           this.createCommandParameters(method, this.getSupportedParameters()));
       LOG.trace("Successfully created command [{}] from method [{}]", command, method);
       return Optional.of(command);
@@ -125,17 +126,17 @@ public class AnnotationCommandDispatcher extends AbstractReflectionCommandDispat
         .collect(toList());
   }
 
-  private AnnotationCommandParameter createCommandParameter(final Parameter parameter, final int index,
+  private ReflectionCommandParameter createCommandParameter(final Parameter parameter, final int index,
       final Set<ReflectionCommandParameterFactory> supportedCommandParameters) throws UnsupportedParameterTypeException {
+    final Param annotation = parameter.getAnnotation(Param.class);
+    if (annotation == null) {
+      throw new UnsupportedParameterTypeException(String.format("Parameter [%s] isn't annotated with [@%s]", parameter.getName(), Param.class.getSimpleName()));
+    }
     for (final ReflectionCommandParameterFactory supportedParameter : supportedCommandParameters) {
       try {
-        final ReflectionCommandParameter reflectionParameter = supportedParameter.create(parameter.getType(), index);
-        // TODO: parse name, shortname, required from annotation
-        final String name = null;
-        final Character shortName = null;
-        final boolean required = false;
-
-        return new AnnotationCommandParameter(reflectionParameter, name, shortName, required);
+        final ReflectionCommandParameter reflectionParameter = supportedParameter.create(parameter.getType(), index, annotation.name(),
+            annotation.shortName() != Character.UNASSIGNED ? annotation.shortName() : null, annotation.required() || parameter.getType().isPrimitive());
+        return reflectionParameter;
       } catch (final UnsupportedParameterTypeException e) {
         LOG.trace("Failed to create command parameter from parameter [{}] with parameter factory [{}]", parameter, supportedParameter, e);
       }
@@ -143,12 +144,12 @@ public class AnnotationCommandDispatcher extends AbstractReflectionCommandDispat
     throw new UnsupportedParameterTypeException(format("Failed to create command parameter from reflection parameter [{}]", parameter));
   }
 
-  private List<AnnotationCommandParameter> createCommandParameters(final Method method, final Set<ReflectionCommandParameterFactory> supportedCommandParameters)
+  private List<ReflectionCommandParameter> createCommandParameters(final Method method, final Set<ReflectionCommandParameterFactory> supportedCommandParameters)
       throws UnsupportedParameterTypeException {
     final Parameter[] parameters = method.getParameters();
-    final List<AnnotationCommandParameter> commandParameters = new ArrayList<>();
+    final List<ReflectionCommandParameter> commandParameters = new ArrayList<>();
     for (int i = 0; i < parameters.length; i++) {
-      final AnnotationCommandParameter commandParameter = this.createCommandParameter(parameters[i], i, supportedCommandParameters);
+      final ReflectionCommandParameter commandParameter = this.createCommandParameter(parameters[i], i, supportedCommandParameters);
       commandParameters.add(commandParameter);
     }
     return commandParameters;

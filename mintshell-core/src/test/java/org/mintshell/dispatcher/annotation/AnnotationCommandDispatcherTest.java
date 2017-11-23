@@ -27,12 +27,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mintshell.CommandDispatchException;
 import org.mintshell.CommandTarget;
+import org.mintshell.annotation.Param;
 import org.mintshell.command.Command;
+import org.mintshell.command.CommandParameter;
+import org.mintshell.command.DefaultCommandTarget;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -55,6 +59,11 @@ public class AnnotationCommandDispatcherTest {
 
   private AnnotationCommandDispatcher sut;
 
+  @After
+  public void afterClass() {
+    this.annotationCommandTarget.invokations.forEach((k, v) -> System.out.println(k + ":" + v));
+  }
+
   @Before
   public void before() {
     this.annotationCommandTarget = new AnnotationCommandTarget();
@@ -67,6 +76,24 @@ public class AnnotationCommandDispatcherTest {
     when(this.classTargetMock.isInstance()).thenReturn(false);
     doReturn(null).when(this.classTargetMock).getTargetInstance();
     doReturn(AnnotationCommandTarget.class).when(this.classTargetMock).getTargetClass();
+  }
+
+  @Test
+  public void testAddCommandTargetWithAnnotatedMethodButNotAnnotatedParam() throws Exception {
+    assertThat(this.sut.getCommandCount()).isZero();
+    final Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+      }
+
+      @org.mintshell.annotation.Command("test")
+      public void test(@Param(name = "a") final int a, final int b) {
+
+      }
+    };
+
+    this.sut.addCommandTargets(new DefaultCommandTarget(runnable));
+    assertThat(this.sut.getCommandCount()).isZero();
   }
 
   @Test(expected = CommandDispatchException.class)
@@ -83,5 +110,19 @@ public class AnnotationCommandDispatcherTest {
     assertThat(this.annotationCommandTarget.getInvokationsOf(command.getName())).isZero();
     this.sut.dispatch(command);
     assertThat(this.annotationCommandTarget.getInvokationsOf(command.getName())).isOne();
+  }
+
+  @Test
+  public void testPublicVoidWithParams() throws Exception {
+    this.sut.addCommandTargets(this.instanceTargetMock);
+    final Command<?> command = Command.create("invokeMeWithParams") //
+        .withParameter(CommandParameter.create(0).withName("number").withValue("42").build()) //
+        .withParameter(CommandParameter.create(1).withShortName('f').withValue("false").build()) //
+        .withParameter(CommandParameter.create(2).withValue("some text").build()) //
+        .build();
+    final String expectedInvocation = "invokeMeWithParams-false-42-some text";
+    assertThat(this.annotationCommandTarget.getInvokationsOf(expectedInvocation)).isZero();
+    this.sut.dispatch(command);
+    assertThat(this.annotationCommandTarget.getInvokationsOf(expectedInvocation)).isOne();
   }
 }

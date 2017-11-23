@@ -26,8 +26,10 @@ package org.mintshell.dispatcher.reflection;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
+import org.mintshell.command.CommandParameter;
 
 /**
  * Extension of a {@link Command} that uses reflection to map a {@link Method} to a {@link Command}.
@@ -45,15 +47,36 @@ public class ReflectionCommand<P extends ReflectionCommandParameter> extends Com
    *
    * @param method
    *          method to use
-   * @param supportedCommandParameters
-   *          supported command parameter types (factories)
+   * @param parameters
+   *          {@link List} of {@link CommandParameter}s
    * @throws UnsupportedParameterTypeException
    *           if at least one of the given method's parameters isn't supported
    * @author Noqmar
    * @since 0.1.0
    */
-  public ReflectionCommand(final Method method, final List<P> commandParameters) throws UnsupportedParameterTypeException {
-    super(Assert.ARG.isNotNull(method, "[method] must not be [null]").getName(), commandParameters);
+  public ReflectionCommand(final Method method, final List<P> parameters) throws UnsupportedParameterTypeException {
+    this(Assert.ARG.isNotNull(method, "[method] must not be [null]"), method.getName(), null, parameters);
+  }
+
+  /**
+   * Creates a new instance.
+   *
+   * @param method
+   *          method to use
+   * @param name
+   *          name
+   * @param description
+   *          description text
+   * @param parameters
+   *          {@link List} of {@link CommandParameter}s
+   * @throws UnsupportedParameterTypeException
+   *           if at least one of the given method's parameters isn't supported
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public ReflectionCommand(final Method method, final String name, final @Nullable String description, final List<P> parameters)
+      throws UnsupportedParameterTypeException {
+    super(name, description, parameters);
     this.method = method;
   }
 

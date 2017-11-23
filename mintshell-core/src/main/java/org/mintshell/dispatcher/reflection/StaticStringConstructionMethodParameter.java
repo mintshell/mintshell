@@ -48,7 +48,8 @@ public class StaticStringConstructionMethodParameter extends ReflectionCommandPa
    * {@link ReflectionCommandParameterFactory} that creates instance of
    * {@link StaticStringConstructionMethodParameter}s.
    */
-  public static final ReflectionCommandParameterFactory FACTORY = (type, index) -> new StaticStringConstructionMethodParameter(type, index);
+  public static final ReflectionCommandParameterFactory FACTORY = (type, index, name, shortName, required) -> new StaticStringConstructionMethodParameter(type,
+      index, name, shortName, required);
 
   private final List<Method> candidates;
 
@@ -66,7 +67,31 @@ public class StaticStringConstructionMethodParameter extends ReflectionCommandPa
    * @since 0.1.0
    */
   public StaticStringConstructionMethodParameter(final Class<?> type, final int index) throws UnsupportedParameterTypeException {
-    super(type, index);
+    this(type, index, null, null, DEFAULT_REQUIRED);
+  }
+
+  /**
+   * Creates a new command parameter.
+   *
+   * @param type
+   *          type of the parameter
+   * @param index
+   *          parameter index
+   * @param name
+   *          (optional) parameter (long) name
+   * @param shortName
+   *          (optional) parameter short name
+   * @param required
+   *          {@code true} if the parameter is mandatory, {@code false} otherwise
+   * @throws UnsupportedParameterTypeException
+   *           if the given parameter type isn't supported
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public StaticStringConstructionMethodParameter(final Class<?> type, final int index, @Nullable final String name, @Nullable final Character shortName,
+      final boolean required) throws UnsupportedParameterTypeException {
+    super(type, index, name, shortName, required);
     this.candidates = this.findCandidates(type);
   }
 

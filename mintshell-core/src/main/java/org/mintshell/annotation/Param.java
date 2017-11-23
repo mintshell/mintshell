@@ -23,28 +23,30 @@
  */
 package org.mintshell.annotation;
 
-import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.mintshell.command.CommandParameter;
+
 /**
- * Annotation to map a method to a {@link Command}.
+ * Annotation to map a method parameter to {@link CommandParameter}.
  *
  * @author Noqmar
  * @since 0.1.0
  */
 @Documented
 @Retention(RUNTIME)
-@Target(METHOD)
-public @interface Command {
+@Target({ PARAMETER })
+public abstract @interface Param {
 
   /**
-   * Returns the description of the command.
+   * Returns the description of the command parameter.
    *
-   * @return description of the command
+   * @return description of the command parameter
    *
    * @author Noqmar
    * @since 0.1.0
@@ -52,12 +54,32 @@ public @interface Command {
   String description() default "";
 
   /**
-   * Returns the name of the command (<b>not</b> the value).
+   * Returns the (long) name of the command parameter.
    *
-   * @return name of the command
+   * @return name of the command parameter
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  String value();
+  String name() default "";
+
+  /**
+   * Flag that classifies the command parameter to be required for command execution.
+   *
+   * @return {@code true} if the command parameter is required for command execution, {@code false} otherwise
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  boolean required() default true;
+
+  /**
+   * Returns the short name of the command parameter (option in case of a boolean parameter).
+   *
+   * @return short name of the command parameter
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  char shortName() default Character.UNASSIGNED;
 }

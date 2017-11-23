@@ -25,6 +25,7 @@ package org.mintshell.dispatcher.reflection;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -172,29 +173,10 @@ public abstract class AbstractReflectionCommandDispatcher<P extends ReflectionCo
    */
   @Override
   protected CommandResult<?> invokeCommand(final Command<?> command, final C targetCommand, final CommandTarget commandTarget) throws CommandDispatchException {
-
-    final Object[] args = new Object[targetCommand.getParameterCount()];
-    for (int i = 0; i < targetCommand.getParameterCount(); i++) {
-      final int index = i;
-      final Optional<? extends CommandParameter> commandParameter = command.getParameters().stream().filter(p -> p.getIndex() == index).findFirst();
-      final ReflectionCommandParameter reflectionParameter = targetCommand.getParameters().stream() //
-          .filter(p -> p.getIndex() == index) //
-          .findFirst() //
-          .orElseThrow(() -> new CommandDispatchException(String.format("Target command parameter with index [%s] is missing", index)));
-      if (reflectionParameter.isRequired() && !commandParameter.isPresent()) {
-        throw new CommandDispatchException(String.format("Required parameter [%s] is missing", reflectionParameter));
-      }
-      final Optional<String> value = commandParameter.isPresent() ? commandParameter.get().getValue() : Optional.empty();
-      try {
-        args[index] = value.isPresent() ? reflectionParameter.of(value.get()) : null;
-      } catch (final ParameterConversionException e) {
-        throw new CommandDispatchException(String.format("Unsufficient value [%s] for parameter [%s]", value.get(), reflectionParameter));
-      }
-    }
-
     final Method method = targetCommand.getMethod();
     final boolean accessible = method.isAccessible();
     try {
+      final Object[] args = this.createInvocationArguments(command, targetCommand);
       method.setAccessible(true);
       final Object result = method.invoke(commandTarget.isInstance() ? commandTarget.getTargetInstance() : null, args);
       return new CommandResult<>(command, result);
@@ -207,5 +189,55 @@ public abstract class AbstractReflectionCommandDispatcher<P extends ReflectionCo
     } finally {
       method.setAccessible(accessible);
     }
+  }
+
+  private Object createInvocationArgument(final List<CommandParameter> commandParameters, final P targetCommandParameter) throws CommandDispatchException {
+    final CommandParameter parameter = commandParameters.stream() //
+        .filter(cp -> targetCommandParameter.getName().isPresent() && targetCommandParameter.getName().equals(cp.getName())) //
+        .findFirst() //
+        .orElseGet(() -> {
+          return commandParameters.stream() //
+              .filter(cp -> targetCommandParameter.getShortName().isPresent() && targetCommandParameter.getShortName().equals(cp.getShortName())) //
+              .findFirst() //
+              .orElseGet(() -> {
+                return commandParameters.stream() //
+                    .filter(cp -> targetCommandParameter.getIndex() == cp.getIndex() && !cp.getName().isPresent() && !cp.getShortName().isPresent()) //
+                    .findFirst() //
+                    .orElse(null);
+              });
+        });
+    if (parameter == null) {
+      if (targetCommandParameter.isRequired()) {
+        throw new CommandDispatchException(String.format("Parameter [%s] is missing", targetCommandParameter));
+      }
+      else {
+        return null;
+      }
+    }
+    else if (parameter.getValue().isPresent()) {
+      final String value = parameter.getValue().get();
+      try {
+        return targetCommandParameter.of(value);
+      } catch (final ParameterConversionException e) {
+        throw new CommandDispatchException(format("Insufficient value [%s] for parameter [%s]", value, targetCommandParameter), e);
+      }
+    }
+    else if (!targetCommandParameter.isRequired()) {
+      return null;
+    }
+    else {
+      throw new CommandDispatchException(String.format("Required parameter [%s] is missing", targetCommandParameter));
+    }
+  }
+
+  private Object[] createInvocationArguments(final Command<?> command, final C targetCommand) throws CommandDispatchException {
+    final Object[] args = new Object[targetCommand.getParameterCount()];
+    for (int i = 0; i < targetCommand.getParameterCount(); i++) {
+      final List<CommandParameter> commandParameters = command.getParameters().stream() //
+          .map(cp -> (CommandParameter) cp) //
+          .collect(toList());
+      args[i] = this.createInvocationArgument(commandParameters, targetCommand.getParameters().get(i));
+    }
+    return args;
   }
 }
