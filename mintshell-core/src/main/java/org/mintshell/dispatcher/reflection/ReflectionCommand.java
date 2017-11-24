@@ -23,18 +23,13 @@
  */
 package org.mintshell.dispatcher.reflection;
 
-import static java.lang.String.format;
-
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mintshell.command.CommandParameter;
 
 /**
  * Extension of a {@link Command} that uses reflection to map a {@link Method} to a {@link Command}.
@@ -43,9 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-public class ReflectionCommand extends Command<ReflectionCommandParameter> {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ReflectionCommand.class);
+public class ReflectionCommand<P extends ReflectionCommandParameter> extends Command<P> {
 
   private final Method method;
 
@@ -54,23 +47,42 @@ public class ReflectionCommand extends Command<ReflectionCommandParameter> {
    *
    * @param method
    *          method to use
-   * @param supportedCommandParameters
-   *          supported command parameter types (factories)
+   * @param parameters
+   *          {@link List} of {@link CommandParameter}s
    * @throws UnsupportedParameterTypeException
    *           if at least one of the given method's parameters isn't supported
    * @author Noqmar
    * @since 0.1.0
    */
-  public ReflectionCommand(final Method method, final Set<ReflectionCommandParameterFactory> supportedCommandParameters)
+  public ReflectionCommand(final Method method, final List<P> parameters) throws UnsupportedParameterTypeException {
+    this(Assert.ARG.isNotNull(method, "[method] must not be [null]"), method.getName(), null, parameters);
+  }
+
+  /**
+   * Creates a new instance.
+   *
+   * @param method
+   *          method to use
+   * @param name
+   *          name
+   * @param description
+   *          description text
+   * @param parameters
+   *          {@link List} of {@link CommandParameter}s
+   * @throws UnsupportedParameterTypeException
+   *           if at least one of the given method's parameters isn't supported
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public ReflectionCommand(final Method method, final String name, final @Nullable String description, final List<P> parameters)
       throws UnsupportedParameterTypeException {
-    super(Assert.ARG.isNotNull(method, "[method] must not be [null]").getName(),
-        createCommandParameters(method, Assert.ARG.isNotNull(supportedCommandParameters, "[supportedCommandParameters] must not be [null]")));
+    super(name, description, parameters);
     this.method = method;
   }
 
   /**
    * Returns the method this {@link ReflectionCommand} is derived from.
-   * 
+   *
    * @return method
    *
    * @author Noqmar
@@ -78,28 +90,5 @@ public class ReflectionCommand extends Command<ReflectionCommandParameter> {
    */
   public Method getMethod() {
     return this.method;
-  }
-
-  private static ReflectionCommandParameter createCommandParameter(final Parameter parameter, final int index,
-      final Set<ReflectionCommandParameterFactory> supportedCommandParameters) throws UnsupportedParameterTypeException {
-    for (final ReflectionCommandParameterFactory supportedParameter : supportedCommandParameters) {
-      try {
-        return supportedParameter.create(index, parameter.getType());
-      } catch (final UnsupportedParameterTypeException e) {
-        LOG.trace("Failed to create command parameter from parameter [{}] with parameter factory [{}]", parameter, supportedParameter, e);
-      }
-    }
-    throw new UnsupportedParameterTypeException(format("Failed to create command parameter from reflection parameter [{}]", parameter));
-  }
-
-  private static List<ReflectionCommandParameter> createCommandParameters(final Method method,
-      final Set<ReflectionCommandParameterFactory> supportedCommandParameters) throws UnsupportedParameterTypeException {
-    final Parameter[] parameters = method.getParameters();
-    final List<ReflectionCommandParameter> commandParameters = new ArrayList<>();
-    for (int i = 0; i < parameters.length; i++) {
-      final ReflectionCommandParameter commandParameter = createCommandParameter(parameters[i], i, supportedCommandParameters);
-      commandParameters.add(commandParameter);
-    }
-    return commandParameters;
   }
 }

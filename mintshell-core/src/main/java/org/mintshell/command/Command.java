@@ -197,7 +197,7 @@ public class Command<P extends CommandParameter> {
   }
 
   /**
-   * Returns a {@link CommandBuilder} which provides a convenient way to create new {@link Command} instance.
+   * Returns a {@link CommandBuilder} which provides a convenient way to create new {@link Command} instances.
    *
    * @param name
    *          name of the {@link Command} to build
@@ -211,7 +211,7 @@ public class Command<P extends CommandParameter> {
   }
 
   /**
-   * Builder to conveniet create {@link Command}s.
+   * Builder to convenient create {@link Command}s.
    *
    * @author Noqmar
    * @since 0.1.0

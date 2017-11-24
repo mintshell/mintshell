@@ -21,32 +21,43 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.examples.terminal.ncurses;
+package org.mintshell.annotation;
 
-import org.mintshell.Mintshell;
-import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
-import org.mintshell.interpreter.StringTokenCommandInterpreter;
-import org.mintshell.terminal.ncurses.interfaces.NCursesTerminalCommandInterface;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * This class demonstrates the usage of a shell using the {@link NCursesTerminalCommandInterface}.
+ * Annotation to map a method to a {@link Command}.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class NCursesTerminalShell {
+@Documented
+@Retention(RUNTIME)
+@Target(METHOD)
+public @interface Command {
 
-  public NCursesTerminalShell(final String[] args) throws Exception {
-    Mintshell //
-        .from(new NCursesTerminalCommandInterface("Mintshell> ", "Welcome to Mintshell with nCurses\n\r", NCursesTerminalCommandInterface.KEYBINDING_EXIT)) //
-        .interpretedBy(new StringTokenCommandInterpreter()) //
-        .dispatchedBy(new ReflectionCommandDispatcher()) //
-        .to(new SimpleNCursesCommandTarget()) //
-        .apply();
-    Thread.sleep(Long.MAX_VALUE);
-  }
+  /**
+   * Returns the description of the command.
+   *
+   * @return description of the command
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  String description() default "";
 
-  public static void main(final String[] args) throws Exception {
-    new NCursesTerminalShell(args);
-  }
+  /**
+   * Returns the name of the command (<b>not</b> the value).
+   *
+   * @return name of the command
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  String value();
 }

@@ -32,9 +32,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.stream.Collectors;
 
-import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
+import org.mintshell.command.DefaultCommandTarget;
 
 /**
  * <p>
@@ -232,38 +232,6 @@ public final class Mintshell {
      * @since 0.1.0
      */
     public abstract Mintshell apply();
-  }
-
-  private static final class DefaultCommandTarget implements CommandTarget {
-
-    private final Class<?> targetClass;
-    private final Object targetInstance;
-
-    private DefaultCommandTarget(final Object commandTarget) {
-      if (Class.class.isInstance(commandTarget)) {
-        this.targetClass = (Class<?>) commandTarget;
-        this.targetInstance = null;
-      }
-      else {
-        this.targetClass = commandTarget.getClass();
-        this.targetInstance = commandTarget;
-      }
-    }
-
-    @Override
-    public Class<?> getTargetClass() {
-      return this.targetClass;
-    }
-
-    @Override
-    public @Nullable Object getTargetInstance() {
-      return this.targetInstance;
-    }
-
-    @Override
-    public boolean isInstance() {
-      return this.targetInstance != null;
-    }
   }
 
   private static class MintShellBuilder implements MintShellInterfaces, MintshellInterpreter, MintshellDispatcher, MintshellTargets {

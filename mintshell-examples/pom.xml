@@ -72,6 +72,7 @@
               <descriptors>
                 <descriptor>src/main/assembly/mintshell-examples.xml</descriptor>
               </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
         </executions>

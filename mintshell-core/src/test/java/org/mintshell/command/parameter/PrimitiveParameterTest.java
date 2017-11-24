@@ -41,126 +41,126 @@ public class PrimitiveParameterTest {
   public void testBooleanObject() throws Exception {
     final String value = "true";
     final Class<?> type = Boolean.class;
-    new PrimitiveParameter(0, type).of(value);
+    new PrimitiveParameter(type, 0).of(value);
   }
 
   @Test
   public void testBooleanPrimitive() throws Exception {
     final String value = "true";
     final Class<?> type = boolean.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo(true);
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo(true);
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testByteObject() throws Exception {
     final String value = "42";
     final Class<?> type = Byte.class;
-    new PrimitiveParameter(0, type).of(value);
+    new PrimitiveParameter(type, 0).of(value);
   }
 
   @Test
   public void testBytePrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = byte.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo((byte) 42);
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo((byte) 42);
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testCharObject() throws Exception {
     final String value = "C";
     final Class<?> type = Character.class;
-    new PrimitiveParameter(0, type).of(value);
+    new PrimitiveParameter(type, 0).of(value);
   }
 
   @Test
   public void testCharPrimitive() throws Exception {
     final String value = "C";
     final Class<?> type = char.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo('C');
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo('C');
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testDoubleObject() throws Exception {
     final String value = "42";
     final Class<?> type = Double.class;
-    new PrimitiveParameter(0, type).of(value);
+    new PrimitiveParameter(type, 0).of(value);
   }
 
   @Test
   public void testDoublePrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = double.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo(42.0);
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo(42.0);
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testFloatObject() throws Exception {
     final String value = "42";
     final Class<?> type = Float.class;
-    new PrimitiveParameter(0, type).of(value);
+    new PrimitiveParameter(type, 0).of(value);
   }
 
   @Test
   public void testFloatPrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = float.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo(42.0f);
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo(42.0f);
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testIntegerObject() throws Exception {
     final String value = "42";
     final Class<?> type = Integer.class;
-    new PrimitiveParameter(0, type).of(value);
+    new PrimitiveParameter(type, 0).of(value);
   }
 
   @Test
   public void testIntegerPrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = int.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo(42);
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo(42);
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testLongObject() throws Exception {
     final String value = "42";
     final Class<?> type = Long.class;
-    new PrimitiveParameter(0, type).of(value);
+    new PrimitiveParameter(type, 0).of(value);
   }
 
   @Test
   public void testLongPrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = long.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo(42L);
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo(42L);
   }
 
   @Test
   public void testNullPrimitive() throws Exception {
     final String value = null;
     final Class<?> type = int.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isNull();
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isNull();
   }
 
   @Test(expected = UnsupportedParameterTypeException.class)
   public void testShortObject() throws Exception {
     final String value = "42";
     final Class<?> type = Short.class;
-    new PrimitiveParameter(0, type).of(value);
+    new PrimitiveParameter(type, 0).of(value);
   }
 
   @Test
   public void testShortPrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = short.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo((short) 42);
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo((short) 42);
   }
 
   @Test
   public void testStringPrimitive() throws Exception {
     final String value = "42";
     final Class<?> type = String.class;
-    assertThat(new PrimitiveParameter(0, type).of(value)).isEqualTo(value);
+    assertThat(new PrimitiveParameter(type, 0).of(value)).isEqualTo(value);
   }
 
 }

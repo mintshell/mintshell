@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.dispatcher.reflection;
+package org.mintshell.dispatcher.annotation;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
@@ -35,17 +35,24 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.mintshell.CommandDispatcher;
-import org.mintshell.command.Command;
+import org.mintshell.annotation.Command;
+import org.mintshell.annotation.Param;
 import org.mintshell.command.CommandParameter;
+import org.mintshell.dispatcher.reflection.AbstractReflectionCommandDispatcher;
+import org.mintshell.dispatcher.reflection.PrimitiveParameter;
+import org.mintshell.dispatcher.reflection.ReflectionCommandParameter;
+import org.mintshell.dispatcher.reflection.ReflectionCommandParameterFactory;
+import org.mintshell.dispatcher.reflection.StaticStringConstructionMethodParameter;
+import org.mintshell.dispatcher.reflection.StringConstructorParameter;
+import org.mintshell.dispatcher.reflection.UnsupportedParameterTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Implementation of a {@link AbstractReflectionCommandDispatcher} that inspects command targets via reflection and
- * translates methods into commands. If targeting a {@link Class} instead of an {@link Object}, only static methods
- * getting into account. For all {@link Command}s short names cannot be assigned automatically and will be therefore
- * omited.
+ * Implementation of a {@link AbstractReflectionCommandDispatcher} that inspects command targets via reflection
+ * searching for annotations and translates annotated methods into commands. If targeting a {@link Class} instead of an
+ * {@link Object}, only static methods getting into account.
  * </p>
  * <p>
  * This {@link CommandDispatcher} supports the following {@link CommandParameter}s by default:
@@ -61,10 +68,10 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-public class ReflectionCommandDispatcher extends AbstractReflectionCommandDispatcher<ReflectionCommandParameter, ReflectionCommand<ReflectionCommandParameter>>
+public class AnnotationCommandDispatcher extends AbstractReflectionCommandDispatcher<ReflectionCommandParameter, AnnotationCommand<ReflectionCommandParameter>>
     implements CommandDispatcher {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ReflectionCommandDispatcher.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AnnotationCommandDispatcher.class);
 
   /**
    * Creates a new instance with {@link #DEFAULT_SUPPORTED_PARAMETERS}.
@@ -72,7 +79,7 @@ public class ReflectionCommandDispatcher extends AbstractReflectionCommandDispat
    * @author Noqmar
    * @since 0.1.0
    */
-  public ReflectionCommandDispatcher() {
+  public AnnotationCommandDispatcher() {
     super();
   }
 
@@ -85,7 +92,7 @@ public class ReflectionCommandDispatcher extends AbstractReflectionCommandDispat
    * @author Noqmar
    * @since 0.1.0
    */
-  public ReflectionCommandDispatcher(final ReflectionCommandParameterFactory... supportedCommandParameters) {
+  public AnnotationCommandDispatcher(final ReflectionCommandParameterFactory... supportedCommandParameters) {
     super(supportedCommandParameters);
   }
 
@@ -95,9 +102,9 @@ public class ReflectionCommandDispatcher extends AbstractReflectionCommandDispat
    * @see org.mintshell.dispatcher.reflection.AbstractReflectionCommandDispatcher#createCommandFromMethod(java.lang.reflect.Method)
    */
   @Override
-  protected Optional<ReflectionCommand<ReflectionCommandParameter>> createCommandFromMethod(final Method method) {
+  protected Optional<AnnotationCommand<ReflectionCommandParameter>> createCommandFromMethod(final Method method) {
     try {
-      final ReflectionCommand<ReflectionCommandParameter> command = new ReflectionCommand<>(method,
+      final AnnotationCommand<ReflectionCommandParameter> command = new AnnotationCommand<>(method,
           this.createCommandParameters(method, this.getSupportedParameters()));
       LOG.trace("Successfully created command [{}] from method [{}]", command, method);
       return Optional.of(command);
@@ -114,14 +121,22 @@ public class ReflectionCommandDispatcher extends AbstractReflectionCommandDispat
    */
   @Override
   protected List<Method> determineSupportedMethods(final Class<?> target) {
-    return stream(target.getMethods()).collect(toList());
+    return stream(target.getMethods()) //
+        .filter(method -> method.getAnnotation(Command.class) != null) //
+        .collect(toList());
   }
 
   private ReflectionCommandParameter createCommandParameter(final Parameter parameter, final int index,
       final Set<ReflectionCommandParameterFactory> supportedCommandParameters) throws UnsupportedParameterTypeException {
+    final Param annotation = parameter.getAnnotation(Param.class);
+    if (annotation == null) {
+      throw new UnsupportedParameterTypeException(String.format("Parameter [%s] isn't annotated with [@%s]", parameter.getName(), Param.class.getSimpleName()));
+    }
     for (final ReflectionCommandParameterFactory supportedParameter : supportedCommandParameters) {
       try {
-        return supportedParameter.create(parameter.getType(), index, null, null, parameter.getType().isPrimitive());
+        final ReflectionCommandParameter reflectionParameter = supportedParameter.create(parameter.getType(), index, annotation.name(),
+            annotation.shortName() != Character.UNASSIGNED ? annotation.shortName() : null, annotation.required() || parameter.getType().isPrimitive());
+        return reflectionParameter;
       } catch (final UnsupportedParameterTypeException e) {
         LOG.trace("Failed to create command parameter from parameter [{}] with parameter factory [{}]", parameter, supportedParameter, e);
       }
