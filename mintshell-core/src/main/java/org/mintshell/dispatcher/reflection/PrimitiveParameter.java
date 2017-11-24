@@ -39,23 +39,67 @@ public class PrimitiveParameter extends ReflectionCommandParameter {
   /**
    * {@link ReflectionCommandParameterFactory} that creates instance of {@link PrimitiveParameter}s.
    */
-  public static final ReflectionCommandParameterFactory FACTORY = (index, type) -> new PrimitiveParameter(index, type);
+  public static final ReflectionCommandParameterFactory FACTORY = (type, index, name, shortName, required) -> new PrimitiveParameter(type, index, name,
+      shortName, required);
 
   /**
    * Creates a new command parameter.
    *
-   * @param index
-   *          index of the parameter in the originating methods's signature
    * @param type
    *          type of the parameter
+   * @param index
+   *          index of the parameter in the originating methods's signature
    * @throws UnsupportedParameterTypeException
    *           if the given parameter type isn's supported
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public PrimitiveParameter(final int index, final Class<?> type) throws UnsupportedParameterTypeException {
-    super(index, type);
+  public PrimitiveParameter(final Class<?> type, final int index) throws UnsupportedParameterTypeException {
+    this(type, index, null, null, DEFAULT_REQUIRED);
+  }
+
+  /**
+   * Creates a new command parameter.
+   *
+   * @param type
+   *          type of the parameter
+   * @param index
+   *          parameter index
+   * @param name
+   *          (optional) parameter (long) name
+   * @param shortName
+   *          (optional) parameter short name
+   * @param required
+   *          {@code true} if the parameter is mandatory, {@code false} otherwise
+   * @throws UnsupportedParameterTypeException
+   *           if the given parameter type isn't supported
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public PrimitiveParameter(final Class<?> type, final int index, @Nullable final String name, @Nullable final Character shortName, final boolean required)
+      throws UnsupportedParameterTypeException {
+    super(type, index, name, shortName, required);
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.command.CommandParameter#isTypeSupported(java.lang.Class)
+   */
+  @Override
+  public boolean isTypeSupported(final Class<?> type) {
+    return false //
+        || type == boolean.class //
+        || type == byte.class //
+        || type == char.class //
+        || type == double.class //
+        || type == float.class //
+        || type == int.class //
+        || type == long.class //
+        || type == short.class //
+        || type == String.class;
   }
 
   /**
@@ -102,24 +146,5 @@ public class PrimitiveParameter extends ReflectionCommandParameter {
     } catch (final Exception e) {
       throw new ParameterConversionException("Conversion of [%s] into instance of [%s] failed", e);
     }
-  }
-
-  /**
-   *
-   * @{inheritDoc}
-   * @see org.mintshell.command.CommandParameter#isTypeSupported(java.lang.Class)
-   */
-  @Override
-  protected boolean isTypeSupported(final Class<?> type) {
-    return false //
-        || type == boolean.class //
-        || type == byte.class //
-        || type == char.class //
-        || type == double.class //
-        || type == float.class //
-        || type == int.class //
-        || type == long.class //
-        || type == short.class //
-        || type == String.class;
   }
 }

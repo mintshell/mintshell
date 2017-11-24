@@ -106,6 +106,30 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
   }
 
   /**
+   * Returns the count of currently managed {@link Command}s.
+   *
+   * @return count currently managed {@link Command}s
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public int getCommandCount() {
+    return this.commands.size();
+  }
+
+  /**
+   * Returns all currently managed {@link Command}s.
+   *
+   * @return all currently managed {@link Command}s
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public Map<C, CommandTarget> getCommands() {
+    return new HashMap<>(this.commands);
+  }
+
+  /**
    * Adds the given {@link CommandTarget} and checks uniquenes of the determinded {@link Command}s if
    * {@link #isForceUniqueCommands()} is set to {@code true}.
    *

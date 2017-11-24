@@ -21,41 +21,43 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.command.parameter;
+package org.mintshell.annotation;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.junit.Test;
-import org.mintshell.dispatcher.reflection.StaticStringConstructionMethodParameter;
-import org.mintshell.dispatcher.reflection.UnsupportedParameterTypeException;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * Tests the functionality of {@link StaticStringConstructionMethodParameter}.
+ * Annotation to map a method to a {@link Command}.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class StaticStringConstructionMethodParameterTest {
+@Documented
+@Retention(RUNTIME)
+@Target(METHOD)
+public @interface Command {
 
-  @Test
-  public void testIntegerObject() throws Exception {
-    final String value = "42";
-    final Class<?> type = Integer.class;
-    assertThat(new StaticStringConstructionMethodParameter(type, 0).of(value)).isEqualTo(Integer.valueOf(42));
-  }
+  /**
+   * Returns the description of the command.
+   *
+   * @return description of the command
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  String description() default "";
 
-  @Test(expected = UnsupportedParameterTypeException.class)
-  public void testIntegerPrimitive() throws Exception {
-    final String value = "42";
-    final Class<?> type = int.class;
-    new StaticStringConstructionMethodParameter(type, 0).of(value);
-  }
-
-  @Test
-  public void testNull() throws Exception {
-    final String value = null;
-    final Class<?> type = Integer.class;
-    assertThat(new StaticStringConstructionMethodParameter(type, 0).of(value)).isNull();
-  }
-
+  /**
+   * Returns the name of the command (<b>not</b> the value).
+   *
+   * @return name of the command
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  String value();
 }

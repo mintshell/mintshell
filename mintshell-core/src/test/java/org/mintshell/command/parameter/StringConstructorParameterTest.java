@@ -46,7 +46,7 @@ public class StringConstructorParameterTest {
     final String value = "";
     final Class<?> type = URL.class;
     try {
-      new StringConstructorParameter(0, type).of(value);
+      new StringConstructorParameter(type, 0).of(value);
       fail("ParameterConversionException expected");
     } catch (final ParameterConversionException expected) {
       assertThat(expected.getCause()).isInstanceOf(MalformedURLException.class);
@@ -57,14 +57,14 @@ public class StringConstructorParameterTest {
   public void testNull() throws Exception {
     final String value = null;
     final Class<?> type = URL.class;
-    assertThat(new StringConstructorParameter(0, type).of(value)).isNull();
+    assertThat(new StringConstructorParameter(type, 0).of(value)).isNull();
   }
 
   @Test
   public void testUrl() throws Exception {
     final String value = "http://fooo.bar";
     final Class<?> type = URL.class;
-    final URL url = (URL) new StringConstructorParameter(0, type).of(value);
+    final URL url = (URL) new StringConstructorParameter(type, 0).of(value);
     assertThat(url.toString()).isEqualTo(value);
   }
 }
