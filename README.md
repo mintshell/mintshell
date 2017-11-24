@@ -9,6 +9,8 @@ Mintshell is a Java library which allows to provide Java applications with a com
 - Reflection dispatcher (for foreign classes)
 - Annotation support (for comfortable command configuration)
 
+**Note**: mintshell requires Java 8
+
 ## Roadmap
 ### 0.1.0 (first release, planned yet in 2017)
 - Grammar-based command interpreter
