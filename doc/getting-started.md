@@ -1,3 +1,4 @@
 ## Getting started
 TODO
-[back](../index.md)
+
+[back](../README.md)
