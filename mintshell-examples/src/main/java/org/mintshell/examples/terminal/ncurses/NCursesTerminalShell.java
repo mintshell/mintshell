@@ -25,7 +25,7 @@ package org.mintshell.examples.terminal.ncurses;
 
 import org.mintshell.Mintshell;
 import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
-import org.mintshell.interpreter.StringTokenCommandInterpreter;
+import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.ncurses.interfaces.NCursesTerminalCommandInterface;
 
 /**
@@ -39,7 +39,7 @@ public class NCursesTerminalShell {
   public NCursesTerminalShell(final String[] args) throws Exception {
     Mintshell //
         .from(new NCursesTerminalCommandInterface("Mintshell> ", "Welcome to Mintshell with nCurses\n\r", NCursesTerminalCommandInterface.KEYBINDING_EXIT)) //
-        .interpretedBy(new StringTokenCommandInterpreter()) //
+        .interpretedBy(new MclCommandInterpreter()) //
         .dispatchedBy(new ReflectionCommandDispatcher()) //
         .to(new SimpleNCursesCommandTarget()) //
         .apply();

@@ -23,6 +23,8 @@
  */
 package org.mintshell.command;
 
+import static java.lang.String.format;
+
 import java.util.Optional;
 
 import org.mintshell.annotation.Nullable;
@@ -157,6 +159,23 @@ public class CommandParameter {
    */
   public boolean isRequired() {
     return this.required;
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    final String pattern = "%s=%s";
+    if (this.getName().isPresent()) {
+      return format(pattern, this.getName().get(), this.getValue().isPresent() ? this.getValue().get() : "");
+    }
+    if (this.getShortName().isPresent()) {
+      return format(pattern, this.getShortName().get(), this.getValue().isPresent() ? this.getValue().get() : "");
+    }
+    return format(pattern, Integer.toString(this.getIndex()), this.getValue().isPresent() ? this.getValue().get() : "");
   }
 
   /**

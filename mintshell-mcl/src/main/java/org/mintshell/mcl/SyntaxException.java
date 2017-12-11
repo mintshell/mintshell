@@ -21,33 +21,46 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.examples.terminal.ssh;
+package org.mintshell.mcl;
 
-import org.mintshell.Mintshell;
-import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
-import org.mintshell.mcl.interpreter.MclCommandInterpreter;
-import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
-import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
+import static java.lang.String.format;
+
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 
 /**
- * This class demonstrates the usage of a shell using the {@link SshCommandInterface}.
+ * Exception that indicates invalid command syntax.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class SshTerminalShell {
+public class SyntaxException extends RuntimeException {
 
-  public SshTerminalShell(final String[] args) throws Exception {
-    Mintshell //
-        .from(new SshCommandInterface("Mintshell> ", "Welcome to Mintshell with SSH\r\n", AbstractTerminalCommandInterface.KEYBINDING_EXIT)) //
-        .interpretedBy(new MclCommandInterpreter()) //
-        .dispatchedBy(new ReflectionCommandDispatcher()) //
-        .to(new SimpleSshCommandTarget()) //
-        .apply();
-    Thread.sleep(Long.MAX_VALUE);
-  }
+  private static final String MESSAGE_PATTERN = "Syntax error at [%s,%s]: %s";
 
-  public static void main(final String[] args) throws Exception {
-    new SshTerminalShell(args);
+  private static final long serialVersionUID = -1373278119311501534L;
+
+  /**
+   * Creates a new instance.
+   *
+   * @param recognizer
+   *          antlr recognizer
+   * @param offendingSymbol
+   *          offending symbol
+   * @param line
+   *          line number
+   * @param charPositionInLine
+   *          character position in line
+   * @param message
+   *          message text
+   * @param cause
+   *          causing {@link Exception}
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public SyntaxException(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String message,
+      final RecognitionException cause) {
+    super(format(MESSAGE_PATTERN, line, charPositionInLine, message), cause);
   }
 }

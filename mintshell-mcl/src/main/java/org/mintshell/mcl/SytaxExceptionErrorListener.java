@@ -21,33 +21,29 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.examples.terminal.ssh;
+package org.mintshell.mcl;
 
-import org.mintshell.Mintshell;
-import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
-import org.mintshell.mcl.interpreter.MclCommandInterpreter;
-import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
-import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 
 /**
- * This class demonstrates the usage of a shell using the {@link SshCommandInterface}.
+ * Implementation of a {@link BaseErrorListener}, that produces {@link SyntaxException}s.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class SshTerminalShell {
+public class SytaxExceptionErrorListener extends BaseErrorListener {
 
-  public SshTerminalShell(final String[] args) throws Exception {
-    Mintshell //
-        .from(new SshCommandInterface("Mintshell> ", "Welcome to Mintshell with SSH\r\n", AbstractTerminalCommandInterface.KEYBINDING_EXIT)) //
-        .interpretedBy(new MclCommandInterpreter()) //
-        .dispatchedBy(new ReflectionCommandDispatcher()) //
-        .to(new SimpleSshCommandTarget()) //
-        .apply();
-    Thread.sleep(Long.MAX_VALUE);
-  }
-
-  public static void main(final String[] args) throws Exception {
-    new SshTerminalShell(args);
+  /**
+   *
+   * @{inheritDoc}
+   * @see org.antlr.v4.runtime.BaseErrorListener#syntaxError(org.antlr.v4.runtime.Recognizer, java.lang.Object, int,
+   *      int, java.lang.String, org.antlr.v4.runtime.RecognitionException)
+   */
+  @Override
+  public void syntaxError(final Recognizer<?, ?> recognizer, final Object offendingSymbol, final int line, final int charPositionInLine, final String message,
+      final RecognitionException cause) {
+    throw new SyntaxException(recognizer, offendingSymbol, line, charPositionInLine, message, cause);
   }
 }
