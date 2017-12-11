@@ -24,13 +24,15 @@ CHARACTER: LETTER_OR_DIGIT;
 
 UNQUOTED: LETTER_OR_DIGIT+;
 
-QUOTED: '"' (LETTER_OR_DIGIT | SYMBOL | SPACE)* '"'; 
+QUOTED: '"' (~["\\\r\n] | ESC_SEQUENCE)* '"';
 
 SPACE: [ \t];
 
-fragment LETTER_OR_DIGIT: [a-zA-Z0-9];
+fragment ESC_SEQUENCE : '\\' [btnfr"'\\];
 
-fragment SYMBOL: [-,\.];
+fragment LETTER_OR_DIGIT: LETTER | [0-9];
+
+fragment LETTER: [a-zA-Z$_];
 
 
 
