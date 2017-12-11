@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 mintshell.org
+ * Copyright © 2017-2018 mintshell.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -24,8 +24,8 @@
 package org.mintshell.examples.terminal.ssh;
 
 import org.mintshell.Mintshell;
-import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
-import org.mintshell.interpreter.StringTokenCommandInterpreter;
+import org.mintshell.dispatcher.annotation.AnnotationCommandDispatcher;
+import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
 import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
 
@@ -40,9 +40,9 @@ public class SshTerminalShell {
   public SshTerminalShell(final String[] args) throws Exception {
     Mintshell //
         .from(new SshCommandInterface("Mintshell> ", "Welcome to Mintshell with SSH\r\n", AbstractTerminalCommandInterface.KEYBINDING_EXIT)) //
-        .interpretedBy(new StringTokenCommandInterpreter()) //
-        .dispatchedBy(new ReflectionCommandDispatcher()) //
-        .to(new SimpleSshCommandTarget()) //
+        .interpretedBy(new MclCommandInterpreter()) //
+        .dispatchedBy(new AnnotationCommandDispatcher()) //
+        .to(new AnnotationCommandTarget()) //
         .apply();
     Thread.sleep(Long.MAX_VALUE);
   }

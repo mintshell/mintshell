@@ -29,10 +29,13 @@
     <!-- versioning of maven plugins -->
     <version.mvn.compiler>3.7.0</version.mvn.compiler>
     <version.mvn.gpg>1.6</version.mvn.gpg>
+    <version.mvn.antlr4>4.5</version.mvn.antlr4>
 
     <!-- versioning of technical dependencies -->
     <version.slf4j>1.7.25</version.slf4j>
+    <version.antlr>4.5</version.antlr>
     <version.sshd>1.6.0</version.sshd>
+
 
     <!-- versioning of test dependencies -->
     <version.junit>4.12</version.junit>
@@ -44,6 +47,7 @@
 
   <modules>
     <module>mintshell-core</module>
+    <module>mintshell-mcl</module>
     <module>mintshell-terminal</module>
     <module>mintshell-terminal-ncurses</module>
     <module>mintshell-terminal-ssh</module>
@@ -59,6 +63,11 @@
         <artifactId>mintshell-core</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mintshell-mcl</artifactId>
+        <version>${project.version}</version>
+      </dependency>      
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-terminal</artifactId>
@@ -86,6 +95,11 @@
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-core</artifactId>
         <version>${version.sshd}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4</artifactId>
+        <version>${version.antlr}</version>
       </dependency>
 
       <!-- test -->
@@ -125,12 +139,38 @@
   </dependencies>
 
   <build>
+
+    <pluginManagement>
+    
+      <plugins>
+      
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${version.mvn.compiler}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>${version.mvn.gpg}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.antlr</groupId>
+          <artifactId>antlr4-maven-plugin</artifactId>
+          <version>${version.mvn.antlr4}</version>
+        </plugin>
+
+      </plugins>
+
+    </pluginManagement>
+
     <plugins>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${version.mvn.compiler}</version>
         <configuration>
           <source>${version.java}</source>
           <target>${version.java}</target>

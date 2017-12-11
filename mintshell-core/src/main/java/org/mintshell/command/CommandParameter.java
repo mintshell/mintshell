@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 mintshell.org
+ * Copyright © 2017-2018 mintshell.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -157,6 +157,29 @@ public class CommandParameter {
    */
   public boolean isRequired() {
     return this.required;
+  }
+
+  /**
+   *
+   * @{inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    final StringBuilder builder = new StringBuilder();
+    if (this.getName().isPresent() && !this.getName().get().isEmpty()) {
+      builder.append(this.getName().get());
+    }
+    else if (this.getShortName().isPresent()) {
+      builder.append(this.getShortName().get());
+    }
+    else {
+      builder.append(Integer.toString(this.getIndex()));
+    }
+    if (this.getValue().isPresent()) {
+      builder.append("=").append(this.getValue().get());
+    }
+    return builder.toString();
   }
 
   /**

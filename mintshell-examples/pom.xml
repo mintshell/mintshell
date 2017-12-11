@@ -28,6 +28,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>mintshell-mcl</artifactId>
+    </dependency>    
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>mintshell-terminal-ncurses</artifactId>
     </dependency>
     <dependency>

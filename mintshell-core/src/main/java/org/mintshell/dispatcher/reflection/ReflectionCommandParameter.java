@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 mintshell.org
+ * Copyright © 2017-2018 mintshell.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -159,20 +159,4 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @since 0.1.0
    */
   public abstract Object of(@Nullable String value) throws ParameterConversionException;
-
-  /**
-   *
-   * @{inheritDoc}
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString() {
-    if (this.getName().isPresent()) {
-      return this.getName().get();
-    }
-    if (this.getShortName().isPresent()) {
-      return this.getShortName().get().toString();
-    }
-    return Integer.toString(this.getIndex());
-  }
 }

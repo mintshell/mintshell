@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 mintshell.org
+ * Copyright © 2017-2018 mintshell.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -33,9 +33,9 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-public class SimpleNCursesCommandTarget {
+public class SimpleCommandTarget {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SimpleNCursesCommandTarget.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
 
   /**
    * Adds the given arguments.
