@@ -75,7 +75,7 @@ public class MclCommandInterpreter implements CommandInterpreter {
       final CommandLineContext parsedCommandLine = this.createParser(commandMessage).commandLine();
       final CommandContext parsedCommand = parsedCommandLine.command();
       final List<CommandParameter> commandParameters = this.handleCommandParameters(parsedCommandLine.commandParameter());
-      final Command<CommandParameter> result = new Command<>(parsedCommand.toString(), commandParameters);
+      final Command<CommandParameter> result = new Command<>(this.extractCommandName(parsedCommand), commandParameters);
       return result;
     } catch (final SyntaxException e) {
       throw new CommandInterpreteException(e.getMessage(), e);
@@ -93,9 +93,31 @@ public class MclCommandInterpreter implements CommandInterpreter {
     return parser;
   }
 
+  private String extractCommandName(final CommandContext parsedCommand) {
+    if (parsedCommand == null) {
+      return null;
+    }
+    else if (parsedCommand.CHARACTER() != null) {
+      return parsedCommand.CHARACTER().toString();
+    }
+    else if (parsedCommand.UNQUOTED() != null) {
+      return parsedCommand.UNQUOTED().toString();
+    }
+    else if (parsedCommand.QUOTED() != null) {
+      final String content = parsedCommand.QUOTED().toString();
+      return content.substring(1, content.length() - 1);
+    }
+    else {
+      throw new IllegalStateException(String.format("Illegal command parameter value [%s]", parsedCommand));
+    }
+  }
+
   private String extractCommandParameterValue(final CommandParameterValueContext parsedCommandParameterValue) {
     if (parsedCommandParameterValue == null) {
       return null;
+    }
+    else if (parsedCommandParameterValue.CHARACTER() != null) {
+      return parsedCommandParameterValue.CHARACTER().toString();
     }
     else if (parsedCommandParameterValue.UNQUOTED() != null) {
       return parsedCommandParameterValue.UNQUOTED().toString();
@@ -134,14 +156,14 @@ public class MclCommandInterpreter implements CommandInterpreter {
 
   private CommandParameter handleLongCommandParameter(final int index, final LongCommandParameterContext parsedCommandParameter,
       final CommandParameterValueContext parsedCommandParameterValue) {
-    final String name = parsedCommandParameter.longCommandParameterName().toString();
+    final String name = parsedCommandParameter.longCommandParameterName().getText();
     final String value = this.extractCommandParameterValue(parsedCommandParameterValue);
     return new CommandParameter(index, name, null, false, value.isEmpty() ? null : value);
   }
 
   private CommandParameter handleShortCommandParameter(final int index, final ShortCommandParameterContext parsedCommandParameter,
       final CommandParameterValueContext parsedCommandParameterValue) {
-    final char shortName = parsedCommandParameter.shortCommandParameterName().toString().charAt(0);
+    final char shortName = parsedCommandParameter.shortCommandParameterName().getText().charAt(0);
     final String value = this.extractCommandParameterValue(parsedCommandParameterValue);
     return new CommandParameter(index, null, shortName, false, value.isEmpty() ? null : value);
   }

@@ -24,7 +24,7 @@
 package org.mintshell.examples.terminal.ssh;
 
 import org.mintshell.Mintshell;
-import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
+import org.mintshell.dispatcher.annotation.AnnotationCommandDispatcher;
 import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
 import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
@@ -41,8 +41,8 @@ public class SshTerminalShell {
     Mintshell //
         .from(new SshCommandInterface("Mintshell> ", "Welcome to Mintshell with SSH\r\n", AbstractTerminalCommandInterface.KEYBINDING_EXIT)) //
         .interpretedBy(new MclCommandInterpreter()) //
-        .dispatchedBy(new ReflectionCommandDispatcher()) //
-        .to(new SimpleSshCommandTarget()) //
+        .dispatchedBy(new AnnotationCommandDispatcher()) //
+        .to(new AnnotationCommandTarget()) //
         .apply();
     Thread.sleep(Long.MAX_VALUE);
   }

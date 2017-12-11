@@ -33,9 +33,9 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-public class SimpleNCursesCommandTarget {
+public class SimpleCommandTarget {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SimpleNCursesCommandTarget.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
 
   /**
    * Adds the given arguments.

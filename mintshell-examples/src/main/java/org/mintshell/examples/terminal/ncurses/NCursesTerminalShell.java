@@ -41,7 +41,7 @@ public class NCursesTerminalShell {
         .from(new NCursesTerminalCommandInterface("Mintshell> ", "Welcome to Mintshell with nCurses\n\r", NCursesTerminalCommandInterface.KEYBINDING_EXIT)) //
         .interpretedBy(new MclCommandInterpreter()) //
         .dispatchedBy(new ReflectionCommandDispatcher()) //
-        .to(new SimpleNCursesCommandTarget()) //
+        .to(new AnnotationCommandTarget()) //
         .apply();
     Thread.sleep(Long.MAX_VALUE);
   }

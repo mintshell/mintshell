@@ -21,8 +21,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.examples.terminal.ssh;
+package org.mintshell.examples.terminal.ncurses;
 
+import org.mintshell.annotation.Command;
+import org.mintshell.annotation.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +35,9 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-public class SimpleSshCommandTarget {
+public class AnnotationCommandTarget {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SimpleSshCommandTarget.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AnnotationCommandTarget.class);
 
   /**
    * Adds the given arguments.
@@ -49,13 +51,18 @@ public class SimpleSshCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  public int add(final int a, final int b) {
+  @Command("add")
+  public int add( //
+      final @Param(shortName = 'a') int a, //
+      final @Param(shortName = 'b') int b) {
     LOG.info("Called add({}, {})", a, b);
     return a + b;
   }
 
+  @Command("exit")
   public void exit() {
     LOG.info("Called exit()");
+    System.exit(0);
   }
 
   /**
@@ -66,6 +73,7 @@ public class SimpleSshCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
+  @Command("mem")
   public long mem() {
     LOG.info("Called mem()");
     final Runtime runtime = Runtime.getRuntime();
@@ -80,6 +88,7 @@ public class SimpleSshCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
+  @Command("memfree")
   public long memfree() {
     LOG.info("Called memfree()");
     final Runtime runtime = Runtime.getRuntime();
@@ -94,6 +103,7 @@ public class SimpleSshCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
+  @Command("memused")
   public long memused() {
     LOG.info("Called memused()");
     final Runtime runtime = Runtime.getRuntime();
