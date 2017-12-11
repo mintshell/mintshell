@@ -53,8 +53,8 @@ public class AnnotationCommandTarget {
    */
   @Command("add")
   public int add( //
-      final @Param(shortName = 'a') int a, //
-      final @Param(shortName = 'b') int b) {
+      final @Param(shortName = 'f', name = "first") int a, //
+      final @Param(shortName = 's', name = "second") int b) {
     LOG.info("Called add({}, {})", a, b);
     return a + b;
   }
@@ -123,8 +123,8 @@ public class AnnotationCommandTarget {
    */
   @Command("sub")
   public int sub( //
-      final @Param(shortName = 'a') int a, //
-      final @Param(shortName = 'b') int b) {
+      final @Param(shortName = 'f', name = "first") int a, //
+      final @Param(shortName = 's', name = "second") int b) {
     LOG.info("Called add({}, {})", a, b);
     return a - b;
   }

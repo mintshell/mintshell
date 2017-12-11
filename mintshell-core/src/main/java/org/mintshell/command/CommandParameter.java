@@ -23,8 +23,6 @@
  */
 package org.mintshell.command;
 
-import static java.lang.String.format;
-
 import java.util.Optional;
 
 import org.mintshell.annotation.Nullable;
@@ -168,14 +166,20 @@ public class CommandParameter {
    */
   @Override
   public String toString() {
-    final String pattern = "%s=%s";
-    if (this.getName().isPresent()) {
-      return format(pattern, this.getName().get(), this.getValue().isPresent() ? this.getValue().get() : "");
+    final StringBuilder builder = new StringBuilder();
+    if (this.getName().isPresent() && !this.getName().get().isEmpty()) {
+      builder.append(this.getName().get());
     }
-    if (this.getShortName().isPresent()) {
-      return format(pattern, this.getShortName().get(), this.getValue().isPresent() ? this.getValue().get() : "");
+    else if (this.getShortName().isPresent()) {
+      builder.append(this.getShortName().get());
     }
-    return format(pattern, Integer.toString(this.getIndex()), this.getValue().isPresent() ? this.getValue().get() : "");
+    else {
+      builder.append(Integer.toString(this.getIndex()));
+    }
+    if (this.getValue().isPresent()) {
+      builder.append("=").append(this.getValue().get());
+    }
+    return builder.toString();
   }
 
   /**
