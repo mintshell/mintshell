@@ -45,6 +45,7 @@ import org.mintshell.command.Command;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
+import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   private CommandDispatcher commandDispatcher;
   private final List<KeyBinding> keyBindings;
   private final SessionRegistry sessionRegistry;
+  private TerminalCommandHistory commandHistory;
 
   /**
    * Creates a new instance.
@@ -98,8 +100,12 @@ public class SshCommandInterface implements TerminalCommandInterface {
     this.sshServer.setPublickeyAuthenticator(new AlwaysAuthenticatedlPublicKeyAuthenticator());
     this.keyBindings = new ArrayList<>(Arrays.asList(keyBindings));
     this.sessionRegistry = new SessionRegistry();
-    this.sshServer.setShellFactory(() -> new SshCommandInterfaceSession(this.sessionRegistry, this.executor, this.getCommandInterpreter(),
-        this.getCommandDispatcher(), new Command<>(exitCommandName), prompt, banner, commandSubmissionKey, this.getKeyBindingsArray()));
+    this.sshServer.setShellFactory(() -> {
+      final SshCommandInterfaceSession newSession = new SshCommandInterfaceSession(this.sessionRegistry, this.executor, this.getCommandInterpreter(),
+          this.getCommandDispatcher(), new Command<>(exitCommandName), prompt, banner, commandSubmissionKey, this.getKeyBindingsArray());
+      newSession.configureCommandHistory(this.commandHistory);
+      return newSession;
+    });
   }
 
   /**
@@ -158,6 +164,21 @@ public class SshCommandInterface implements TerminalCommandInterface {
   public void clearKeyBindings() {
     this.keyBindings.clear();
     this.sessionRegistry.getSessions().forEach(SshCommandInterfaceSession::clearKeyBindings);
+  }
+
+  /**
+   * Configures the given {@link TerminalCommandHistory} to be used by this {@link SshCommandInterface}.
+   *
+   * @param commandHistory
+   *          new {@link TerminalCommandHistory} or {@code null} to remove an already configured
+   *          {@link TerminalCommandHistory}
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public void configureCommandHistory(final @Nullable TerminalCommandHistory commandHistory) {
+    this.commandHistory = commandHistory;
+    this.sessionRegistry.getSessions().forEach(session -> session.configureCommandHistory(commandHistory));
   }
 
   /**

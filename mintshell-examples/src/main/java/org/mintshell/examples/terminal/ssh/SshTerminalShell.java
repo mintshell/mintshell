@@ -23,10 +23,12 @@
  */
 package org.mintshell.examples.terminal.ssh;
 
+import static org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface.KEYBINDING_EXIT;
+
 import org.mintshell.Mintshell;
 import org.mintshell.dispatcher.annotation.AnnotationCommandDispatcher;
 import org.mintshell.mcl.interpreter.MclCommandInterpreter;
-import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
+import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
 
 /**
@@ -38,8 +40,12 @@ import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
 public class SshTerminalShell {
 
   public SshTerminalShell(final String[] args) throws Exception {
+
+    final SshCommandInterface commandInterface = new SshCommandInterface("Mintshell> ", "Welcome to Mintshell with SSH\r\n", KEYBINDING_EXIT);
+    commandInterface.configureCommandHistory(new TerminalCommandHistory());
+
     Mintshell //
-        .from(new SshCommandInterface("Mintshell> ", "Welcome to Mintshell with SSH\r\n", AbstractTerminalCommandInterface.KEYBINDING_EXIT)) //
+        .from(commandInterface) //
         .interpretedBy(new MclCommandInterpreter()) //
         .dispatchedBy(new AnnotationCommandDispatcher()) //
         .to(new AnnotationCommandTarget()) //

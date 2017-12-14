@@ -25,7 +25,6 @@ package org.mintshell.command;
 
 import java.util.Optional;
 
-import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 
 /**
@@ -56,9 +55,9 @@ public class CommandResult<T> {
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandResult(final Command<?> command, final @Nullable T value) {
-    this.command = Assert.ARG.isNotNull(command, "[cause] must not be [null]");
-    this.value = Optional.ofNullable(value);
+  public CommandResult(final Command<?> command, final Optional<T> value) {
+    this.command = Assert.ARG.isNotNull(command, "[command] must not be [null]");
+    this.value = Assert.ARG.isNotNull(value, "[value] must not be [null]");
     this.state = State.SUCCEEDED;
     this.cause = Optional.empty();
   }
@@ -75,7 +74,7 @@ public class CommandResult<T> {
    * @since 0.1.0
    */
   public CommandResult(final Command<?> command, final Throwable cause) {
-    this.command = Assert.ARG.isNotNull(command, "[cause] must not be [null]");
+    this.command = Assert.ARG.isNotNull(command, "[command] must not be [null]");
     this.value = Optional.empty();
     this.state = State.FAILED;
     this.cause = Optional.of(Assert.ARG.isNotNull(cause, "[cause] must not be [null]"));
@@ -132,7 +131,7 @@ public class CommandResult<T> {
 
   /**
    * Returns whether this result represents a failed {@link Command} execution.
-   * 
+   *
    * @return {@code true} if this result represents a failed {@link Command} execution, {@code false} otherwise
    *
    * @author Noqmar
@@ -144,7 +143,7 @@ public class CommandResult<T> {
 
   /**
    * Returns whether this result represents a succeeded {@link Command} execution.
-   * 
+   *
    * @return {@code true} if this result represents a succeeded {@link Command} execution, {@code false} otherwise
    *
    * @author Noqmar
