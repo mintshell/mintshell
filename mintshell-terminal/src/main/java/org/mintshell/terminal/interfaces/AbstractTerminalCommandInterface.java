@@ -269,6 +269,35 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   }
 
   /**
+   * Checks if the given {@link Command} is related to the given {@link TerminalCommandHistory} and executes it in that
+   * case.
+   *
+   * @param command
+   *          command to check
+   * @param terminalCommandHistory
+   *          {@link TerminalCommandHistory} to use
+   * @return result of the history command execution of {@link Optional#empty()}
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  protected Optional<CommandInterfaceCommandResult<?>> handleCommandHistory(final Command<?> command, final TerminalCommandHistory terminalCommandHistory) {
+    if (terminalCommandHistory.getHistoryListCommand().equals(command.getName())) {
+      final int digitCount = Integer.toString(terminalCommandHistory.getMaxCommandLineNumber()).length();
+      final StringBuilder builder = new StringBuilder();
+      terminalCommandHistory.getCommandLines().entrySet().stream() //
+          .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey())) //
+          .map(entry -> String.format("%" + digitCount + "d %s", entry.getKey(), entry.getValue())) //
+          .forEach(entry -> builder.append(entry).append("\n\r"));
+      final String result = builder.toString();
+      return Optional.of(new CommandInterfaceCommandResult<>(command, Optional.of(result.substring(0, result.length() - 2)), true));
+    }
+    else {
+      return Optional.empty();
+    }
+  }
+
+  /**
    * Checks if the given {@link Key} is the command submission key and handles it by issuing a command. May be
    * overwritten by subclasses.
    *
@@ -406,15 +435,11 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
    */
   @Override
   protected CommandInterfaceCommandResult<?> preCommand(final Command<?> command) {
-    final int digits = Integer.toString(this.commandHistory.getMaxCommandLineNumber()).length();
-    final StringBuilder builder = new StringBuilder();
-    if (this.commandHistory != null && this.commandHistory.getHistoryListCommand().equals(command.getName())) {
-      this.commandHistory.getCommandLines().entrySet().stream() //
-          .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey())) //
-          .map(entry -> String.format("%" + digits + "d %s", entry.getKey(), entry.getValue())) //
-          .forEach(entry -> builder.append(entry).append("\n\r"));
-      final String result = builder.toString();
-      return new CommandInterfaceCommandResult<>(command, Optional.of(result.substring(0, result.length() - 2)), true);
+    if (this.commandHistory != null) {
+      final Optional<CommandInterfaceCommandResult<?>> commandHistoryResult = this.handleCommandHistory(command, this.commandHistory);
+      if (commandHistoryResult.isPresent()) {
+        return commandHistoryResult.get();
+      }
     }
     return super.preCommand(command);
   }
