@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
@@ -78,9 +79,9 @@ public class AbstractCommandInterfaceTest {
       }
 
       @Override
-      protected Command<?> preCommand(final Command<?> command) {
+      protected CommandInterfaceCommandResult<?> preCommand(final Command<?> command) {
         AbstractCommandInterfaceTest.this.preCommandCounter.incrementAndGet();
-        return command;
+        return new CommandInterfaceCommandResult<>(command, Optional.empty(), false);
       }
     };
 
@@ -169,7 +170,7 @@ public class AbstractCommandInterfaceTest {
 
     // prepare
     final String expectedResult = "success";
-    final CommandResult<?> commandResult = new CommandResult<>(this.commandMock, expectedResult);
+    final CommandResult<?> commandResult = new CommandResult<>(this.commandMock, Optional.of(expectedResult));
     doReturn(this.commandMock).when(this.commandInterpreterMock).interprete(Mockito.anyString());
     doReturn(commandResult).when(this.commandDispatcherMock).dispatch(this.commandMock);
     assertThat(this.preCommandCounter.get()).isEqualTo(0);

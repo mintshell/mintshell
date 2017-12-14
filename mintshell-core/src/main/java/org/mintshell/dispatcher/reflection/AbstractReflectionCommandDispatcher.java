@@ -179,7 +179,7 @@ public abstract class AbstractReflectionCommandDispatcher<P extends ReflectionCo
       final Object[] args = this.createInvocationArguments(command, targetCommand);
       method.setAccessible(true);
       final Object result = method.invoke(commandTarget.isInstance() ? commandTarget.getTargetInstance() : null, args);
-      return new CommandResult<>(command, result);
+      return new CommandResult<>(command, Optional.ofNullable(result));
     } catch (final InvocationTargetException e) {
       return new CommandResult<>(command, e.getTargetException());
     } catch (final IllegalAccessException e) {

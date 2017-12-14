@@ -37,7 +37,9 @@ import org.mintshell.CommandDispatcher;
 import org.mintshell.CommandInterpreter;
 import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
+import org.mintshell.command.Command;
 import org.mintshell.interfaces.AbstractCommandInterface;
+import org.mintshell.interfaces.CommandInterfaceCommandResult;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.LineBuffer;
@@ -65,6 +67,8 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   private final List<KeyBinding> keyBindings;
   private final Key commandSubmissionKey;
   private final LineBuffer lineBuffer;
+
+  private TerminalCommandHistory commandHistory;
 
   /**
    * Creates a new instance using the given command prompt.
@@ -176,6 +180,26 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   }
 
   /**
+   * Configures the given {@link TerminalCommandHistory} to be used by this {@link TerminalCommandInterface}.
+   *
+   * @param commandHistory
+   *          new {@link TerminalCommandHistory} or {@code null} to remove an already configured
+   *          {@link TerminalCommandHistory}
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public void configureCommandHistory(final @Nullable TerminalCommandHistory commandHistory) {
+    if (this.getCommandHistory() != null && !this.getCommandHistory().equals(commandHistory)) {
+      // TODO (Noqmar): remove commands
+    }
+    if (commandHistory != null) {
+      // TODO (Noqmar): add commands
+    }
+    this.commandHistory = commandHistory;
+  }
+
+  /**
    *
    * @{inheritDoc}
    * @see org.mintshell.interfaces.AbstractCommandInterface#deactivate()
@@ -189,6 +213,19 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
       this.keyTask.cancel(true);
     }
     this.executor.shutdownNow();
+  }
+
+  /**
+   * Returns the currently configured {@link TerminalCommandHistory}.
+   *
+   * @return currently configured {@link TerminalCommandHistory} or {@code null}, if there is no
+   *         {@link TerminalCommandHistory} configured
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public @Nullable TerminalCommandHistory getCommandHistory() {
+    return this.commandHistory;
   }
 
   /**
@@ -221,7 +258,7 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
 
   /**
    * Returns the zero-based column number of the current cursor position.
-   * 
+   *
    * @return current column number
    *
    * @author Noqmar
@@ -229,6 +266,35 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
    */
   protected int getCursorColumn() {
     return this.lineBuffer.getCursorPosition();
+  }
+
+  /**
+   * Checks if the given {@link Command} is related to the given {@link TerminalCommandHistory} and executes it in that
+   * case.
+   *
+   * @param command
+   *          command to check
+   * @param terminalCommandHistory
+   *          {@link TerminalCommandHistory} to use
+   * @return result of the history command execution of {@link Optional#empty()}
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  protected Optional<CommandInterfaceCommandResult<?>> handleCommandHistory(final Command<?> command, final TerminalCommandHistory terminalCommandHistory) {
+    if (terminalCommandHistory.getHistoryListCommand().equals(command.getName())) {
+      final int digitCount = Integer.toString(terminalCommandHistory.getMaxCommandLineNumber()).length();
+      final StringBuilder builder = new StringBuilder();
+      terminalCommandHistory.getCommandLines().entrySet().stream() //
+          .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey())) //
+          .map(entry -> String.format("%" + digitCount + "d %s", entry.getKey(), entry.getValue())) //
+          .forEach(entry -> builder.append(entry).append("\n\r"));
+      final String result = builder.toString();
+      return Optional.of(new CommandInterfaceCommandResult<>(command, Optional.of(result.substring(0, result.length() - 2)), true));
+    }
+    else {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -248,6 +314,11 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
       final String commandMessage = this.lineBuffer.toString();
       this.lineBuffer.clear();
       this.newLine();
+      if (!commandMessage.isEmpty()) {
+        if (this.commandHistory != null) {
+          this.commandHistory.addCommandLine(commandMessage);
+        }
+      }
       if (!commandMessage.trim().isEmpty()) {
         final String result = this.performCommand(commandMessage);
         this.println(result);
@@ -272,6 +343,18 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
       if (key.isPrintableKey()) {
         this.lineBuffer.insertLeft(key.getValue());
         this.print(key.getValue());
+      }
+      else if (this.commandHistory != null && key.equals(this.commandHistory.getHistoryPrevKey())) {
+        this.eraseCursorToStartOfLine();
+        final String previousCommandMessage = this.getCommandHistory().getPreviousCommandLine();
+        this.lineBuffer.insertLeft(previousCommandMessage);
+        this.print(previousCommandMessage);
+      }
+      else if (this.commandHistory != null && key.equals(this.commandHistory.getHistoryNextKey())) {
+        this.eraseCursorToStartOfLine();
+        final String nextCommandMessage = this.getCommandHistory().getNextCommandLine();
+        this.lineBuffer.insertLeft(nextCommandMessage);
+        this.print(nextCommandMessage);
       }
       else {
         switch (key) {
@@ -346,6 +429,22 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
   protected abstract void moveCursor(int col, int row);
 
   /**
+   *
+   * @{inheritDoc}
+   * @see org.mintshell.interfaces.AbstractCommandInterface#preCommand(org.mintshell.command.Command)
+   */
+  @Override
+  protected CommandInterfaceCommandResult<?> preCommand(final Command<?> command) {
+    if (this.commandHistory != null) {
+      final Optional<CommandInterfaceCommandResult<?>> commandHistoryResult = this.handleCommandHistory(command, this.commandHistory);
+      if (commandHistoryResult.isPresent()) {
+        return commandHistoryResult.get();
+      }
+    }
+    return super.preCommand(command);
+  }
+
+  /**
    * Prints the prompt.
    *
    * @author Noqmar
@@ -353,6 +452,13 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
    */
   protected void printPrompt() {
     this.print(this.prompt);
+  }
+
+  private void eraseCursorToStartOfLine() {
+    while (this.lineBuffer.getCursorPosition() > 0) {
+      this.lineBuffer.removeLeft();
+      this.erasePrevious();
+    }
   }
 
   private void moveCursorToEndOfLine() {

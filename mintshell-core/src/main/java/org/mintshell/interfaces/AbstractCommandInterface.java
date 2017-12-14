@@ -128,9 +128,11 @@ public abstract class AbstractCommandInterface implements CommandInterface {
   protected synchronized String performCommand(final String commandMessage) {
     CommandResult<?> result = null;
     try {
-      final Command<?> command = this.preCommand(this.commandInterpreter.interprete(commandMessage));
-      result = Assert.ARG.isNotNull(this.commandDispatcher.dispatch(command),
-          format("Performing command [%s] doesn't lead to a valid command result", commandMessage));
+      final Command<?> command = this.commandInterpreter.interprete(commandMessage);
+      final CommandInterfaceCommandResult<?> commandInterfaceResult = this.preCommand(command);
+      result = commandInterfaceResult.isCommandConsumed() ? commandInterfaceResult
+          : Assert.ARG.isNotNull(this.commandDispatcher.dispatch(command),
+              format("Performing command [%s] doesn't lead to a valid command result", commandMessage));
 
       switch (result.getState()) {
         case SUCCEEDED:
@@ -193,7 +195,7 @@ public abstract class AbstractCommandInterface implements CommandInterface {
    * @author Noqmar
    * @since 0.1.0
    */
-  protected Command<?> preCommand(final Command<?> command) {
-    return command;
+  protected CommandInterfaceCommandResult<?> preCommand(final Command<?> command) {
+    return new CommandInterfaceCommandResult<>(command, Optional.empty(), false);
   }
 }
