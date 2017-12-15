@@ -134,8 +134,9 @@ public class AnnotationCommandDispatcher extends AbstractReflectionCommandDispat
     }
     for (final ReflectionCommandParameterFactory supportedParameter : supportedCommandParameters) {
       try {
-        final ReflectionCommandParameter reflectionParameter = supportedParameter.create(parameter.getType(), index, annotation.name(),
-            annotation.shortName() != Character.UNASSIGNED ? annotation.shortName() : null, annotation.required() || parameter.getType().isPrimitive());
+        final ReflectionCommandParameter reflectionParameter = supportedParameter.create(parameter.getType(), index,
+            annotation.name().isEmpty() ? null : annotation.name(), annotation.shortName() != Character.UNASSIGNED ? annotation.shortName() : null,
+            annotation.description(), annotation.required() || parameter.getType().isPrimitive());
         return reflectionParameter;
       } catch (final UnsupportedParameterTypeException e) {
         LOG.trace("Failed to create command parameter from parameter [{}] with parameter factory [{}]", parameter, supportedParameter, e);

@@ -55,7 +55,8 @@ public class AnnotationCommand<P extends ReflectionCommandParameter> extends Ref
    * @since 0.1.0
    */
   public AnnotationCommand(final Method method, final List<P> commandParameters) throws UnsupportedParameterTypeException {
-    super(Assert.ARG.isNotNull(method, "[method] must not be [null]"), findName(method), findDescription(method), commandParameters);
+    super(Assert.ARG.isNotNull(method, "[method] must not be [null]"), findName(method), findDescription(method), findHelpParameterName(method),
+        commandParameters);
   }
 
   private static @Nullable String findDescription(final Method method) throws UnsupportedParameterTypeException {
@@ -64,6 +65,14 @@ public class AnnotationCommand<P extends ReflectionCommandParameter> extends Ref
       throw new UnsupportedParameterTypeException(String.format("[@%s] annotation missing at method [%s]", Command.class.getSimpleName(), method.getName()));
     }
     return annotation.description();
+  }
+
+  private static @Nullable String findHelpParameterName(final Method method) throws UnsupportedParameterTypeException {
+    final org.mintshell.annotation.Command annotation = method.getAnnotation(org.mintshell.annotation.Command.class);
+    if (annotation == null) {
+      throw new UnsupportedParameterTypeException(String.format("[@%s] annotation missing at method [%s]", Command.class.getSimpleName(), method.getName()));
+    }
+    return annotation.helpParameterName();
   }
 
   private static String findName(final Method method) throws UnsupportedParameterTypeException {

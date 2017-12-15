@@ -56,7 +56,7 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @since 0.1.0
    */
   public ReflectionCommandParameter(final Class<?> type, final int index) throws UnsupportedParameterTypeException {
-    this(type, index, null, null, false);
+    this(type, index, null, null, null, false);
   }
 
   /**
@@ -75,7 +75,7 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @since 0.1.0
    */
   public ReflectionCommandParameter(final Class<?> type, final int index, final boolean required) throws UnsupportedParameterTypeException {
-    this(type, index, null, null, required);
+    this(type, index, null, null, null, required);
   }
 
   /**
@@ -89,6 +89,8 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    *          (optional) parameter (long) name
    * @param shortName
    *          (optional) parameter short name
+   * @param description
+   *          (optional) parameter description
    * @param required
    *          {@code true} if the parameter is mandatory, {@code false} otherwise
    * @throws UnsupportedParameterTypeException
@@ -98,8 +100,8 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
    * @since 0.1.0
    */
   public ReflectionCommandParameter(final Class<?> type, final int index, final @Nullable String name, final @Nullable Character shortName,
-      final boolean required) throws UnsupportedParameterTypeException {
-    super(index, name, shortName, required, null);
+      final @Nullable String description, final boolean required) throws UnsupportedParameterTypeException {
+    super(index, name, shortName, description, required, null);
     this.type = Assert.ARG.isNotNull(type, "[type] must not be [null]");
     if (!this.isTypeSupported(type)) {
       throw new UnsupportedParameterTypeException(String.format("Type [%s] is not supported by [%s]", type.getName(), this.getClass().getName()));

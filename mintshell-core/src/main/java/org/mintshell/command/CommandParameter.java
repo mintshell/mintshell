@@ -43,6 +43,7 @@ public class CommandParameter {
   private final Optional<Character> shortName;
   private final Optional<String> value;
   private final boolean required;
+  private final String description;
 
   /**
    * Creates a new instance with an index.
@@ -69,7 +70,7 @@ public class CommandParameter {
    * @since 0.1.0
    */
   public CommandParameter(final int index, final @Nullable String value) {
-    this(index, null, null, DEFAULT_REQUIRED, value);
+    this(index, null, null, null, DEFAULT_REQUIRED, value);
   }
 
   /**
@@ -89,13 +90,26 @@ public class CommandParameter {
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandParameter(final int index, final @Nullable String name, final @Nullable Character shortName, final boolean required,
-      final @Nullable String value) {
+  public CommandParameter(final int index, final @Nullable String name, final @Nullable Character shortName, final @Nullable String description,
+      final boolean required, final @Nullable String value) {
     this.index = index;
     this.name = Optional.ofNullable(name);
     this.shortName = Optional.ofNullable(shortName);
+    this.description = description;
     this.required = required;
     this.value = Optional.ofNullable(value);
+  }
+
+  /**
+   * Returns the command parameter description.
+   *
+   * @return command parameter description or {@code null}, if there's no description available.
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public @Nullable String getDescription() {
+    return this.description;
   }
 
   /**
@@ -208,6 +222,7 @@ public class CommandParameter {
     private final int index;
     private String name;
     private Character shortName;
+    private String description;
     private boolean required = true;
     private String value;
 
@@ -237,7 +252,22 @@ public class CommandParameter {
      * @since 0.1.0
      */
     public CommandParameter build() {
-      return new CommandParameter(this.index, this.name, this.shortName, this.required, this.value);
+      return new CommandParameter(this.index, this.name, this.shortName, this.description, this.required, this.value);
+    }
+
+    /**
+     * Sets a description text to the current builder state.
+     *
+     * @param description
+     *          the description to be set
+     * @return {@link CommandParameterBuilder} instance
+     *
+     * @author Noqmar
+     * @since 0.1.0
+     */
+    public CommandParameterBuilder withDescription(final @Nullable String description) {
+      this.description = description;
+      return this;
     }
 
     /**

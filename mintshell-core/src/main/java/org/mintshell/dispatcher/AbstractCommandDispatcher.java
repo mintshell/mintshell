@@ -39,6 +39,7 @@ import org.mintshell.CommandTarget;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandAlias;
+import org.mintshell.command.CommandHelp;
 import org.mintshell.command.CommandResult;
 
 /**
@@ -57,6 +58,7 @@ import org.mintshell.command.CommandResult;
 public abstract class AbstractCommandDispatcher<C extends Command<?>> implements CommandDispatcher {
 
   private final Map<C, CommandTarget> commands;
+  private final CommandHelp commandHelp = new SimpleCommandHelp(); // TODO (Noqmar): make configurable
 
   /**
    * Creates a new instance.
@@ -97,6 +99,19 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
    */
   @Override
   public CommandResult<?> dispatch(final Command<?> command) throws CommandDispatchException {
+
+    // handle help
+    if (this.commandHelp != null) {
+      if (command.getName().equals(this.commandHelp.getHelpCommandName())) {
+        return this.handleHelpCommand(command, this.commandHelp);
+      }
+      else if (command.getHelpParameterName().isPresent() && command.getParameterCount() == 1 && command.getParameters().get(0).getName().isPresent()
+          && command.getParameters().get(0).getName().get().equals(command.getHelpParameterName().orElse(null))) {
+        return new CommandResult<>(command, Optional.of(this.createDetailCommandHelpText(command.getName())));
+      }
+    }
+
+    // dispatch command
     final Optional<Entry<C, CommandTarget>> entryCandidate = this.commands.entrySet().stream() //
         .filter(entry -> entry.getKey().getName().equals(command.getName())) //
         .findFirst();
@@ -162,6 +177,59 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
    * @since 0.1.0
    */
   protected abstract Set<C> determineCommands(final CommandTarget commandTarget);
+
+  /**
+   * Returns detail help text for a command with the given command name.
+   * 
+   * @param commandName
+   *          name of the command to create detail text for
+   * @return detail help text
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  protected String createDetailCommandHelpText(final String commandName) {
+    final StringBuilder builder = new StringBuilder();
+    final Optional<C> searchedCommand = this.commands.keySet().stream() //
+        .filter(cmd -> commandName.equals(cmd.getName())) //
+        .findAny();
+    if (searchedCommand.isPresent()) {
+      builder.append(this.commandHelp.getCommandDetailText(searchedCommand.get()));
+    }
+    else {
+      builder.append(this.commandHelp.getCommandNotFoundText(commandName));
+    }
+    return builder.toString();
+  }
+
+  /**
+   * Handles execution of the help command.
+   *
+   * @param command
+   *          command to be handled
+   * @param commandHelp
+   *          {@link CommandHelp} support
+   * @return result of the handling
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  protected CommandResult<?> handleHelpCommand(final Command<?> command, final CommandHelp commandHelp) {
+    final StringBuilder builder = new StringBuilder();
+    if (command.getParameterCount() == 0 || !command.getParameters().get(0).getValue().isPresent()
+        || command.getParameters().get(0).getValue().get().trim().isEmpty()) {
+      this.commands.keySet().stream() //
+          .sorted((cmd1, cmd2) -> cmd1.getName().compareTo(cmd2.getName())) //
+          .map(cmd -> commandHelp.getCommandOverviewText(cmd)) //
+          .forEach(line -> builder.append(line).append("\n\r"));
+      builder.append(commandHelp.getCommandOverviewFooterText().orElse(""));
+    }
+    else {
+      final String commandToSearch = command.getParameters().get(0).getValue().orElse("");
+      builder.append(this.createDetailCommandHelpText(commandToSearch));
+    }
+    return new CommandResult<>(command, Optional.of(builder.toString()));
+  }
 
   /**
    * Performs the invokation of the given {@link Command} with it's corresponding {@link CommandTarget}.

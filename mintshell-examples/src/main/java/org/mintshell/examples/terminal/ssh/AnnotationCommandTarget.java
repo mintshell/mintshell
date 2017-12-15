@@ -51,15 +51,15 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("add")
+  @Command(value = "add", description = "adds two integers")
   public int add( //
-      final @Param(shortName = 'f', name = "first") int a, //
-      final @Param(shortName = 's', name = "second") int b) {
+      final @Param(shortName = 'f', name = "first", description = "first summand <int>)") int a, //
+      final @Param(shortName = 's', name = "second", description = "second summand <int>)") int b) {
     LOG.info("Called add({}, {})", a, b);
     return a + b;
   }
 
-  @Command("exit")
+  @Command(value = "exit", description = "exits the SSH session")
   public void exit() {
     LOG.info("Called exit()");
   }
@@ -72,7 +72,7 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("mem")
+  @Command(value = "mem", description = "prints the amount of total memory in bytes")
   public long mem() {
     LOG.info("Called mem()");
     final Runtime runtime = Runtime.getRuntime();
@@ -87,7 +87,7 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("memfree")
+  @Command(value = "memfree", description = "prints the amount of free memory in bytes")
   public long memfree() {
     LOG.info("Called memfree()");
     final Runtime runtime = Runtime.getRuntime();
@@ -102,7 +102,7 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("memused")
+  @Command(value = "memused", description = "prints the amount of used memory in bytes")
   public long memused() {
     LOG.info("Called memused()");
     final Runtime runtime = Runtime.getRuntime();
@@ -121,10 +121,10 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("sub")
+  @Command(value = "sub")
   public int sub( //
-      final @Param(shortName = 'f', name = "first") int a, //
-      final @Param(shortName = 's', name = "second") int b) {
+      final @Param int a, //
+      final @Param int b) {
     LOG.info("Called add({}, {})", a, b);
     return a - b;
   }
