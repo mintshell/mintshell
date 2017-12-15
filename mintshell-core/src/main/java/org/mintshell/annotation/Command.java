@@ -25,10 +25,13 @@ package org.mintshell.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.mintshell.command.Command.DEFAULT_HELP_PARAMETER_NAME;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import org.mintshell.command.CommandHelp;
 
 /**
  * Annotation to map a method to a {@link Command}.
@@ -50,6 +53,17 @@ public @interface Command {
    * @since 0.1.0
    */
   String description() default "";
+
+  /**
+   * Returns a parameter (long) name, that can be used to display command help, if {@link CommandHelp} is supported and
+   * this parameter is the only one provided.
+   *
+   * @return command help parameter definition
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  String helpParameterName() default DEFAULT_HELP_PARAMETER_NAME;
 
   /**
    * Returns the name of the command (<b>not</b> the value).

@@ -70,7 +70,7 @@ public class CommandAlias<P extends CommandParameter> extends Command<P> {
    * @since 0.1.0
    */
   public CommandAlias(final Command<P> command, final String name, final @Nullable String descripion) {
-    super(name, descripion, Assert.ARG.isNotNull(command, "[command] must not be [null]").getParameters());
+    super(name, descripion, null, Assert.ARG.isNotNull(command, "[command] must not be [null]").getParameters());
     this.command = command;
   }
 

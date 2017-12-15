@@ -55,7 +55,7 @@ public class ReflectionCommand<P extends ReflectionCommandParameter> extends Com
    * @since 0.1.0
    */
   public ReflectionCommand(final Method method, final List<P> parameters) throws UnsupportedParameterTypeException {
-    this(Assert.ARG.isNotNull(method, "[method] must not be [null]"), method.getName(), null, parameters);
+    this(Assert.ARG.isNotNull(method, "[method] must not be [null]"), method.getName(), null, DEFAULT_HELP_PARAMETER_NAME, parameters);
   }
 
   /**
@@ -67,6 +67,8 @@ public class ReflectionCommand<P extends ReflectionCommandParameter> extends Com
    *          name
    * @param description
    *          description text
+   * @param helpParameterName
+   *          help parameter name
    * @param parameters
    *          {@link List} of {@link CommandParameter}s
    * @throws UnsupportedParameterTypeException
@@ -74,9 +76,9 @@ public class ReflectionCommand<P extends ReflectionCommandParameter> extends Com
    * @author Noqmar
    * @since 0.1.0
    */
-  public ReflectionCommand(final Method method, final String name, final @Nullable String description, final List<P> parameters)
-      throws UnsupportedParameterTypeException {
-    super(name, description, parameters);
+  public ReflectionCommand(final Method method, final String name, final @Nullable String description, final @Nullable String helpParameterName,
+      final List<P> parameters) throws UnsupportedParameterTypeException {
+    super(name, description, helpParameterName, parameters);
     this.method = method;
   }
 
