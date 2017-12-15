@@ -39,6 +39,7 @@ import org.mintshell.CommandTarget;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandAlias;
+import org.mintshell.command.CommandHelp;
 import org.mintshell.command.CommandResult;
 
 /**
@@ -57,6 +58,7 @@ import org.mintshell.command.CommandResult;
 public abstract class AbstractCommandDispatcher<C extends Command<?>> implements CommandDispatcher {
 
   private final Map<C, CommandTarget> commands;
+  private final CommandHelp commandHelp = new SimpleCommandHelp(); // TODO (Noqmar): make configurable
 
   /**
    * Creates a new instance.
@@ -97,6 +99,9 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
    */
   @Override
   public CommandResult<?> dispatch(final Command<?> command) throws CommandDispatchException {
+    if (this.commandHelp != null && command.getName().equals(this.commandHelp.getHelpCommandName())) {
+      return this.handleHelpCommand(command, this.commandHelp);
+    }
     final Optional<Entry<C, CommandTarget>> entryCandidate = this.commands.entrySet().stream() //
         .filter(entry -> entry.getKey().getName().equals(command.getName())) //
         .findFirst();
@@ -162,6 +167,31 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
    * @since 0.1.0
    */
   protected abstract Set<C> determineCommands(final CommandTarget commandTarget);
+
+  protected CommandResult<?> handleHelpCommand(final Command<?> command, final CommandHelp commandHelp) {
+    final StringBuilder builder = new StringBuilder();
+    if (command.getParameterCount() == 0 || !command.getParameters().get(0).getValue().isPresent()
+        || command.getParameters().get(0).getValue().get().trim().isEmpty()) {
+      this.commands.keySet().stream() //
+          .sorted((cmd1, cmd2) -> cmd1.getName().compareTo(cmd2.getName())) //
+          .map(cmd -> commandHelp.getCommandOverviewText(cmd)) //
+          .forEach(line -> builder.append(line).append("\n\r"));
+      builder.append(commandHelp.getCommandOverviewFooterText().orElse(""));
+    }
+    else {
+      final String commandToSearch = command.getParameters().get(0).getValue().orElse("");
+      final Optional<C> searchedCommand = this.commands.keySet().stream() //
+          .filter(cmd -> commandToSearch.equals(cmd.getName())) //
+          .findAny();
+      if (searchedCommand.isPresent()) {
+        builder.append(commandHelp.getCommandDetailText(searchedCommand.get()));
+      }
+      else {
+        builder.append(commandHelp.getCommandNotFoundText(commandToSearch));
+      }
+    }
+    return new CommandResult<>(command, Optional.of(builder.toString()));
+  }
 
   /**
    * Performs the invokation of the given {@link Command} with it's corresponding {@link CommandTarget}.

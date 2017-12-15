@@ -39,8 +39,8 @@ public class PrimitiveParameter extends ReflectionCommandParameter {
   /**
    * {@link ReflectionCommandParameterFactory} that creates instance of {@link PrimitiveParameter}s.
    */
-  public static final ReflectionCommandParameterFactory FACTORY = (type, index, name, shortName, required) -> new PrimitiveParameter(type, index, name,
-      shortName, required);
+  public static final ReflectionCommandParameterFactory FACTORY = (type, index, name, shortName, description, required) -> new PrimitiveParameter(type, index,
+      name, shortName, description, required);
 
   /**
    * Creates a new command parameter.
@@ -56,7 +56,7 @@ public class PrimitiveParameter extends ReflectionCommandParameter {
    * @since 0.1.0
    */
   public PrimitiveParameter(final Class<?> type, final int index) throws UnsupportedParameterTypeException {
-    this(type, index, null, null, DEFAULT_REQUIRED);
+    this(type, index, null, null, null, DEFAULT_REQUIRED);
   }
 
   /**
@@ -70,6 +70,8 @@ public class PrimitiveParameter extends ReflectionCommandParameter {
    *          (optional) parameter (long) name
    * @param shortName
    *          (optional) parameter short name
+   * @param description
+   *          (optional) parameter description
    * @param required
    *          {@code true} if the parameter is mandatory, {@code false} otherwise
    * @throws UnsupportedParameterTypeException
@@ -78,9 +80,9 @@ public class PrimitiveParameter extends ReflectionCommandParameter {
    * @author Noqmar
    * @since 0.1.0
    */
-  public PrimitiveParameter(final Class<?> type, final int index, @Nullable final String name, @Nullable final Character shortName, final boolean required)
-      throws UnsupportedParameterTypeException {
-    super(type, index, name, shortName, required);
+  public PrimitiveParameter(final Class<?> type, final int index, @Nullable final String name, @Nullable final Character shortName,
+      final @Nullable String description, final boolean required) throws UnsupportedParameterTypeException {
+    super(type, index, name, shortName, description, required);
   }
 
   /**

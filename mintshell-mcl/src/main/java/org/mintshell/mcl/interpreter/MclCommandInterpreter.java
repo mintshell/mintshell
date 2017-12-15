@@ -158,13 +158,13 @@ public class MclCommandInterpreter implements CommandInterpreter {
       final CommandParameterValueContext parsedCommandParameterValue) {
     final String name = parsedCommandParameter.longCommandParameterName().getText();
     final String value = this.extractCommandParameterValue(parsedCommandParameterValue);
-    return new CommandParameter(index, name, null, false, value.isEmpty() ? null : value);
+    return new CommandParameter(index, name, null, null, false, value.isEmpty() ? null : value);
   }
 
   private CommandParameter handleShortCommandParameter(final int index, final ShortCommandParameterContext parsedCommandParameter,
       final CommandParameterValueContext parsedCommandParameterValue) {
     final char shortName = parsedCommandParameter.shortCommandParameterName().getText().charAt(0);
     final String value = this.extractCommandParameterValue(parsedCommandParameterValue);
-    return new CommandParameter(index, null, shortName, false, value.isEmpty() ? null : value);
+    return new CommandParameter(index, null, shortName, null, false, value.isEmpty() ? null : value);
   }
 }
