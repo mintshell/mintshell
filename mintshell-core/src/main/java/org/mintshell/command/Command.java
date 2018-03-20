@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.mintshell.CommandInterface;
 import org.mintshell.annotation.Nullable;
@@ -56,9 +57,12 @@ import org.mintshell.assertion.Assert;
  */
 public class Command<P extends CommandParameter> {
 
+  public static final String DEFAULT_HELP_PARAMETER_NAME = "help";
+
   private final String description;
   private final String name;
   private final List<P> parameters;
+  private final Optional<String> helpParameterName;
 
   /**
    * Creates a new {@link Command}.
@@ -70,7 +74,7 @@ public class Command<P extends CommandParameter> {
    * @since 0.1.0
    */
   public Command(final String name) {
-    this(name, null, Collections.emptyList());
+    this(name, null, DEFAULT_HELP_PARAMETER_NAME, Collections.emptyList());
   }
 
   /**
@@ -85,7 +89,7 @@ public class Command<P extends CommandParameter> {
    * @since 0.1.0
    */
   public Command(final String name, final List<P> parameters) {
-    this(name, null, parameters);
+    this(name, null, DEFAULT_HELP_PARAMETER_NAME, parameters);
   }
 
   /**
@@ -101,9 +105,10 @@ public class Command<P extends CommandParameter> {
    * @author Noqmar
    * @since 0.1.0
    */
-  public Command(final String name, final @Nullable String description, final List<P> parameters) {
+  public Command(final String name, final @Nullable String description, final @Nullable String helpParameterName, final List<P> parameters) {
     this.name = Assert.ARG.isNotNull(name, "[name] must not be [null]");
     this.description = description;
+    this.helpParameterName = Optional.ofNullable(helpParameterName);
     this.parameters = new ArrayList<>(Assert.ARG.isNotNull(parameters, "[parameters] must not be [null]"));
   }
 
@@ -137,6 +142,10 @@ public class Command<P extends CommandParameter> {
    */
   public @Nullable String getDescription() {
     return this.description;
+  }
+
+  public Optional<String> getHelpParameterName() {
+    return this.helpParameterName;
   }
 
   /**
@@ -220,6 +229,7 @@ public class Command<P extends CommandParameter> {
 
     private String description;
     private final String name;
+    private String helpParameterName;
     private final List<CommandParameter> parameters;
 
     private CommandBuilder(final String name) {
@@ -236,7 +246,7 @@ public class Command<P extends CommandParameter> {
      * @since 0.1.0
      */
     public Command<CommandParameter> build() {
-      return new Command<>(this.name, this.description, this.parameters);
+      return new Command<>(this.name, this.description, this.helpParameterName, this.parameters);
     }
 
     /**
@@ -251,6 +261,21 @@ public class Command<P extends CommandParameter> {
      */
     public CommandBuilder withDescription(final String description) {
       this.description = description;
+      return this;
+    }
+
+    /**
+     * Sets a help parameter name to the current builder state.
+     *
+     * @param helpParameterName
+     *          the help parameter name to be set
+     * @return {@link CommandBuilder} instance
+     *
+     * @author Noqmar
+     * @since 0.1.0
+     */
+    public CommandBuilder withHelpParameterNameDescription(final @Nullable String helpParameterName) {
+      this.helpParameterName = helpParameterName;
       return this;
     }
 

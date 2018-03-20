@@ -48,8 +48,8 @@ public class StaticStringConstructionMethodParameter extends ReflectionCommandPa
    * {@link ReflectionCommandParameterFactory} that creates instance of
    * {@link StaticStringConstructionMethodParameter}s.
    */
-  public static final ReflectionCommandParameterFactory FACTORY = (type, index, name, shortName, required) -> new StaticStringConstructionMethodParameter(type,
-      index, name, shortName, required);
+  public static final ReflectionCommandParameterFactory FACTORY = (type, index, name, shortName, description,
+      required) -> new StaticStringConstructionMethodParameter(type, index, name, shortName, description, required);
 
   private final List<Method> candidates;
 
@@ -67,7 +67,7 @@ public class StaticStringConstructionMethodParameter extends ReflectionCommandPa
    * @since 0.1.0
    */
   public StaticStringConstructionMethodParameter(final Class<?> type, final int index) throws UnsupportedParameterTypeException {
-    this(type, index, null, null, DEFAULT_REQUIRED);
+    this(type, index, null, null, null, DEFAULT_REQUIRED);
   }
 
   /**
@@ -81,6 +81,8 @@ public class StaticStringConstructionMethodParameter extends ReflectionCommandPa
    *          (optional) parameter (long) name
    * @param shortName
    *          (optional) parameter short name
+   * @param description
+   *          (optional) parameter description
    * @param required
    *          {@code true} if the parameter is mandatory, {@code false} otherwise
    * @throws UnsupportedParameterTypeException
@@ -89,9 +91,9 @@ public class StaticStringConstructionMethodParameter extends ReflectionCommandPa
    * @author Noqmar
    * @since 0.1.0
    */
-  public StaticStringConstructionMethodParameter(final Class<?> type, final int index, @Nullable final String name, @Nullable final Character shortName,
-      final boolean required) throws UnsupportedParameterTypeException {
-    super(type, index, name, shortName, required);
+  public StaticStringConstructionMethodParameter(final Class<?> type, final int index, final @Nullable String name, final @Nullable Character shortName,
+      final @Nullable String description, final boolean required) throws UnsupportedParameterTypeException {
+    super(type, index, name, shortName, description, required);
     this.candidates = this.findCandidates(type);
   }
 

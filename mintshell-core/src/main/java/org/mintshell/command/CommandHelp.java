@@ -23,66 +23,71 @@
  */
 package org.mintshell.command;
 
-import org.mintshell.annotation.Nullable;
-import org.mintshell.assertion.Assert;
+import java.util.Optional;
 
 /**
- * A {@link CommandAlias} is a delegation to a (real) command with it's own name and description.
- *
- * @param <P>
- *          type of the command parameters
+ * Help facility responsible to display information about available {@link Command}s and their
+ * {@link CommandParameter}s.
  *
  * @author Noqmar
  * @since 0.1.0
  */
-public class CommandAlias<P extends CommandParameter> extends Command<P> {
-
-  private final Command<P> command;
+public abstract interface CommandHelp {
 
   /**
-   * Creates a new {@link CommandAlias} for the given {@link Command}. Note that the given {@link Command} may be and
-   * {@link CommandAlias} again.
+   * Returns the detail help text for the given {@link Command} (usually with information about
+   * {@link CommandParameter}s).
    *
    * @param command
-   *          command to be aliased
-   * @param name
-   *          name of the alias
+   *          command to get detail text for
+   * @return detail help text
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandAlias(final Command<P> command, final String name) {
-    this(command, name, null);
-  }
+  public abstract String getCommandDetailText(final Command<?> command);
 
   /**
-   * Creates a new {@link CommandAlias} for the given {@link Command}. Note that the given {@link Command} may be and
-   * {@link CommandAlias} again.
+   * Returns the help text, if the given command name doesn't match any known {@link Command}.
+   *
+   * @param commandName
+   *          name of the unknown {@link Command}
+   * @return help text
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract String getCommandNotFoundText(final String commandName);
+
+  /**
+   * Returns an optional footer text to be displayed after the command overview.
+   * 
+   * @return optional footer text
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public abstract Optional<String> getCommandOverviewFooterText();
+
+  /**
+   * Returns the overview help text for the given {@link Command}.
    *
    * @param command
-   *          command to be aliased
-   * @param name
-   *          name of the alias
-   * @param descripion
-   *          (optional) description of the alias
+   *          command to get overview text for
+   * @return overview help text
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandAlias(final Command<P> command, final String name, final @Nullable String descripion) {
-    super(name, descripion, null, Assert.ARG.isNotNull(command, "[command] must not be [null]").getParameters());
-    this.command = command;
-  }
+  public abstract String getCommandOverviewText(final Command<?> command);
 
   /**
-   * Returns the {@link Command} of which this is an alias for.
+   * Returns the name of the help command.
    *
-   * @return aliased {@link Command}
+   * @return name of the help command
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public Command<P> getCommand() {
-    return this.command;
-  }
+  public abstract String getHelpCommandName();
 }

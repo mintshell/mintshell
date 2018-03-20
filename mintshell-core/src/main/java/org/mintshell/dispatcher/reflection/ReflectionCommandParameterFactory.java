@@ -48,6 +48,8 @@ public abstract interface ReflectionCommandParameterFactory {
    *          (optional) parameter (long) name
    * @param shortName
    *          (optional) parameter short name
+   * @param description
+   *          (optional) parameter description
    * @param required
    *          {@code true} if the parameter is mandatory, {@code false} otherwise
    * @return {@link CommandParameter} instance
@@ -56,6 +58,6 @@ public abstract interface ReflectionCommandParameterFactory {
    * @author Noqmar
    * @since 0.1.0
    */
-  public abstract ReflectionCommandParameter create(Class<?> type, int index, @Nullable String name, @Nullable Character shortName, boolean required)
-      throws UnsupportedParameterTypeException;
+  public abstract ReflectionCommandParameter create(Class<?> type, int index, @Nullable String name, @Nullable Character shortName,
+      @Nullable String description, boolean required) throws UnsupportedParameterTypeException;
 }
