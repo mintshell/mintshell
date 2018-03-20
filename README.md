@@ -16,11 +16,14 @@ Mintshell is a Java library which allows to provide Java applications with a com
 - Grammar-based command interpreter
 - Command history in terminal-based command interfaces
 - Command help support 
--- Native libs for Linux/Windows
+- Native libs for OSX/Linux
 
 ### 0.2.0
+- Native libs for further Linux distributions
+- Native libs for Windows
 - Command pipe support
 - Subshells
+- Autocompletion
 
 ## Overview
 

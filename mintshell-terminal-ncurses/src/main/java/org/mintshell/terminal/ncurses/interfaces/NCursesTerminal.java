@@ -270,9 +270,9 @@ public final class NCursesTerminal {
    */
   private static native int getCh();
 
-  private static String getLibraryName() {
-    final String osArch = System.getProperty("os.arch", "x86");
-    return format(LIB_PATTERN, osArch, getLibrarySuffix());
+  private static String getLibraryName(final boolean withArchitecture) {
+    final String osArch = System.getProperty("os.arch", "unknown");
+    return withArchitecture ? format(LIB_PATTERN, osArch, getLibrarySuffix()) : format(LIB_PATTERN, "unknown", getLibrarySuffix());
   }
 
   private static String getLibrarySuffix() {
@@ -347,7 +347,16 @@ public final class NCursesTerminal {
   private static native void init();
 
   private static void loadLibrary() {
-    final String libFileName = getLibraryName();
+    final String libFileNameWithArch = getLibraryName(true);
+    try {
+      loadLibrary(libFileNameWithArch);
+    } catch (final UnsatisfiedLinkError e) {
+      final String libFileNameWithoutArch = getLibraryName(false);
+      loadLibrary(libFileNameWithoutArch);
+    }
+  }
+
+  private static void loadLibrary(final String libFileName) {
     final Path localPath = Paths.get(libFileName);
     try {
       System.load(localPath.toAbsolutePath().toString());
