@@ -8,26 +8,62 @@
 
   <name>Mintshell</name>
   <description>Multi-Interface Shell for Java applications</description>
+  <url>http://mintshell.org</url>
+  <inceptionYear>2018</inceptionYear>
 
   <organization>
     <name>Mintshell</name>
     <url>http://mintshell.org</url>
   </organization>
 
+  <developers>
+    <developer>
+      <name>Noqmar</name>
+      <email>noqmar@mintshell.org</email>
+      <roles>
+        <role>maintainer</role>
+        <role>architect</role>
+        <role>committer</role>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <scm>
     <developerConnection>scm:git:ssh://git@github.com:mintshell/mintshell.git</developerConnection>
     <tag>HEAD</tag>
+    <url>https://github.com/mintshell/mintshell</url>
   </scm>
 
   <packaging>pom</packaging>
 
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <version.java>1.8</version.java>
 
-    <!-- versioning of maven plugins -->
+    <!-- versioning of maven lifecycle plugins -->
+    <version.mvn.clean>3.0.0</version.mvn.clean>
+    <version.mvn.resources>3.0.2</version.mvn.resources>
     <version.mvn.compiler>3.7.0</version.mvn.compiler>
+    <version.mvn.surefire>2.21.0</version.mvn.surefire>
+    <version.mvn.jar>3.0.2</version.mvn.jar>
+    <version.mvn.install>2.5.2</version.mvn.install>
+    <version.mvn.deploy>2.8.2</version.mvn.deploy>
+
+    <!-- versioning of additional maven plugins -->
+    <version.mvn.dependency>3.0.2</version.mvn.dependency>
+    <version.mvn.site>3.7</version.mvn.site>
+    <version.mvn.javadoc>3.0.0</version.mvn.javadoc>
+    <version.mvn.source>3.0.1</version.mvn.source>
     <version.mvn.gpg>1.6</version.mvn.gpg>
     <version.mvn.antlr4>4.5</version.mvn.antlr4>
 
@@ -35,7 +71,6 @@
     <version.slf4j>1.7.25</version.slf4j>
     <version.antlr>4.5</version.antlr>
     <version.sshd>1.6.0</version.sshd>
-
 
     <!-- versioning of test dependencies -->
     <version.junit>4.12</version.junit>
@@ -67,7 +102,7 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-mcl</artifactId>
         <version>${project.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-terminal</artifactId>
@@ -141,21 +176,71 @@
   <build>
 
     <pluginManagement>
-    
       <plugins>
-      
+
+        <!-- maven lifecycle plugins -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${version.mvn.clean}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${version.mvn.resources}</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${version.mvn.compiler}</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${version.mvn.surefire}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${version.mvn.jar}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${version.mvn.install}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${version.mvn.deploy}</version>
+        </plugin>
 
+        <!-- additional maven plugins -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${version.mvn.dependency}</version>
+        </plugin>        
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${version.mvn.site}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${version.mvn.javadoc}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${version.mvn.source}</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
           <version>${version.mvn.gpg}</version>
         </plugin>
-
         <plugin>
           <groupId>org.antlr</groupId>
           <artifactId>antlr4-maven-plugin</artifactId>
@@ -163,18 +248,143 @@
         </plugin>
 
       </plugins>
-
     </pluginManagement>
 
     <plugins>
 
+      <!-- build configuration of maven lifecycle plugins -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <failOnError>true</failOnError>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>${version.java}</source>
           <target>${version.java}</target>
+          <testSource>${version.java}</testSource>
+          <testTarget>${version.java}</testTarget>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+      </plugin>
+
+      <!-- build configuration of additional maven plugins -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+            </goals>
+            <configuration>
+              <failOnWarning>true</failOnWarning>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <encoding> ${project.build.sourceEncoding}</encoding>
+          <docencoding>${project.reporting.outputEncoding}</docencoding>
+          <failOnError>true</failOnError>
+          <level>protected</level>
+          <show>protected</show>
+          <serialwarn>true</serialwarn>
+          <validateLinks>true</validateLinks>
+          <detectLinks>false</detectLinks>
+          <detectJavaApiLink>true</detectJavaApiLink>
+          <additionalparam>-Xdoclint:none</additionalparam>
+          <tags>
+            <tag>
+              <name>apiNote</name>
+              <placement>a</placement>
+              <head>API Note:</head>
+            </tag>
+            <tag>
+              <name>implSpec</name>
+              <placement>a</placement>
+              <head>Implementation Requirements:</head>
+            </tag>
+            <tag>
+              <name>implNote</name>
+              <placement>a</placement>
+              <head>Implementation Note:</head>
+            </tag>
+            <tag>
+              <name>param</name>
+            </tag>
+            <tag>
+              <name>return</name>
+            </tag>
+            <tag>
+              <name>throws</name>
+            </tag>
+            <tag>
+              <name>since</name>
+            </tag>
+            <tag>
+              <name>version</name>
+            </tag>
+            <tag>
+              <name>serialData</name>
+            </tag>
+            <tag>
+              <name>see</name>
+            </tag>
+          </tags>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
