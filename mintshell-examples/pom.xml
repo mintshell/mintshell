@@ -15,6 +15,10 @@
 
   <properties>
 
+    <!--  project specific maven plugins -->
+    <version.mvn.exec>1.6.0</version.mvn.exec>
+
+    <!-- project specific dependencies -->
     <version.logback>1.2.3</version.logback>
 
   </properties>
@@ -32,17 +36,27 @@
     </dependency>    
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>mintshell-terminal</artifactId>
+    </dependency>       
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>mintshell-terminal-ncurses</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>mintshell-terminal-ssh</artifactId>
     </dependency>
-
+    
+    <!-- technical -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency> 
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${version.logback}</version>
+      <scope>runtime</scope>
     </dependency>
 
   </dependencies>
@@ -53,6 +67,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
+        <version>${version.mvn.exec}</version>
         <configuration>
           <executable>java</executable>
           <arguments>

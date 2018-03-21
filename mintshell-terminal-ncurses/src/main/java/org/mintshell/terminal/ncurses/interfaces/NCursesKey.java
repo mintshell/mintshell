@@ -317,7 +317,7 @@ enum NCursesKey {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see java.lang.Enum#toString()
    */
   @Override

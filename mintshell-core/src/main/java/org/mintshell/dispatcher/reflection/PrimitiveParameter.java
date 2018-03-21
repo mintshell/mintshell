@@ -87,8 +87,9 @@ public class PrimitiveParameter extends ReflectionCommandParameter {
 
   /**
    *
-   * @{inheritDoc}
-   * @see org.mintshell.command.CommandParameter#isTypeSupported(java.lang.Class)
+   * {@inheritDoc}
+   * 
+   * @see org.mintshell.dispatcher.reflection.ReflectionCommandParameter#isTypeSupported(java.lang.Class)
    */
   @Override
   public boolean isTypeSupported(final Class<?> type) {
@@ -106,8 +107,9 @@ public class PrimitiveParameter extends ReflectionCommandParameter {
 
   /**
    *
-   * @{inheritDoc}
-   * @see org.mintshell.command.CommandParameter#of(java.lang.String)
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.dispatcher.reflection.ReflectionCommandParameter#of(java.lang.String)
    */
   @Override
   public Object of(final @Nullable String value) throws ParameterConversionException {

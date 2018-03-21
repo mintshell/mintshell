@@ -96,7 +96,7 @@ public class SimpleCommandHelp implements CommandHelp {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.command.CommandHelp#getCommandDetailText(org.mintshell.command.Command)
    */
   @Override
@@ -111,7 +111,7 @@ public class SimpleCommandHelp implements CommandHelp {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.command.CommandHelp#getCommandNotFoundText(java.lang.String)
    */
   @Override
@@ -121,7 +121,7 @@ public class SimpleCommandHelp implements CommandHelp {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.command.CommandHelp#getCommandOverviewFooterText()
    */
   @Override
@@ -131,7 +131,7 @@ public class SimpleCommandHelp implements CommandHelp {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.command.CommandHelp#getCommandOverviewText(org.mintshell.command.Command)
    */
   @Override
@@ -141,7 +141,7 @@ public class SimpleCommandHelp implements CommandHelp {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.command.CommandHelp#getHelpCommandName()
    */
   @Override

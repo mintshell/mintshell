@@ -96,7 +96,7 @@ public class LineBuffer implements CharSequence {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see java.lang.CharSequence#charAt(int)
    */
   @Override
@@ -205,7 +205,7 @@ public class LineBuffer implements CharSequence {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see java.lang.CharSequence#length()
    */
   @Override
@@ -341,7 +341,7 @@ public class LineBuffer implements CharSequence {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see java.lang.CharSequence#subSequence(int, int)
    */
   @Override
@@ -351,7 +351,7 @@ public class LineBuffer implements CharSequence {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see java.lang.Object#toString()
    */
   @Override

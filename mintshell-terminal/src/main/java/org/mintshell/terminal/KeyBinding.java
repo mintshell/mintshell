@@ -60,7 +60,7 @@ public class KeyBinding {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -109,7 +109,7 @@ public class KeyBinding {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see java.lang.Object#hashCode()
    */
   @Override

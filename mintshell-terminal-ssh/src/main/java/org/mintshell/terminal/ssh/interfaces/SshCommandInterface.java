@@ -128,7 +128,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#activate(org.mintshell.CommandInterpreter,
    *      org.mintshell.CommandDispatcher)
    */
@@ -146,7 +146,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#addKeyBindings(org.mintshell.terminal.KeyBinding[])
    */
   @Override
@@ -157,7 +157,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#clearKeyBindings()
    */
   @Override
@@ -183,7 +183,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.CommandInterface#deactivate()
    */
   @Override
@@ -193,7 +193,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#eraseNext()
    */
   @Override
@@ -203,7 +203,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#erasePrevious()
    */
   @Override
@@ -213,7 +213,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#getKeyBindings()
    */
   @Override
@@ -223,7 +223,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.CommandInterface#isActivated()
    */
   @Override
@@ -233,7 +233,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#moveNext()
    */
   @Override
@@ -243,7 +243,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#movePrevious()
    */
   @Override
@@ -253,7 +253,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#newLine()
    */
   @Override
@@ -263,7 +263,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#print(java.lang.String)
    */
   @Override
@@ -273,7 +273,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#readKey()
    */
   @Override
@@ -283,7 +283,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#removeKeyBinding(org.mintshell.terminal.KeyBinding)
    */
   @Override

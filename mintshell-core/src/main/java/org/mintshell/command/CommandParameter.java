@@ -82,6 +82,8 @@ public class CommandParameter {
    *          (optional) parameter (long) name
    * @param shortName
    *          (optional) parameter short name
+   * @param description
+   *          (optional) description of the parameter
    * @param required
    *          {@code true} if the parameter is mandatory, {@code false} sonst
    * @param value
@@ -175,7 +177,8 @@ public class CommandParameter {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   *
    * @see java.lang.Object#toString()
    */
   @Override

@@ -126,7 +126,7 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.interfaces.AbstractCommandInterface#activate(org.mintshell.CommandInterpreter,
    *      org.mintshell.CommandDispatcher)
    */
@@ -160,7 +160,7 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#addKeyBindings(org.mintshell.terminal.KeyBinding[])
    */
   @Override
@@ -171,7 +171,7 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#clearKeyBindings()
    */
   @Override
@@ -201,7 +201,7 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.interfaces.AbstractCommandInterface#deactivate()
    */
   @Override
@@ -230,7 +230,7 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#getKeyBindings()
    */
   @Override
@@ -240,7 +240,7 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#removeKeyBinding(org.mintshell.terminal.KeyBinding)
    */
   @Override
@@ -430,7 +430,7 @@ public abstract class AbstractTerminalCommandInterface extends AbstractCommandIn
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.interfaces.AbstractCommandInterface#preCommand(org.mintshell.command.Command)
    */
   @Override

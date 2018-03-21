@@ -136,8 +136,8 @@ public abstract class ReflectionCommandParameter extends CommandParameter {
 
   /**
    * Returns whether this {@link CommandParameter} supports the given type, where 'support' means technical support and
-   * doesn't exclude any exeptions when trying to convert a concrete {@link String} value via the
-   * {@link #of(Class, String)} method.
+   * doesn't exclude any exeptions when trying to convert a concrete {@link String} value via the {@link #of(String)}
+   * method.
    *
    * @param type
    *          type to be checked

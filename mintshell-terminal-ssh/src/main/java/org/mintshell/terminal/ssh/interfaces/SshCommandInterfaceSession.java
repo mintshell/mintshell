@@ -67,6 +67,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
   /**
    * Creates a new instance.
    *
+   * @param sessionRegistry
+   *          session registry
    * @param executor
    *          executor service to run within
    * @param commandInterpreter
@@ -103,7 +105,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#deactivate()
    */
   @Override
@@ -116,7 +119,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.apache.sshd.server.CommandLifecycle#destroy()
    */
   @Override
@@ -127,7 +131,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#eraseNext()
    */
   @Override
@@ -142,7 +147,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#erasePrevious()
    */
   @Override
@@ -159,7 +165,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#moveNext()
    */
   @Override
@@ -174,7 +181,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#movePrevious()
    */
   @Override
@@ -189,7 +197,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#newLine()
    */
   @Override
@@ -199,7 +208,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#print(java.lang.String)
    */
   @Override
@@ -219,7 +229,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#readKey()
    */
   @Override
@@ -234,7 +245,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.apache.sshd.server.Command#setErrorStream(java.io.OutputStream)
    */
   @Override
@@ -244,7 +256,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.apache.sshd.server.Command#setExitCallback(org.apache.sshd.server.ExitCallback)
    */
   @Override
@@ -254,7 +267,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.apache.sshd.server.Command#setInputStream(java.io.InputStream)
    */
   @Override
@@ -264,7 +278,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.apache.sshd.server.Command#setOutputStream(java.io.OutputStream)
    */
   @Override
@@ -274,7 +289,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.apache.sshd.server.CommandLifecycle#start(org.apache.sshd.server.Environment)
    */
   @Override
@@ -293,7 +309,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#clearScreen()
    */
   @Override
@@ -309,7 +326,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#moveCursor(int, int)
    */
   @Override
@@ -324,7 +342,8 @@ public class SshCommandInterfaceSession extends AbstractTerminalCommandInterface
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.interfaces.AbstractCommandInterface#postCommand(org.mintshell.command.CommandResult)
    */
   @Override

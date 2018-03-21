@@ -37,7 +37,7 @@ public class SytaxExceptionErrorListener extends BaseErrorListener {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.antlr.v4.runtime.BaseErrorListener#syntaxError(org.antlr.v4.runtime.Recognizer, java.lang.Object, int,
    *      int, java.lang.String, org.antlr.v4.runtime.RecognitionException)
    */

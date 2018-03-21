@@ -160,18 +160,7 @@
       </dependency>
 
     </dependencies>
-
   </dependencyManagement>
-
-  <dependencies>
-
-    <!-- technical -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-
-  </dependencies>
 
   <build>
 
@@ -304,6 +293,7 @@
             </goals>
             <configuration>
               <failOnWarning>true</failOnWarning>
+              <ignoreNonCompile>true</ignoreNonCompile>
             </configuration>
           </execution>
         </executions>

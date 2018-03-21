@@ -116,7 +116,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#eraseNext()
    */
   @Override
@@ -127,7 +127,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#erasePrevious()
    */
   @Override
@@ -140,7 +140,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#moveNext()
    */
   @Override
@@ -152,7 +152,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#movePrevious()
    */
   @Override
@@ -164,7 +164,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#newLine()
    */
   @Override
@@ -175,7 +175,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#print(java.lang.String)
    */
   @Override
@@ -199,7 +199,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#readKey()
    */
   @Override
@@ -213,7 +213,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#clearScreen()
    */
   @Override
@@ -225,7 +225,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#moveCursor(int, int)
    */
   @Override

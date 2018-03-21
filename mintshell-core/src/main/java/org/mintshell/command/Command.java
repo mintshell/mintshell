@@ -98,7 +98,9 @@ public class Command<P extends CommandParameter> {
    * @param name
    *          name
    * @param description
-   *          description text
+   *          (optional) description text
+   * @param helpParameterName
+   *          (optional) name of the help parameter
    * @param parameters
    *          {@link List} of {@link CommandParameter}s
    *
@@ -114,7 +116,8 @@ public class Command<P extends CommandParameter> {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -187,7 +190,8 @@ public class Command<P extends CommandParameter> {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -197,7 +201,8 @@ public class Command<P extends CommandParameter> {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   *
    * @see java.lang.Object#toString()
    */
   @Override

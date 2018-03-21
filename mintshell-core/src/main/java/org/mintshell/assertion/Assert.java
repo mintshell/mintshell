@@ -125,7 +125,8 @@ public abstract interface Assert<T extends Throwable> {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.assertion.Assert#invalid(java.lang.String)
      */
     @Override
@@ -135,7 +136,8 @@ public abstract interface Assert<T extends Throwable> {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.assertion.SupplierAssert#invalid(java.lang.String, java.lang.Throwable)
      */
     @Override
@@ -155,7 +157,8 @@ public abstract interface Assert<T extends Throwable> {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.assertion.Assert#invalid(java.lang.String)
      */
     @Override
@@ -175,7 +178,8 @@ public abstract interface Assert<T extends Throwable> {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.assertion.Assert#invalid(java.lang.String)
      */
     @Override
@@ -195,7 +199,8 @@ public abstract interface Assert<T extends Throwable> {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.assertion.Assert#invalid(java.lang.String)
      */
     @Override
@@ -205,7 +210,8 @@ public abstract interface Assert<T extends Throwable> {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.assertion.SupplierAssert#invalid(java.lang.String, java.lang.Throwable)
      */
     @Override

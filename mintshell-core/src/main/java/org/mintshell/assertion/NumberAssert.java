@@ -44,7 +44,8 @@ public abstract interface NumberAssert<T extends Throwable> extends Assert<T> {
    * @return asserted {@link Number}
    * @throws T
    *           if the given number is smaller or equal to the given refenrence
-   *
+   * @param <N>
+   *          type of {@link Number}
    * @author Noqmar
    * @since 0.1.0
    */
@@ -65,7 +66,8 @@ public abstract interface NumberAssert<T extends Throwable> extends Assert<T> {
    * @return asserted {@link Number}
    * @throws T
    *           if the given number is greater or equal to the given refenrence
-   *
+   * @param <N>
+   *          type of {@link Number}
    * @author Noqmar
    * @since 0.1.0
    */

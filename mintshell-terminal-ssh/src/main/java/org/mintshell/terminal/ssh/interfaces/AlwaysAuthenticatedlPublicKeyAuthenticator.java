@@ -38,7 +38,7 @@ public class AlwaysAuthenticatedlPublicKeyAuthenticator implements PublickeyAuth
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.apache.sshd.server.auth.pubkey.PublickeyAuthenticator#authenticate(java.lang.String,
    *      java.security.PublicKey, org.apache.sshd.server.session.ServerSession)
    */

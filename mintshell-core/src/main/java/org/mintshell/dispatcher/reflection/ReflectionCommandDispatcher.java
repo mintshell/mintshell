@@ -49,11 +49,13 @@ import org.slf4j.LoggerFactory;
  * </p>
  * <p>
  * This {@link CommandDispatcher} supports the following {@link CommandParameter}s by default:
+ * </p>
  * <ul>
  * <li>{@link PrimitiveParameter}</li>
  * <li>{@link StaticStringConstructionMethodParameter}</li>
  * <li>{@link StringConstructorParameter}</li>
  * </ul>
+ * <p>
  * Further {@link CommandParameter}s may be added via
  * {@link #addSupportedParameters(org.mintshell.dispatcher.reflection.ReflectionCommandParameterFactory...)}
  * </p>
@@ -91,7 +93,8 @@ public class ReflectionCommandDispatcher extends AbstractReflectionCommandDispat
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.dispatcher.reflection.AbstractReflectionCommandDispatcher#createCommandFromMethod(java.lang.reflect.Method)
    */
   @Override
@@ -109,7 +112,8 @@ public class ReflectionCommandDispatcher extends AbstractReflectionCommandDispat
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.dispatcher.reflection.AbstractReflectionCommandDispatcher#determineSupportedMethods(java.lang.Class)
    */
   @Override

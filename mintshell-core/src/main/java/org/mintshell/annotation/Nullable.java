@@ -37,23 +37,23 @@ import java.lang.annotation.Target;
  *
  * <p>
  * If annotation based {@code null} analysis is enabled, using this annotation has two consequences:
+ * </p>
  * <ol>
  * <li>Binding a {@code null} value to an entity (field, local variable, method parameter, or method return value) of
  * this type is legal.</li>
  * <li>Dereferencing an expression of this type is unsafe, i.&thinsp;e., a {@code NullPointerException} can occur at
  * runtime.</li>
  * </ol>
- * </p>
  *
  * <p>
  * Note, some developer environment might come along with some annotation based {@code null} analysis.
+ * </p>
  * <dl>
  * <dt><a href="http://eclipse.org">Eclipse</a></dt>
- * <dd>Eclipse provides settings under:<br/>
+ * <dd>Eclipse provides settings under:<br>
  * <em>Window</em>&rarr;<em>Preferences</em>&rarr;<em>Java</em>&rarr;<em>Compiler</em>&rarr;<em>Errors/Warnings</em> in
  * section <em>Null analysis</em></dd>
  * </dl>
- * </p>
  *
  * @author Noqmar
  * @since 0.1.0

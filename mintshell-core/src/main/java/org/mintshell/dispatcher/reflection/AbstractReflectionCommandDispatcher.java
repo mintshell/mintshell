@@ -53,11 +53,13 @@ import org.mintshell.dispatcher.AbstractCommandDispatcher;
  * </p>
  * <p>
  * This {@link CommandDispatcher} supports the following {@link CommandParameter}s by default:
+ * </p>
  * <ul>
  * <li>{@link PrimitiveParameter}</li>
  * <li>{@link StaticStringConstructionMethodParameter}</li>
  * <li>{@link StringConstructorParameter}</li>
  * </ul>
+ * <p>
  * Further {@link CommandParameter}s may be added via
  * {@link #addSupportedParameters(org.mintshell.dispatcher.reflection.ReflectionCommandParameterFactory...)}
  * </p>
@@ -116,7 +118,8 @@ public abstract class AbstractReflectionCommandDispatcher<P extends ReflectionCo
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.CommandDispatcher#getSupportedParameters()
    */
   @Override
@@ -139,7 +142,8 @@ public abstract class AbstractReflectionCommandDispatcher<P extends ReflectionCo
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.dispatcher.AbstractCommandDispatcher#determineCommands(org.mintshell.CommandTarget)
    */
   @Override
@@ -167,7 +171,8 @@ public abstract class AbstractReflectionCommandDispatcher<P extends ReflectionCo
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   * 
    * @see org.mintshell.dispatcher.AbstractCommandDispatcher#invokeCommand(org.mintshell.command.Command,
    *      org.mintshell.command.Command, org.mintshell.CommandTarget)
    */

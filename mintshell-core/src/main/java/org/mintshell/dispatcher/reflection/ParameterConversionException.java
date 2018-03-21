@@ -27,7 +27,7 @@ import org.mintshell.command.CommandParameter;
 
 /**
  * Exception indicating that converting a {@link String} value to a {@link CommandParameter}'s type via
- * {@link CommandParameter#of(Class, String)} failed. The causing {@link Exception} is available via
+ * {@link ReflectionCommandParameter#of(String)} failed. The causing {@link Exception} is available via
  * {@link #getCause()}.
  *
  * @author Noqmar

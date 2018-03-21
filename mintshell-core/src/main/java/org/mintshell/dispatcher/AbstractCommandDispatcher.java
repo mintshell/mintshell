@@ -49,8 +49,8 @@ import org.mintshell.command.CommandResult;
  * {@link Command}s determined from added {@link CommandTarget}s are unique, which means when adding a
  * {@link CommandTarget} providing an already managed {@link Command} an {@link IllegalStateException} will be thrown.
  * Dispatching {@link Command}s means to find a supported {@link Command} and the corresponding managed
- * {@link CommandTarget} and execute it via the {@link #invokeCommand(Command, CommandTarget)} method. These two methods
- * have to be provided by subclasses.
+ * {@link CommandTarget} and execute it via the {@link #invokeCommand(Command, Command, CommandTarget)} method. These
+ * two methods have to be provided by subclasses.
  *
  * @author Noqmar
  * @since 0.1.0
@@ -72,7 +72,8 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   *
    * @see org.mintshell.CommandDispatcher#addCommandTargets(org.mintshell.CommandTarget[])
    */
   @Override
@@ -83,7 +84,8 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   *
    * @see org.mintshell.CommandDispatcher#addCommandTargets(java.util.Set)
    */
   @Override
@@ -94,7 +96,8 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
+   *
    * @see org.mintshell.CommandDispatcher#dispatch(org.mintshell.command.Command)
    */
   @Override
@@ -145,8 +148,7 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
   }
 
   /**
-   * Adds the given {@link CommandTarget} and checks uniquenes of the determinded {@link Command}s if
-   * {@link #isForceUniqueCommands()} is set to {@code true}.
+   * Adds the given {@link CommandTarget} and checks uniquenes of the determinded {@link Command}.
    *
    * @param commandTarget
    *          command target to add
@@ -166,21 +168,8 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
   }
 
   /**
-   * Inspects the given {@link CommandTarget} and determines all available {@link Command} names for this
-   * {@link CommandTarget}.
-   *
-   * @param commandTarget
-   *          command target to be inspected
-   * @return {@link Set} of determined {@link Command} names
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  protected abstract Set<C> determineCommands(final CommandTarget commandTarget);
-
-  /**
    * Returns detail help text for a command with the given command name.
-   * 
+   *
    * @param commandName
    *          name of the command to create detail text for
    * @return detail help text
@@ -201,6 +190,19 @@ public abstract class AbstractCommandDispatcher<C extends Command<?>> implements
     }
     return builder.toString();
   }
+
+  /**
+   * Inspects the given {@link CommandTarget} and determines all available {@link Command} names for this
+   * {@link CommandTarget}.
+   *
+   * @param commandTarget
+   *          command target to be inspected
+   * @return {@link Set} of determined {@link Command} names
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  protected abstract Set<C> determineCommands(final CommandTarget commandTarget);
 
   /**
    * Handles execution of the help command.

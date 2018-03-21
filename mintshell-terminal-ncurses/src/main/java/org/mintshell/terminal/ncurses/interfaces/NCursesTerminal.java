@@ -427,7 +427,7 @@ public final class NCursesTerminal {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
      * @see java.io.InputStream#read()
      */
     @Override
@@ -446,7 +446,7 @@ public final class NCursesTerminal {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
      * @see java.io.OutputStream#close()
      */
     @Override
@@ -456,7 +456,7 @@ public final class NCursesTerminal {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
      * @see java.io.OutputStream#flush()
      */
     @Override
@@ -466,7 +466,7 @@ public final class NCursesTerminal {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
      * @see java.io.OutputStream#write(int)
      */
     @Override

@@ -59,7 +59,7 @@ public class DefaultCommandTarget implements CommandTarget {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.CommandTarget#getTargetClass()
    */
   @Override
@@ -69,7 +69,7 @@ public class DefaultCommandTarget implements CommandTarget {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.CommandTarget#getTargetInstance()
    */
   @Override
@@ -79,7 +79,7 @@ public class DefaultCommandTarget implements CommandTarget {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.CommandTarget#isInstance()
    */
   @Override

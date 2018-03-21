@@ -174,6 +174,8 @@ public abstract interface StateAssert<T extends Throwable> extends SupplierAsser
    *
    * @param supplier
    *          supplier to assert
+   * @param reason
+   *          reason to be delegated to the thrown {@link Throwable} if the expression is {@code false}
    * @return the supplied expression, in fact {@code true}
    * @throws T
    *           if the boolean supplied is {@code false} or throws itself an {@link Exception}

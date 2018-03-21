@@ -44,7 +44,7 @@ import org.mintshell.command.DefaultCommandTarget;
  * </p>
  * <p>
  * It creates a {@link ForkJoinPool} with a {@link ForkJoinWorkerThread} per {@link CommandInterface} and runs the
- * {@link CommandInterface} in parallel within that {@link ForkJoinPool}.<br/>
+ * {@link CommandInterface} in parallel within that {@link ForkJoinPool}.<br>
  * It also provides the factory methods {@link #from(CommandInterface...)} and {@link #from(Set)} to get builder and
  * subbuilder instances to build a connected {@link Command} interpretation structure.
  * </p>
@@ -248,7 +248,8 @@ public final class Mintshell {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.Mintshell.MintshellTargets#apply()
      */
     @Override
@@ -258,7 +259,8 @@ public final class Mintshell {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.Mintshell.MintshellInterpreter#dispatchedBy(org.mintshell.CommandDispatcher)
      */
     @Override
@@ -269,7 +271,8 @@ public final class Mintshell {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.Mintshell.MintShellInterfaces#interpretedBy(org.mintshell.CommandInterpreter)
      */
     @Override
@@ -280,7 +283,8 @@ public final class Mintshell {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.Mintshell.MintshellDispatcher#to(java.lang.Object[])
      */
     @Override
@@ -290,7 +294,8 @@ public final class Mintshell {
 
     /**
      *
-     * @{inheritDoc}
+     * {@inheritDoc}
+     * 
      * @see org.mintshell.Mintshell.MintshellInterpreter#to(java.util.Set)
      */
     @Override

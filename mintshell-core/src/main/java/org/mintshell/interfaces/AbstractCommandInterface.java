@@ -54,7 +54,7 @@ public abstract class AbstractCommandInterface implements CommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.CommandInterface#activate(org.mintshell.CommandInterpreter, org.mintshell.CommandDispatcher)
    */
   @Override
@@ -68,7 +68,7 @@ public abstract class AbstractCommandInterface implements CommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.CommandInterface#deactivate()
    */
   @Override
@@ -79,7 +79,7 @@ public abstract class AbstractCommandInterface implements CommandInterface {
 
   /**
    *
-   * @{inheritDoc}
+   * {@inheritDoc}
    * @see org.mintshell.CommandInterface#isActivated()
    */
   @Override
