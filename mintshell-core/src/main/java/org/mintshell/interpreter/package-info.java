@@ -1,5 +1,5 @@
 /**
- * Contains core implementations of Mintshell command interpreters.
+ * Contains core implementations of command interpreters.
  *
  * @author Noqmar
  * @since 0.1.0

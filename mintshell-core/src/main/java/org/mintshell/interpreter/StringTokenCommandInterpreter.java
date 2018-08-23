@@ -26,10 +26,10 @@ package org.mintshell.interpreter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mintshell.CommandInterpreteException;
-import org.mintshell.CommandInterpreter;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandParameter;
+import org.mintshell.command.DefaultCommand;
+import org.mintshell.command.DefaultCommandParameter;
 
 /**
  * Simple implementation of a {@link CommandInterpreter} that splits a given command message on it's spaces using the
@@ -44,10 +44,11 @@ public class StringTokenCommandInterpreter implements CommandInterpreter {
   /**
    *
    * {@inheritDoc}
-   * @see org.mintshell.CommandInterpreter#interprete(java.lang.String)
+   * 
+   * @see org.mintshell.interpreter.CommandInterpreter#interprete(java.lang.String)
    */
   @Override
-  public Command<?> interprete(final String commandMessage) throws CommandInterpreteException {
+  public Command interprete(final String commandMessage) throws CommandInterpreteException {
     if (commandMessage == null || commandMessage.trim().isEmpty()) {
       throw new CommandInterpreteException("The command message doesn't contain a command");
     }
@@ -56,8 +57,8 @@ public class StringTokenCommandInterpreter implements CommandInterpreter {
 
     final List<CommandParameter> parameters = new ArrayList<>();
     for (int i = 1; i < parts.length; i++) {
-      parameters.add(new CommandParameter(i - 1, parts[i]));
+      parameters.add(new DefaultCommandParameter(i - 1, parts[i]));
     }
-    return new Command<>(name, parameters);
+    return new DefaultCommand(name, parameters);
   }
 }

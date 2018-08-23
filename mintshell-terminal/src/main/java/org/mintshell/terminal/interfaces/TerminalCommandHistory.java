@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
-import org.mintshell.command.CommandHistory;
+import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.terminal.Key;
 
 /**
@@ -71,6 +71,7 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.command.CommandHistory#addCommandLine(java.lang.String)
    */
   @Override
@@ -82,6 +83,7 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.command.CommandHistory#clear()
    */
   @Override
@@ -95,6 +97,7 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.command.CommandHistory#getCommandLine(int)
    */
   @Override
@@ -105,6 +108,7 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.command.CommandHistory#getCommandLines()
    */
   @Override
@@ -151,6 +155,7 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.command.CommandHistory#getMaxCommandLineNumber()
    */
   @Override
@@ -161,6 +166,7 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.command.CommandHistory#getNextCommandLine()
    */
   @Override
@@ -175,6 +181,7 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.command.CommandHistory#getPreviousCommandLine()
    */
   @Override

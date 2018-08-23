@@ -29,10 +29,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.mintshell.CommandInterpreteException;
-import org.mintshell.CommandInterpreter;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandParameter;
+import org.mintshell.command.DefaultCommand;
+import org.mintshell.command.DefaultCommandParameter;
+import org.mintshell.interpreter.CommandInterpreteException;
+import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.mcl.MCLLexer;
 import org.mintshell.mcl.MCLParser;
 import org.mintshell.mcl.MCLParser.CommandContext;
@@ -67,15 +69,16 @@ public class MclCommandInterpreter implements CommandInterpreter {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.CommandInterpreter#interprete(java.lang.String)
    */
   @Override
-  public Command<?> interprete(final String commandMessage) throws CommandInterpreteException {
+  public Command interprete(final String commandMessage) throws CommandInterpreteException {
     try {
       final CommandLineContext parsedCommandLine = this.createParser(commandMessage).commandLine();
       final CommandContext parsedCommand = parsedCommandLine.command();
       final List<CommandParameter> commandParameters = this.handleCommandParameters(parsedCommandLine.commandParameter());
-      final Command<CommandParameter> result = new Command<>(this.extractCommandName(parsedCommand), commandParameters);
+      final Command result = new DefaultCommand(this.extractCommandName(parsedCommand), commandParameters);
       return result;
     } catch (final SyntaxException e) {
       throw new CommandInterpreteException(e.getMessage(), e);
@@ -144,8 +147,8 @@ public class MclCommandInterpreter implements CommandInterpreter {
             parsedCommandParameter.commandParameterValue()));
       }
       else if (parsedCommandParameter.commandParameterValue() != null) {
-        commandParameters
-            .add(new CommandParameter(indexCounter.getAndIncrement(), this.extractCommandParameterValue(parsedCommandParameter.commandParameterValue())));
+        commandParameters.add(
+            new DefaultCommandParameter(indexCounter.getAndIncrement(), this.extractCommandParameterValue(parsedCommandParameter.commandParameterValue())));
       }
       else {
         throw new IllegalStateException("There is none of short/long/anonymous command parameter available");
@@ -158,13 +161,13 @@ public class MclCommandInterpreter implements CommandInterpreter {
       final CommandParameterValueContext parsedCommandParameterValue) {
     final String name = parsedCommandParameter.longCommandParameterName().getText();
     final String value = this.extractCommandParameterValue(parsedCommandParameterValue);
-    return new CommandParameter(index, name, null, null, false, value == null || value.isEmpty() ? null : value);
+    return new DefaultCommandParameter(index, name, null, value == null || value.isEmpty() ? null : value);
   }
 
   private CommandParameter handleShortCommandParameter(final int index, final ShortCommandParameterContext parsedCommandParameter,
       final CommandParameterValueContext parsedCommandParameterValue) {
     final char shortName = parsedCommandParameter.shortCommandParameterName().getText().charAt(0);
     final String value = this.extractCommandParameterValue(parsedCommandParameterValue);
-    return new CommandParameter(index, null, shortName, null, false, value.isEmpty() ? null : value);
+    return new DefaultCommandParameter(index, null, shortName, value.isEmpty() ? null : value);
   }
 }

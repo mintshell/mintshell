@@ -23,10 +23,9 @@
  */
 package org.mintshell.examples.terminal.ssh;
 
-import static org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface.KEYBINDING_EXIT;
+import static org.mintshell.terminal.interfaces.BaseTerminalCommandInterface.KEYBINDING_EXIT;
 
 import org.mintshell.Mintshell;
-import org.mintshell.dispatcher.annotation.AnnotationCommandDispatcher;
 import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;
@@ -46,9 +45,8 @@ public class SshTerminalShell {
 
     Mintshell //
         .from(commandInterface) //
-        .interpretedBy(new MclCommandInterpreter()) //
-        .dispatchedBy(new AnnotationCommandDispatcher()) //
-        .to(new AnnotationCommandTarget()) //
+        .with(new MclCommandInterpreter()) //
+        .to(new AnnotationMainCommandShell()) //
         .apply();
     Thread.sleep(Long.MAX_VALUE);
   }

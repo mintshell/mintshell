@@ -23,7 +23,7 @@
  */
 package org.mintshell.examples.terminal.ncurses;
 
-import org.mintshell.annotation.Command;
+import org.mintshell.annotation.CommandTarget;
 import org.mintshell.annotation.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("add")
+  @CommandTarget("add")
   public int add( //
       final @Param(shortName = 'a') int a, //
       final @Param(shortName = 'b') int b) {
@@ -59,7 +59,7 @@ public class AnnotationCommandTarget {
     return a + b;
   }
 
-  @Command("exit")
+  @CommandTarget("exit")
   public void exit() {
     LOG.info("Called exit()");
     System.exit(0);
@@ -73,7 +73,7 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("mem")
+  @CommandTarget("mem")
   public long mem() {
     LOG.info("Called mem()");
     final Runtime runtime = Runtime.getRuntime();
@@ -88,7 +88,7 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("memfree")
+  @CommandTarget("memfree")
   public long memfree() {
     LOG.info("Called memfree()");
     final Runtime runtime = Runtime.getRuntime();
@@ -103,7 +103,7 @@ public class AnnotationCommandTarget {
    * @author Noqmar
    * @since 0.1.0
    */
-  @Command("memused")
+  @CommandTarget("memused")
   public long memused() {
     LOG.info("Called memused()");
     final Runtime runtime = Runtime.getRuntime();

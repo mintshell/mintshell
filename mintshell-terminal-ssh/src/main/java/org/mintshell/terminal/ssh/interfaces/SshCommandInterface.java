@@ -24,7 +24,7 @@
 package org.mintshell.terminal.ssh.interfaces;
 
 import static java.lang.String.format;
-import static org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface.DEFAULT_COMMAND_SUBMISSION_KEY;
+import static org.mintshell.terminal.interfaces.BaseTerminalCommandInterface.DEFAULT_COMMAND_SUBMISSION_KEY;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,13 +38,13 @@ import java.util.stream.Collectors;
 
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.mintshell.CommandDispatcher;
-import org.mintshell.CommandInterpreter;
 import org.mintshell.annotation.Nullable;
-import org.mintshell.command.Command;
+import org.mintshell.command.DefaultCommand;
+import org.mintshell.dispatcher.CommandDispatcher;
+import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
-import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
+import org.mintshell.terminal.interfaces.BaseTerminalCommandInterface;
 import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 import org.slf4j.Logger;
@@ -102,7 +102,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
     this.sessionRegistry = new SessionRegistry();
     this.sshServer.setShellFactory(() -> {
       final SshCommandInterfaceSession newSession = new SshCommandInterfaceSession(this.sessionRegistry, this.executor, this.getCommandInterpreter(),
-          this.getCommandDispatcher(), new Command<>(exitCommandName), prompt, banner, commandSubmissionKey, this.getKeyBindingsArray());
+          this.getCommandDispatcher(), new DefaultCommand(exitCommandName), prompt, banner, commandSubmissionKey, this.getKeyBindingsArray());
       newSession.configureCommandHistory(this.commandHistory);
       return newSession;
     });
@@ -110,7 +110,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
 
   /**
    * Creates a new instance using the {@link #DEFAULT_PORT} and the
-   * {@link AbstractTerminalCommandInterface#DEFAULT_COMMAND_SUBMISSION_KEY}.
+   * {@link BaseTerminalCommandInterface#DEFAULT_COMMAND_SUBMISSION_KEY}.
    *
    * @param prompt
    *          shell prompt
@@ -129,8 +129,9 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
-   * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#activate(org.mintshell.CommandInterpreter,
-   *      org.mintshell.CommandDispatcher)
+   *
+   * @see org.mintshell.terminal.interfaces.BaseTerminalCommandInterface#activate(org.mintshell.interpreter.CommandInterpreter,
+   *      org.mintshell.dispatcher.CommandDispatcher)
    */
   @Override
   public void activate(final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher) throws IllegalStateException {
@@ -147,6 +148,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#addKeyBindings(org.mintshell.terminal.KeyBinding[])
    */
   @Override
@@ -158,6 +160,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#clearKeyBindings()
    */
   @Override
@@ -184,7 +187,8 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
-   * @see org.mintshell.CommandInterface#deactivate()
+   *
+   * @see org.mintshell.interfaces.CommandInterface#deactivate()
    */
   @Override
   public void deactivate() {
@@ -194,6 +198,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#eraseNext()
    */
   @Override
@@ -204,6 +209,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#erasePrevious()
    */
   @Override
@@ -214,6 +220,29 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
+   * @see org.mintshell.interfaces.CommandInterface#getCommandDispatcher()
+   */
+  @Override
+  public CommandDispatcher getCommandDispatcher() {
+    return this.commandDispatcher;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   * 
+   * @see org.mintshell.interfaces.CommandInterface#getCommandInterpreter()
+   */
+  @Override
+  public CommandInterpreter getCommandInterpreter() {
+    return this.commandInterpreter;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#getKeyBindings()
    */
   @Override
@@ -224,7 +253,8 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
-   * @see org.mintshell.CommandInterface#isActivated()
+   *
+   * @see org.mintshell.interfaces.CommandInterface#isActivated()
    */
   @Override
   public boolean isActivated() {
@@ -234,6 +264,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#moveNext()
    */
   @Override
@@ -244,6 +275,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#movePrevious()
    */
   @Override
@@ -254,6 +286,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#newLine()
    */
   @Override
@@ -264,6 +297,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#print(java.lang.String)
    */
   @Override
@@ -274,6 +308,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#readKey()
    */
   @Override
@@ -284,20 +319,13 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#removeKeyBinding(org.mintshell.terminal.KeyBinding)
    */
   @Override
   public void removeKeyBinding(final KeyBinding keyBinding) {
     this.keyBindings.remove(keyBinding);
     this.sessionRegistry.getSessions().forEach(session -> session.removeKeyBinding(keyBinding));
-  }
-
-  CommandDispatcher getCommandDispatcher() {
-    return this.commandDispatcher;
-  }
-
-  CommandInterpreter getCommandInterpreter() {
-    return this.commandInterpreter;
   }
 
   private KeyBinding[] getKeyBindingsArray() {

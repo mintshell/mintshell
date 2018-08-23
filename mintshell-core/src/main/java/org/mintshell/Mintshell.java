@@ -24,23 +24,30 @@
 package org.mintshell;
 
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
-import java.util.stream.Collectors;
 
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
-import org.mintshell.command.DefaultCommandTarget;
+import org.mintshell.dispatcher.CommandDispatcher;
+import org.mintshell.dispatcher.DefaultCommandDispatcher;
+import org.mintshell.interfaces.CommandInterface;
+import org.mintshell.interpreter.CommandInterpreter;
+import org.mintshell.target.CommandShell;
+import org.mintshell.target.CommandTargetSource;
+import org.mintshell.target.reflection.annotation.AnnotationCommandShell;
 
 /**
  * <p>
  * Kind of runtime environment for a connected {@link Command} interpretation structure consisting of
  * {@link CommandInterface}s receiving {@link Command}s, submiting them to their {@link CommandDispatcher}s, which
- * dispatch the submitted {@link Command}s to their {@link CommandTarget}s when possible.
+ * dispatch the submitted {@link Command}s to their {@link CommandTargetSource}s when possible.
  * </p>
  * <p>
  * It creates a {@link ForkJoinPool} with a {@link ForkJoinWorkerThread} per {@link CommandInterface} and runs the
@@ -58,8 +65,7 @@ public final class Mintshell {
   private final CommandInterpreter commandInterpreter;
   private final CommandDispatcher commandDispatcher;
 
-  private Mintshell(final Set<CommandInterface> commandInterfaces, final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher,
-      final Set<CommandTarget> commandTargets) {
+  private Mintshell(final Set<CommandInterface> commandInterfaces, final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher) {
     if (commandInterfaces == null) {
       throw new IllegalArgumentException("[commandInterfaces] must not be [null]");
     }
@@ -72,10 +78,6 @@ public final class Mintshell {
       throw new IllegalArgumentException("[commandDispatcher] must not be [null]");
     }
     this.commandDispatcher = commandDispatcher;
-    if (commandTargets == null) {
-      throw new IllegalArgumentException("[commandTargets] must not be [null]");
-    }
-    this.commandDispatcher.addCommandTargets(commandTargets);
     this.commandInterfaces.forEach(ci -> ci.activate(this.commandInterpreter, this.commandDispatcher));
   }
 
@@ -119,12 +121,8 @@ public final class Mintshell {
     return new MintShellBuilder(commandInterfaces);
   }
 
-  private static CommandTarget wrap(final Object commandTarget) {
-    return new DefaultCommandTarget(commandTarget);
-  }
-
   /**
-   * Subbuilder collecting {@link CommandTarget}s.
+   * Subbuilder collecting {@link CommandTargetSource}s.
    *
    * @author Noqmar
    * @since 0.1.0
@@ -132,30 +130,17 @@ public final class Mintshell {
   public static abstract interface MintshellDispatcher {
 
     /**
-     * Defines a variable amount of {@link Object} or {@link Class} instances as {@link CommandTarget}s for the
-     * {@link CommandDispatcher}s.
+     * Connects all collected {@link CommandTargetSource}s with all collected {@link CommandDispatcher}s and those to
+     * all collected {@link CommandInterface} and creates a new {@link Mintshell} instance, which is responsible of
+     * starting the interpretation processing.
      *
-     * @param commandTargets
-     *          variable amount of targets
-     * @return new subbuilder instance
+     * @return new {@link Mintshell} instance with all the connected structure
      *
      * @author Noqmar
      * @since 0.1.0
      */
-    public abstract MintshellTargets to(Object... commandTargets);
+    public abstract Mintshell apply();
 
-    /**
-     * Defines a {@link Set} of {@link Object} or {@link Class} instances as {@link CommandTarget}s for the
-     * {@link CommandDispatcher}s.
-     *
-     * @param commandTargets
-     *          {@link Set} of targets
-     * @return new subbuilder instance
-     *
-     * @author Noqmar
-     * @since 0.1.0
-     */
-    public abstract MintshellTargets to(Set<Object> commandTargets);
   }
 
   /**
@@ -176,7 +161,7 @@ public final class Mintshell {
      * @author Noqmar
      * @since 0.1.0
      */
-    public abstract MintshellInterpreter interpretedBy(CommandInterpreter commandInterpreter);
+    public abstract MintshellInterpreter with(CommandInterpreter commandInterpreter);
   }
 
   /**
@@ -191,80 +176,76 @@ public final class Mintshell {
      * Defines a {@link CommandDispatcher} for the {@link CommandInterpreter}s
      *
      * @param commandDispatcher
-     *          {@link CommandDispatcher} used to dispatch an interpreted command to all {@link CommandTarget}s
+     *          {@link CommandDispatcher} used to dispatch an interpreted command to all {@link CommandTargetSource}s
      * @return new subbuilder instance
      *
      * @author Noqmar
-     * @since 0.1.0
+     * @since 0.2.0
      */
-    public abstract MintshellDispatcher dispatchedBy(CommandDispatcher commandDispatcher);
+    public abstract MintshellDispatcher to(CommandDispatcher commandDispatcher);
 
     /**
-     * Defines a {@link Set} of {@link Object} or {@link Class} instances as {@link CommandTarget}s for the
-     * {@link CommandDispatcher}s.
+     * Defines a {@link DefaultCommandDispatcher} with a {@link CommandShell}for the {@link CommandInterpreter}s
      *
-     * @param commandTargets
-     *          {@link Set} of targets
+     * @param commandShell
+     *          {@link CommandShell} used for the {@link DefaultCommandDispatcher}
      * @return new subbuilder instance
      *
      * @author Noqmar
-     * @since 0.1.0
+     * @since 0.2.0
      */
-    public abstract MintshellTargets to(Set<Object> commandTargets);
+    public abstract MintshellDispatcher to(CommandShell commandShell);
+
+    /**
+     * Defines a {@link DefaultCommandDispatcher} with a {@link AnnotationCommandShell} and command target sources for
+     * the {@link CommandInterpreter}s
+     *
+     * @param commandTargetSources
+     *          command target sources used for the {@link AnnotationCommandShell} for the
+     *          {@link DefaultCommandDispatcher}
+     * @return new subbuilder instance
+     *
+     * @author Noqmar
+     * @since 0.2.0
+     */
+    public abstract MintshellDispatcher to(Object... commandTargetSources);
   }
 
   /**
-   * Final subbuilder to start the {@link Mintshell} command interpretation.
+   * Complete Builder.
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public static abstract interface MintshellTargets {
-
-    /**
-     * Connects all collected {@link CommandTarget}s with all collected {@link CommandDispatcher}s and those to all
-     * collected {@link CommandInterface} and creates a new {@link Mintshell} instance, which is responsible of starting
-     * the interpretation processing.
-     *
-     * @return new {@link Mintshell} instance with all the connected structure
-     *
-     * @author Noqmar
-     * @since 0.1.0
-     */
-    public abstract Mintshell apply();
-  }
-
-  private static class MintShellBuilder implements MintShellInterfaces, MintshellInterpreter, MintshellDispatcher, MintshellTargets {
+  private static class MintShellBuilder implements MintShellInterfaces, MintshellInterpreter, MintshellDispatcher {
 
     private final Set<CommandInterface> commandInterfaces;
     private CommandDispatcher commandDispatcher;
     private CommandInterpreter commandInterpreter;
-    private final Set<CommandTarget> commandTargets;
 
     private MintShellBuilder(final Set<CommandInterface> commandInterfaces) {
       this.commandInterfaces = new HashSet<>(Assert.ARG.isNotNull(commandInterfaces, "[commandInterfaces] must not be [null]"));
-      this.commandTargets = new HashSet<>();
     }
 
     /**
      *
      * {@inheritDoc}
-     * 
-     * @see org.mintshell.Mintshell.MintshellTargets#apply()
+     *
+     * @see org.mintshell.Mintshell.MintshellDispatcher#apply()
      */
     @Override
     public Mintshell apply() {
-      return new Mintshell(this.commandInterfaces, this.commandInterpreter, this.commandDispatcher, this.commandTargets);
+      return new Mintshell(this.commandInterfaces, this.commandInterpreter, this.commandDispatcher);
     }
 
     /**
      *
      * {@inheritDoc}
-     * 
-     * @see org.mintshell.Mintshell.MintshellInterpreter#dispatchedBy(org.mintshell.CommandDispatcher)
+     *
+     * @see org.mintshell.Mintshell.MintshellInterpreter#to(org.mintshell.dispatcher.CommandDispatcher)
      */
     @Override
-    public MintshellDispatcher dispatchedBy(final CommandDispatcher commandDispatcher) {
+    public MintshellDispatcher to(final CommandDispatcher commandDispatcher) {
       this.commandDispatcher = Assert.ARG.isNotNull(commandDispatcher, "[commandDispatcher] must not be [null]");
       return this;
     }
@@ -272,38 +253,41 @@ public final class Mintshell {
     /**
      *
      * {@inheritDoc}
-     * 
-     * @see org.mintshell.Mintshell.MintShellInterfaces#interpretedBy(org.mintshell.CommandInterpreter)
+     *
+     * @see org.mintshell.Mintshell.MintshellInterpreter#to(org.mintshell.target.CommandShell)
      */
     @Override
-    public MintshellInterpreter interpretedBy(final CommandInterpreter commandInterpreter) {
+    public MintshellDispatcher to(final CommandShell commandShell) {
+      return this.to(new DefaultCommandDispatcher(commandShell));
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     *
+     * @see org.mintshell.Mintshell.MintshellInterpreter#to(java.lang.Object[])
+     */
+    @Override
+    public MintshellDispatcher to(final Object... commandTargetSources) {
+      Assert.ARG.isNotNull(commandTargetSources, "[commandTargetSources] must not be [null]");
+      final List<CommandTargetSource> sourcesList = stream(commandTargetSources) //
+          .map(commandTargetSource -> new CommandTargetSource(commandTargetSource)) //
+          .collect(toList());
+      final CommandTargetSource[] sources = new CommandTargetSource[sourcesList.size()];
+      final AnnotationCommandShell shell = new AnnotationCommandShell("Mintshell> ");
+      shell.addCommandTargetSources(sourcesList.toArray(sources));
+      return this.to(shell);
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     *
+     * @see org.mintshell.Mintshell.MintShellInterfaces#with(org.mintshell.interpreter.CommandInterpreter)
+     */
+    @Override
+    public MintshellInterpreter with(final CommandInterpreter commandInterpreter) {
       this.commandInterpreter = Assert.ARG.isNotNull(commandInterpreter, "[commandInterpreter] must not be [null]");
-      return this;
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     * 
-     * @see org.mintshell.Mintshell.MintshellDispatcher#to(java.lang.Object[])
-     */
-    @Override
-    public MintshellTargets to(final Object... commandTargets) {
-      return this.to(stream(commandTargets).collect(Collectors.toSet()));
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     * 
-     * @see org.mintshell.Mintshell.MintshellInterpreter#to(java.util.Set)
-     */
-    @Override
-    public MintshellTargets to(final Set<Object> commandTargets) {
-      this.commandTargets.addAll( //
-          commandTargets.stream() //
-              .map(t -> (CommandTarget) (CommandTarget.class.isInstance(t) ? t : wrap(t))) //
-              .collect(Collectors.toSet()));
       return this;
     }
   }
