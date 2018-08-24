@@ -2,7 +2,8 @@
 logs/
 
 ### Maven ###
-target/
+/*/target
+
 dependency-reduced-pom.xml
 
 ### Eclipse ###
@@ -19,3 +20,4 @@ Desktop.ini
 /run.sh
 /ncurses.sh
 /ssh.sh
+
