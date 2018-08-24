@@ -72,7 +72,7 @@ public class TerminalCommandHistory implements CommandHistory {
    *
    * {@inheritDoc}
    *
-   * @see org.mintshell.command.CommandHistory#addCommandLine(java.lang.String)
+   * @see org.mintshell.interfaces.CommandHistory#addCommandLine(java.lang.String)
    */
   @Override
   public void addCommandLine(final String commandLine) {
@@ -84,7 +84,7 @@ public class TerminalCommandHistory implements CommandHistory {
    *
    * {@inheritDoc}
    *
-   * @see org.mintshell.command.CommandHistory#clear()
+   * @see org.mintshell.interfaces.CommandHistory#clear()
    */
   @Override
   public void clear() {
@@ -98,7 +98,7 @@ public class TerminalCommandHistory implements CommandHistory {
    *
    * {@inheritDoc}
    *
-   * @see org.mintshell.command.CommandHistory#getCommandLine(int)
+   * @see org.mintshell.interfaces.CommandHistory#getCommandLine(int)
    */
   @Override
   public Optional<String> getCommandLine(final int number) {
@@ -109,7 +109,7 @@ public class TerminalCommandHistory implements CommandHistory {
    *
    * {@inheritDoc}
    *
-   * @see org.mintshell.command.CommandHistory#getCommandLines()
+   * @see org.mintshell.interfaces.CommandHistory#getCommandLines()
    */
   @Override
   public Map<Integer, String> getCommandLines() {
@@ -155,8 +155,8 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
-   *
-   * @see org.mintshell.command.CommandHistory#getMaxCommandLineNumber()
+   * 
+   * @see org.mintshell.interfaces.CommandHistory#getMaxCommandLineNumber()
    */
   @Override
   public int getMaxCommandLineNumber() {
@@ -166,8 +166,8 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
-   *
-   * @see org.mintshell.command.CommandHistory#getNextCommandLine()
+   * 
+   * @see org.mintshell.interfaces.CommandHistory#getNextCommandLine()
    */
   @Override
   public String getNextCommandLine() {
@@ -181,8 +181,8 @@ public class TerminalCommandHistory implements CommandHistory {
   /**
    *
    * {@inheritDoc}
-   *
-   * @see org.mintshell.command.CommandHistory#getPreviousCommandLine()
+   * 
+   * @see org.mintshell.interfaces.CommandHistory#getPreviousCommandLine()
    */
   @Override
   public @Nullable String getPreviousCommandLine() {

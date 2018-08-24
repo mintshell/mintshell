@@ -69,8 +69,8 @@ public class MclCommandInterpreter implements CommandInterpreter {
   /**
    *
    * {@inheritDoc}
-   *
-   * @see org.mintshell.CommandInterpreter#interprete(java.lang.String)
+   * 
+   * @see org.mintshell.interpreter.CommandInterpreter#interprete(java.lang.String)
    */
   @Override
   public Command interprete(final String commandMessage) throws CommandInterpreteException {

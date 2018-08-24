@@ -26,6 +26,7 @@ package org.mintshell.terminal;
 import org.mintshell.assertion.Assert;
 import org.mintshell.dispatcher.CommandDispatcher;
 import org.mintshell.interpreter.CommandInterpreter;
+import org.mintshell.target.CommandShell;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 
 /**

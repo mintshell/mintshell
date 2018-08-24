@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
-import org.mintshell.command.CommandParameter;
 import org.mintshell.target.CommandTarget;
 import org.mintshell.target.CommandTargetParameter;
 
@@ -71,6 +70,8 @@ public class DefaultCommandHelp implements CommandHelp {
    *
    * @param helpCommandName
    *          name of the help command
+   * @param helpCommandParameterName
+   *          (optional) name of a help parameter
    * @param commandOverviewPattern
    *          pattern for command overview, must contain placeholder for target command name and command description
    * @param commandOverviewFooterPattern
@@ -170,32 +171,32 @@ public class DefaultCommandHelp implements CommandHelp {
   }
 
   /**
-   * Returns formatted detail text for a {@link CommandParameter}.
+   * Returns formatted detail text for a {@link CommandTargetParameter}.
    *
-   * @param commandParameter
-   *          {@link CommandParameter} to get text for
+   * @param commandTargetParameter
+   *          {@link CommandTargetParameter} to get text for
    * @return formatted detail text
    *
    * @author Noqmar
    * @since 0.2.0
    */
-  protected String getCommandParameterText(final CommandTargetParameter commandExecutionParameter) {
+  protected String getCommandParameterText(final CommandTargetParameter commandTargetParameter) {
     final StringBuilder builder = new StringBuilder();
-    if (!commandExecutionParameter.getShortName().isPresent() && !commandExecutionParameter.getName().isPresent()) {
-      builder.append(" arg").append(commandExecutionParameter.getIndex());
+    if (!commandTargetParameter.getShortName().isPresent() && !commandTargetParameter.getName().isPresent()) {
+      builder.append(" arg").append(commandTargetParameter.getIndex());
     }
     else {
-      if (commandExecutionParameter.getShortName().isPresent()) {
-        builder.append(" -").append(commandExecutionParameter.getShortName().get());
-        if (commandExecutionParameter.getName().isPresent()) {
+      if (commandTargetParameter.getShortName().isPresent()) {
+        builder.append(" -").append(commandTargetParameter.getShortName().get());
+        if (commandTargetParameter.getName().isPresent()) {
           builder.append(",");
         }
       }
-      if (commandExecutionParameter.getName().isPresent()) {
-        builder.append(" --").append(commandExecutionParameter.getName().get());
+      if (commandTargetParameter.getName().isPresent()) {
+        builder.append(" --").append(commandTargetParameter.getName().get());
       }
     }
-    builder.append("\t\t").append(commandExecutionParameter.getDescription().orElse("no description available"));
+    builder.append("\t\t").append(commandTargetParameter.getDescription().orElse("no description available"));
     return builder.toString();
   }
 

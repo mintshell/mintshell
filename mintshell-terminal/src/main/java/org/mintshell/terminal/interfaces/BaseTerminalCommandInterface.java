@@ -205,8 +205,8 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   /**
    *
    * {@inheritDoc}
-   *
-   * @see org.mintshell.interfaces.AbstractCommandInterface#deactivate()
+   * 
+   * @see org.mintshell.interfaces.BaseCommandInterface#deactivate()
    */
   @Override
   public void deactivate() {
@@ -437,8 +437,8 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   /**
    *
    * {@inheritDoc}
-   *
-   * @see org.mintshell.interfaces.AbstractCommandInterface#preCommand(org.mintshell.command.Command)
+   * 
+   * @see org.mintshell.interfaces.BaseCommandInterface#preCommand(org.mintshell.command.Command)
    */
   @Override
   protected CommandInterfaceCommandResult<?> preCommand(final Command command) {
