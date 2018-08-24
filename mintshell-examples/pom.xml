@@ -28,6 +28,10 @@
     <!-- modules -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>mintshell-api</artifactId>
+    </dependency>       
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>mintshell-core</artifactId>
     </dependency>
     <dependency>
