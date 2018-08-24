@@ -25,15 +25,15 @@ package org.mintshell.interfaces;
 
 import java.util.Optional;
 
-import org.mintshell.CommandDispatcher;
-import org.mintshell.CommandInterface;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandResult;
+import org.mintshell.command.DefaultCommandResult;
+import org.mintshell.dispatcher.CommandDispatcher;
 
 /**
  * A {@link CommandResult} as the result of executing a {@link Command} within a {@link CommandInterface} before it gets
  * to be dispatched by a {@link CommandDispatcher}. It contains a flag that indicates whether the executed
- * {@link Command} shall be treated as consumed, which means that it doesn't get dispathed anymore.
+ * {@link Command} shall be treated as consumed, which means that it doesn't get dispatched anymore.
  *
  * @param <T>
  *          type of the possibly contained value
@@ -41,7 +41,7 @@ import org.mintshell.command.CommandResult;
  * @author Noqmar
  * @since 0.1.0
  */
-public class CommandInterfaceCommandResult<T> extends CommandResult<T> {
+public class CommandInterfaceCommandResult<T> extends DefaultCommandResult<T> {
 
   private final boolean commandConsumed;
 
@@ -59,7 +59,7 @@ public class CommandInterfaceCommandResult<T> extends CommandResult<T> {
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandInterfaceCommandResult(final Command<?> command, final Optional<T> value, final boolean commandConsumed) {
+  public CommandInterfaceCommandResult(final Command command, final Optional<T> value, final boolean commandConsumed) {
     super(command, value);
     this.commandConsumed = commandConsumed;
   }
@@ -78,7 +78,7 @@ public class CommandInterfaceCommandResult<T> extends CommandResult<T> {
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandInterfaceCommandResult(final Command<?> command, final Throwable cause, final boolean commandConsumed) {
+  public CommandInterfaceCommandResult(final Command command, final Throwable cause, final boolean commandConsumed) {
     super(command, cause);
     this.commandConsumed = commandConsumed;
   }

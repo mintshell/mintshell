@@ -14,12 +14,18 @@
   <description>Core components of Mintshell</description>
 
   <dependencies>
-  
+
+    <!-- modules -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mintshell-api</artifactId>
+    </dependency>
+
     <!-- technical -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>  
+    </dependency>
 
     <!-- test -->
     <dependency>

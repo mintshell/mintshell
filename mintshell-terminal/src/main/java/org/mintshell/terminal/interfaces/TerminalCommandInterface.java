@@ -25,7 +25,7 @@ package org.mintshell.terminal.interfaces;
 
 import java.util.Collection;
 
-import org.mintshell.CommandInterface;
+import org.mintshell.interfaces.CommandInterface;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 

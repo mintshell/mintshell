@@ -26,7 +26,6 @@ package org.mintshell.interpreter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
-import org.mintshell.CommandInterpreteException;
 import org.mintshell.command.Command;
 
 /**
@@ -40,9 +39,9 @@ public class StringTokenCommandInterpreterTest {
   @Test
   public void testInterprete() throws CommandInterpreteException {
     final StringTokenCommandInterpreter sut = new StringTokenCommandInterpreter();
-    final Command<?> result = sut.interprete("foo b a r");
+    final Command result = sut.interprete("foo b a r");
     assertThat(result.getName()).isEqualTo("foo");
-    assertThat(result.getParameterCount()).isEqualTo(3);
+    assertThat(result.getParameters().size()).isEqualTo(3);
     assertThat(result.getParameters().get(0).getIndex()).isEqualTo(0);
     assertThat(result.getParameters().get(0).getName()).isEmpty();
     assertThat(result.getParameters().get(0).getShortName()).isEmpty();

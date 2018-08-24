@@ -1,5 +1,5 @@
 /**
- * Contains core concepts and interfaces of Mintshell.
+ * Contains core concepts and interfaces.
  *
  * @author Noqmar
  * @since 0.1.0

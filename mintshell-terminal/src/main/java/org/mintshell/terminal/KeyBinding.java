@@ -23,15 +23,15 @@
  */
 package org.mintshell.terminal;
 
-import org.mintshell.CommandDispatcher;
-import org.mintshell.CommandInterpreter;
-import org.mintshell.CommandTarget;
 import org.mintshell.assertion.Assert;
+import org.mintshell.dispatcher.CommandDispatcher;
+import org.mintshell.interpreter.CommandInterpreter;
+import org.mintshell.target.CommandShell;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 
 /**
  * A {@link KeyBinding} maps a {@link Key} of an {@link String}, that is marked as 'internal', which means all involved
- * components like {@link CommandInterpreter}, {@link CommandDispatcher} or {@link CommandTarget} may treat them in a
+ * components like {@link CommandInterpreter}, {@link CommandDispatcher} or {@link CommandShell} may treat them in a
  * special matter.
  *
  * @author Noqmar
@@ -61,6 +61,7 @@ public class KeyBinding {
   /**
    *
    * {@inheritDoc}
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -110,6 +111,7 @@ public class KeyBinding {
   /**
    *
    * {@inheritDoc}
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override

@@ -81,6 +81,7 @@
   </properties>
 
   <modules>
+    <module>mintshell-api</module>
     <module>mintshell-core</module>
     <module>mintshell-mcl</module>
     <module>mintshell-terminal</module>
@@ -93,6 +94,11 @@
     <dependencies>
 
       <!-- modules -->
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mintshell-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>      
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-core</artifactId>

@@ -1,0 +1,122 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.mintshell</groupId>
+    <artifactId>mintshell</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>mintshell-terminal-lib</artifactId>
+
+  <name>Mintshell Terminal Libraries</name>
+  <description>System libraries for Mintshell Terminal interfaces</description>
+  
+  <properties>
+    <jniClass>org.mintshell.terminal.ncurses.interfaces.NCursesTerminal</jniClass>
+    <jniCFile>src/main/c/NCursesTerminal.c</jniCFile>
+  </properties>
+
+  <dependencies>
+
+    <!-- modules -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mintshell-terminal-ncurses</artifactId>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>mintshell-terminal-ncurses</artifactId>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                  <includes>**/*.class</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-jni-headers</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <property name="maven.classpath" refid="maven.runtime.classpath" />
+              <executable>javah</executable>
+              <workingDirectory>${project.build.outputDirectory}</workingDirectory>
+              <arguments>
+                <argument>-d</argument>
+                <argument>${project.basedir}/jni</argument>
+                <argument>${jniClass}</argument>
+              </arguments>
+              <executableDependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>mintshell-terminal-ncurses</artifactId>
+              </executableDependency>
+              <includeProjectDependencies>true</includeProjectDependencies>
+            </configuration>
+          </execution>
+          <execution>
+            <id>compile-native-lib</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <executable>gcc</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>-fPIC</argument>
+                <argument>-bundle</argument>
+                <argument>-undefined</argument>
+                <argument>suppress</argument>
+                <argument>-flat_namespace</argument>
+                <argument>-m64</argument>
+                <argument>-I</argument>
+                <argument>/Library/Java/JavaVirtualMachines/openjdk-1.8.0_152-b04/include</argument>
+                <argument>-I</argument>
+                <argument>/Library/Java/JavaVirtualMachines/openjdk-1.8.0_152-b04/include/darwin</argument>
+                <argument>${jniCFile}</argument>
+                <argument>-l</argument>
+                <argument>ncurses</argument>
+                <argument>-o</argument>
+                <argument>bin/mintshell-terminal-ncurses-${os.arch}.jnilib</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+    </plugins>
+
+  </build>
+
+</project>

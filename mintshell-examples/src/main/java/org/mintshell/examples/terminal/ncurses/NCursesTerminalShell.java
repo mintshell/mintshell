@@ -24,7 +24,6 @@
 package org.mintshell.examples.terminal.ncurses;
 
 import org.mintshell.Mintshell;
-import org.mintshell.dispatcher.reflection.ReflectionCommandDispatcher;
 import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.ncurses.interfaces.NCursesTerminalCommandInterface;
@@ -45,8 +44,7 @@ public class NCursesTerminalShell {
 
     Mintshell //
         .from(commandInterface) //
-        .interpretedBy(new MclCommandInterpreter()) //
-        .dispatchedBy(new ReflectionCommandDispatcher()) //
+        .with(new MclCommandInterpreter()) //
         .to(new AnnotationCommandTarget()) //
         .apply();
     Thread.sleep(Long.MAX_VALUE);

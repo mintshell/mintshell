@@ -1,5 +1,5 @@
 /**
- * Contains core implementations of Mintshell command interfaces.
+ * Contains core implementations of command interfaces.
  *
  * @author Noqmar
  * @since 0.1.0

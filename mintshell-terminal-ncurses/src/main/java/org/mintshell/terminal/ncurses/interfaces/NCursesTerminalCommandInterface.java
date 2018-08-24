@@ -23,12 +23,12 @@
  */
 package org.mintshell.terminal.ncurses.interfaces;
 
-import org.mintshell.CommandInterface;
 import org.mintshell.annotation.Nullable;
+import org.mintshell.interfaces.CommandInterface;
 import org.mintshell.terminal.Cursor;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
-import org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface;
+import org.mintshell.terminal.interfaces.BaseTerminalCommandInterface;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInterface implements CommandInterface {
+public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterface implements CommandInterface {
 
   private static final Logger LOG = LoggerFactory.getLogger(NCursesTerminalCommandInterface.class);
 
@@ -214,7 +214,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
   /**
    *
    * {@inheritDoc}
-   * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#clearScreen()
+   * @see org.mintshell.terminal.interfaces.BaseTerminalCommandInterface#clearScreen()
    */
   @Override
   protected void clearScreen() {
@@ -226,7 +226,7 @@ public class NCursesTerminalCommandInterface extends AbstractTerminalCommandInte
   /**
    *
    * {@inheritDoc}
-   * @see org.mintshell.terminal.interfaces.AbstractTerminalCommandInterface#moveCursor(int, int)
+   * @see org.mintshell.terminal.interfaces.BaseTerminalCommandInterface#moveCursor(int, int)
    */
   @Override
   protected void moveCursor(final int col, final int row) {
