@@ -46,15 +46,26 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BaseCommandInterface implements CommandInterface {
 
+  public static final String DEFAULT_PROMPT_STOP = ">";
+
   private final Logger LOG = LoggerFactory.getLogger(BaseCommandInterface.class);
 
   private CommandInterpreter commandInterpreter;
   private CommandDispatcher commandDispatcher;
+  private final String promptStop;
+
+  public BaseCommandInterface() {
+    this(DEFAULT_PROMPT_STOP);
+  }
+
+  public BaseCommandInterface(final String promptStop) {
+    this.promptStop = Assert.ARG.isNotNull(promptStop, "[promptStop] must not be [null]");
+  }
 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#activate(org.mintshell.interpreter.CommandInterpreter,
    *      org.mintshell.dispatcher.CommandDispatcher)
    */
@@ -70,7 +81,7 @@ public abstract class BaseCommandInterface implements CommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#deactivate()
    */
   @Override
@@ -82,7 +93,7 @@ public abstract class BaseCommandInterface implements CommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#getCommandDispatcher()
    */
   @Override
@@ -93,7 +104,7 @@ public abstract class BaseCommandInterface implements CommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#getCommandInterpreter()
    */
   @Override
@@ -104,12 +115,35 @@ public abstract class BaseCommandInterface implements CommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
+   * @see org.mintshell.common.PromptProvider#getPrompt()
+   */
+  @Override
+  public String getPrompt() {
+    return new StringBuilder(this.commandDispatcher != null ? this.commandDispatcher.getPrompt() : "").append(this.getPromptStop()).append(" ").toString();
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
    * @see org.mintshell.interfaces.CommandInterface#isActivated()
    */
   @Override
   public boolean isActivated() {
     return this.commandInterpreter != null && this.commandDispatcher != null;
+  }
+
+  /**
+   * Returns the prompt stop symbol.
+   *
+   * @return prompt stop symbol
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected String getPromptStop() {
+    return this.promptStop;
   }
 
   /**

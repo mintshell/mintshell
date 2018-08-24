@@ -72,7 +72,18 @@ import org.slf4j.LoggerFactory;
  */
 public class AnnotationCommandShell extends BaseReflectionCommandShell {
 
+  public static final String DEFAULT_PROMPT = "Mintshell";
   private static final Logger LOG = LoggerFactory.getLogger(AnnotationCommandShell.class);
+
+  /**
+   * Creates a new instance with {@link #DEFAULT_PROMPT}.
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public AnnotationCommandShell() {
+    this(DEFAULT_PROMPT);
+  }
 
   /**
    * Creates a new instance.

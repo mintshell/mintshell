@@ -28,6 +28,7 @@ import java.util.Stack;
 import org.mintshell.annotation.Nullable;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandResult;
+import org.mintshell.common.PromptProvider;
 import org.mintshell.target.CommandShell;
 import org.mintshell.target.CommandTarget;
 
@@ -38,7 +39,7 @@ import org.mintshell.target.CommandTarget;
  * @author Noqmar
  * @since 0.1.0
  */
-public abstract interface CommandDispatcher {
+public abstract interface CommandDispatcher extends PromptProvider {
 
   /**
    * Dispatches the given {@link Command} by determining a matching {@link CommandTarget} from the current

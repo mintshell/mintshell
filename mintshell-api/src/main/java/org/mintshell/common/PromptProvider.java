@@ -21,48 +21,23 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.dispatcher;
-
-import org.mintshell.annotation.Nullable;
-import org.mintshell.target.CommandShell;
-import org.mintshell.target.CommandTarget;
+package org.mintshell.common;
 
 /**
- * Default implementation of a {@link CommandDispatcher}.
+ * Component that is able to provide a command prompt text.
  *
  * @author Noqmar
  * @since 0.2.0
  */
-public class DefaultCommandDispatcher extends BaseCommandDispatcher<CommandTarget> {
+public abstract interface PromptProvider {
 
   /**
-   * Creates a new instance with an initial {@link CommandShell} and with {@link DefaultCommandHelp}.
+   * Returns the current prompt text
    *
-   * @param initialShell
-   *          inital {@link CommandShell}
+   * @return current prompt text
    *
    * @author Noqmar
    * @since 0.2.0
    */
-  public DefaultCommandDispatcher(final CommandShell initialShell) {
-    super(initialShell);
-  }
-
-  /**
-   * Creates a new instance with an initial {@link CommandShell}.
-   *
-   * @param initialShell
-   *          inital {@link CommandShell}
-   * @param commandHelp
-   *          (optional) command help facility
-   * @param promptPathSeparator
-   *          sepearator to divide prompt of different {@link CommandShell}s or {@code null} if prompt pathing should be
-   *          disabled
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  public DefaultCommandDispatcher(final CommandShell initialShell, @Nullable final CommandHelp commandHelp, final @Nullable String promptPathSeparator) {
-    super(initialShell, commandHelp, promptPathSeparator);
-  }
+  public abstract String getPrompt();
 }

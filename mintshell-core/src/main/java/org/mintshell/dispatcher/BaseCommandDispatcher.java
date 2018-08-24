@@ -25,6 +25,7 @@ package org.mintshell.dispatcher;
 
 import static java.lang.String.format;
 
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Stack;
 
@@ -49,9 +50,11 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
 
   private final CommandHelp commandHelp;
   private final Stack<CommandShell> commandShells;
+  private Optional<String> promptPathSeparator;
 
   /**
-   * Creates a new instance with an initial {@link CommandShell} and with {@link DefaultCommandHelp}.
+   * Creates a new instance with an initial {@link CommandShell} and with {@link DefaultCommandHelp} and without
+   * {@link #getPromptPathSeparator()}.
    *
    * @param initialShell
    *          inital {@link CommandShell}
@@ -60,7 +63,7 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
    * @since 0.2.0
    */
   protected BaseCommandDispatcher(final CommandShell initialShell) {
-    this(initialShell, new DefaultCommandHelp());
+    this(initialShell, new DefaultCommandHelp(), null);
   }
 
   /**
@@ -70,21 +73,25 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
    *          inital {@link CommandShell}
    * @param commandHelp
    *          (optional) command help facility
+   * @param promptPathSeparator
+   *          sepearator to divide prompt of different {@link CommandShell}s or {@code null} if prompt pathing should be
+   *          disabled
    *
    * @author Noqmar
    * @since 0.2.0
    */
-  protected BaseCommandDispatcher(final CommandShell initialShell, final @Nullable CommandHelp commandHelp) {
+  protected BaseCommandDispatcher(final CommandShell initialShell, final @Nullable CommandHelp commandHelp, final @Nullable String promptPathSeparator) {
     Assert.ARG.isNotNull(initialShell, "[initialShell] must not be [null]");
     this.commandShells = new Stack<>();
     this.commandShells.push(initialShell);
     this.commandHelp = commandHelp;
+    this.promptPathSeparator = Optional.ofNullable(promptPathSeparator);
   }
 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.dispatcher.CommandDispatcher#dispatch(org.mintshell.command.Command)
    */
   @Override
@@ -121,12 +128,53 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.dispatcher.CommandDispatcher#getCommandHelp()
    */
   @Override
   public @Nullable CommandHelp getCommandHelp() {
     return this.commandHelp;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.common.PromptProvider#getPrompt()
+   */
+  @Override
+  public String getPrompt() {
+    if (this.promptPathSeparator.isPresent()) {
+      return this.createPromptPath(this.promptPathSeparator.get());
+    }
+    else {
+      return this.commandShells.peek().getPrompt();
+    }
+  }
+
+  /**
+   * Returns the (optional) prompt path seperator.
+   *
+   * @return (optional) prompt path separator or {@link Optional#empty()} if prompt pathing is disabled
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public Optional<String> getPromptPathSeparator() {
+    return this.promptPathSeparator;
+  }
+
+  /**
+   * Sets a new prompt path separator.
+   *
+   * @param promptPathSeparator
+   *          prompt path seperator or {@code null}, if prompt pathing should be diabled
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public void setPromptPathSeparator(final @Nullable String promptPathSeparator) {
+    this.promptPathSeparator = Optional.ofNullable(promptPathSeparator);
   }
 
   /**
@@ -150,6 +198,29 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
     }
     else {
       builder.append(this.commandHelp.getCommandNotFoundText(commandName));
+    }
+    return builder.toString();
+  }
+
+  /**
+   * Iterates over the {@link Stack} of {@link CommandShell}s and builds a path with their prompts using the given
+   * separator.
+   * 
+   * @param separator
+   *          path separator
+   * @return prompt path from the {@link Stack} of {@link CommandShell}s
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected String createPromptPath(final String separator) {
+    final StringBuilder builder = new StringBuilder();
+    final Iterator<CommandShell> it = this.commandShells.iterator();
+    while (it.hasNext()) {
+      builder.append(it.next().getPrompt());
+      if (it.hasNext()) {
+        builder.append(separator);
+      }
     }
     return builder.toString();
   }

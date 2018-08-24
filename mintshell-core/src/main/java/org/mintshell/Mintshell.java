@@ -274,7 +274,7 @@ public final class Mintshell {
           .map(commandTargetSource -> new CommandTargetSource(commandTargetSource)) //
           .collect(toList());
       final CommandTargetSource[] sources = new CommandTargetSource[sourcesList.size()];
-      final AnnotationCommandShell shell = new AnnotationCommandShell("Mintshell> ");
+      final AnnotationCommandShell shell = new AnnotationCommandShell();
       shell.addCommandTargetSources(sourcesList.toArray(sources));
       return this.to(shell);
     }

@@ -62,7 +62,6 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   private final ExecutorService executor;
   private Future<?> task;
   private Future<?> keyTask;
-  private final String prompt;
   private final Optional<String> banner;
   private final List<KeyBinding> keyBindings;
   private final Key commandSubmissionKey;
@@ -71,38 +70,38 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   private TerminalCommandHistory commandHistory;
 
   /**
-   * Creates a new instance using the given command prompt.
+   * Creates a new instance using the given command prompt finished.
    *
-   * @param prompt
-   *          command prompt
+   * @param promptStop
+   *          command prompt stop
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final String prompt) {
-    this(prompt, null);
+  public BaseTerminalCommandInterface(final String promptStop) {
+    this(promptStop, null);
   }
 
   /**
    * Creates a new instance using the given command prompt and the (optional) welcome banner.
    *
-   * @param prompt
-   *          command prompt
+   * @param promptStop
+   *          command prompt stop
    * @param banner
    *          welcome banner
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final String prompt, final @Nullable String banner) {
-    this(prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
+  public BaseTerminalCommandInterface(final String promptStop, final @Nullable String banner) {
+    this(promptStop, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
   }
 
   /**
    * Creates a new instance.
    *
-   * @param prompt
-   *          command prompt
+   * @param promptStop
+   *          command prompt stop
    * @param banner
    *          welcome banner
    * @param commandSubmissionKey
@@ -113,9 +112,9 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final String prompt, final @Nullable String banner, final Key commandSubmissionKey,
+  public BaseTerminalCommandInterface(final String promptStop, final @Nullable String banner, final Key commandSubmissionKey,
       final @Nullable KeyBinding... keyBindings) {
-    this.prompt = Assert.ARG.isNotNull(prompt, "[prompt] must not be [null]");
+    super(promptStop);
     this.banner = Optional.ofNullable(banner);
     this.commandSubmissionKey = Assert.ARG.isNotNull(commandSubmissionKey, "[commandSubmissionKey] must not be [null]");
     this.keyBindings = new ArrayList<>();
@@ -174,7 +173,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#clearKeyBindings()
    */
   @Override
@@ -205,7 +204,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.BaseCommandInterface#deactivate()
    */
   @Override
@@ -437,7 +436,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.BaseCommandInterface#preCommand(org.mintshell.command.Command)
    */
   @Override
@@ -458,7 +457,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    * @since 0.1.0
    */
   protected void printPrompt() {
-    this.print(this.prompt);
+    this.print(this.getPrompt());
   }
 
   private void eraseCursorToStartOfLine() {

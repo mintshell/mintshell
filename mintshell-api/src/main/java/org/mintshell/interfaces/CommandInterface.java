@@ -26,6 +26,7 @@ package org.mintshell.interfaces;
 import org.mintshell.annotation.Nullable;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandResult;
+import org.mintshell.common.PromptProvider;
 import org.mintshell.dispatcher.CommandDispatcher;
 import org.mintshell.interpreter.CommandInterpreter;
 
@@ -39,7 +40,7 @@ import org.mintshell.interpreter.CommandInterpreter;
  * @author Noqmar
  * @since 0.1.0
  */
-public abstract interface CommandInterface {
+public abstract interface CommandInterface extends PromptProvider {
 
   /**
    * Activates the {@link CommandInterface} with the given {@link CommandInterpreter} and {@link CommandDispatcher} to

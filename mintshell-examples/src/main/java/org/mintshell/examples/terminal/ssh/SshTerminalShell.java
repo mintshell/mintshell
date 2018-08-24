@@ -40,7 +40,7 @@ public class SshTerminalShell {
 
   public SshTerminalShell(final String[] args) throws Exception {
 
-    final SshCommandInterface commandInterface = new SshCommandInterface("Mintshell> ", "Welcome to Mintshell with SSH\r\n", KEYBINDING_EXIT);
+    final SshCommandInterface commandInterface = new SshCommandInterface("Welcome to Mintshell with SSH\r\n", KEYBINDING_EXIT);
     commandInterface.configureCommandHistory(new TerminalCommandHistory());
 
     Mintshell //

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-@CommandShell(prompt = "main>")
+@CommandShell(prompt = "main")
 public class AnnotationMainCommandShell {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);

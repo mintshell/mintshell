@@ -26,6 +26,7 @@ package org.mintshell.target;
 import java.util.Set;
 
 import org.mintshell.command.Command;
+import org.mintshell.common.PromptProvider;
 
 /**
  * A {@link CommandShell} encapsulates a kind of command execution environment. It manages a {@link Set} of supported
@@ -34,17 +35,7 @@ import org.mintshell.command.Command;
  * @author Noqmar
  * @since 0.2.0
  */
-public abstract interface CommandShell {
-
-  /**
-   * Returns the (current) prompt of the {@link CommandShell}.
-   *
-   * @return (current) prompt
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  public abstract String getPrompt();
+public abstract interface CommandShell extends PromptProvider {
 
   /**
    * Returns a {@link Set} of provided {@link CommandTarget}s within the scope of this {@link CommandShell}.

@@ -78,8 +78,6 @@ public class SshCommandInterface implements TerminalCommandInterface {
    *          port number to bind the SSH server to
    * @param exitCommandName
    *          Name of the command that is recognized and leads to close a SSH session
-   * @param prompt
-   *          shell prompt
    * @param banner
    *          welcome banner
    * @param commandSubmissionKey
@@ -90,7 +88,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterface(final int port, final String exitCommandName, final String prompt, @Nullable final String banner, final Key commandSubmissionKey,
+  public SshCommandInterface(final int port, final String exitCommandName, @Nullable final String banner, final Key commandSubmissionKey,
       @Nullable final KeyBinding... keyBindings) {
     this.executor = Executors.newCachedThreadPool();
     this.port = port;
@@ -102,7 +100,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
     this.sessionRegistry = new SessionRegistry();
     this.sshServer.setShellFactory(() -> {
       final SshCommandInterfaceSession newSession = new SshCommandInterfaceSession(this.sessionRegistry, this.executor, this.getCommandInterpreter(),
-          this.getCommandDispatcher(), new DefaultCommand(exitCommandName), prompt, banner, commandSubmissionKey, this.getKeyBindingsArray());
+          this.getCommandDispatcher(), new DefaultCommand(exitCommandName), banner, commandSubmissionKey, this.getKeyBindingsArray());
       newSession.configureCommandHistory(this.commandHistory);
       return newSession;
     });
@@ -112,8 +110,6 @@ public class SshCommandInterface implements TerminalCommandInterface {
    * Creates a new instance using the {@link #DEFAULT_PORT} and the
    * {@link BaseTerminalCommandInterface#DEFAULT_COMMAND_SUBMISSION_KEY}.
    *
-   * @param prompt
-   *          shell prompt
    * @param banner
    *          welcome banner
    * @param keyBindings
@@ -122,8 +118,8 @@ public class SshCommandInterface implements TerminalCommandInterface {
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterface(final String prompt, @Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
-    this(DEFAULT_PORT, DEFAULT_EXIT_COMMAND_NAME, prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
+  public SshCommandInterface(@Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
+    this(DEFAULT_PORT, DEFAULT_EXIT_COMMAND_NAME, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
   }
 
   /**
@@ -231,7 +227,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#getCommandInterpreter()
    */
   @Override
@@ -248,6 +244,17 @@ public class SshCommandInterface implements TerminalCommandInterface {
   @Override
   public Collection<KeyBinding> getKeyBindings() {
     return new ArrayList<>(this.keyBindings);
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.common.PromptProvider#getPrompt()
+   */
+  @Override
+  public String getPrompt() {
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
   }
 
   /**
