@@ -40,7 +40,7 @@ import org.mintshell.assertion.Assert;
 public abstract class BaseCommandShell implements CommandShell {
 
   private final String prompt;
-  private final Map<CommandTarget, CommandTargetSource> commandTargetSources;
+  protected final Map<CommandTarget, CommandTargetSource> commandTargetSources;
 
   /**
    * Creates a new instance and determines all {@link CommandTarget}s from the given command target sources

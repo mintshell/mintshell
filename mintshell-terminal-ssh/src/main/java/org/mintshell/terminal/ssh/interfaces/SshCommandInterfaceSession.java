@@ -37,7 +37,6 @@ import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.shell.TtyFilterInputStream;
 import org.mintshell.assertion.Assert;
-import org.mintshell.command.Command;
 import org.mintshell.command.CommandResult;
 import org.mintshell.dispatcher.CommandDispatcher;
 import org.mintshell.interpreter.CommandInterpreter;
@@ -62,7 +61,6 @@ public class SshCommandInterfaceSession extends BaseTerminalCommandInterface imp
   private final ExecutorService executor;
   private final CommandInterpreter commandInterpreter;
   private final CommandDispatcher commandDispatcher;
-  private final Command exitCommand;
 
   /**
    * Creates a new instance.
@@ -77,8 +75,6 @@ public class SshCommandInterfaceSession extends BaseTerminalCommandInterface imp
    * @param commandDispatcher
    *          {@link CommandDispatcher} which would be usually propagated though
    *          {@link #activate(CommandInterpreter, CommandDispatcher)}
-   * @param exitCommand
-   *          {@link Command} that leads to termination of this session
    * @param banner
    *          welcome banner
    * @param commandSubmissionKey
@@ -90,14 +86,12 @@ public class SshCommandInterfaceSession extends BaseTerminalCommandInterface imp
    * @since 0.1.0
    */
   public SshCommandInterfaceSession(final SessionRegistry sessionRegistry, final ExecutorService executor, final CommandInterpreter commandInterpreter,
-      final CommandDispatcher commandDispatcher, final Command exitCommand, final String banner, final Key commandSubmissionKey,
-      final KeyBinding... keyBindings) {
+      final CommandDispatcher commandDispatcher, final String banner, final Key commandSubmissionKey, final KeyBinding... keyBindings) {
     super(DEFAULT_PROMPT_STOP, banner, commandSubmissionKey, keyBindings);
     this.sessionRegistry = Assert.ARG.isNotNull(sessionRegistry, "[sessionRegistry] must not be [null]");
     this.executor = Assert.ARG.isNotNull(executor, "[executor] must not be [null]");
     this.commandInterpreter = Assert.ARG.isNotNull(commandInterpreter, "[commandInterpreter] must not be [null]");
     this.commandDispatcher = Assert.ARG.isNotNull(commandDispatcher, "[commandDispatcher] must not be [null]");
-    this.exitCommand = Assert.ARG.isNotNull(exitCommand, "[exitCommand] must not be [null]");
     sessionRegistry.register(this);
   }
 
@@ -113,6 +107,9 @@ public class SshCommandInterfaceSession extends BaseTerminalCommandInterface imp
       this.task.cancel(true);
     }
     super.deactivate();
+    if (this.exitCallback != null) {
+      this.exitCallback.onExit(0);
+    }
   }
 
   /**
@@ -346,12 +343,6 @@ public class SshCommandInterfaceSession extends BaseTerminalCommandInterface imp
    */
   @Override
   protected void postCommand(final CommandResult<?> result) {
-    if (result != null && this.exitCommand != null && this.exitCommand.equals(result.getCommand())) {
-      this.deactivate();
-      if (this.exitCallback != null) {
-        this.exitCallback.onExit(result.isSucceeded() ? 0 : 1);
-      }
-    }
     super.postCommand(result);
   }
 }

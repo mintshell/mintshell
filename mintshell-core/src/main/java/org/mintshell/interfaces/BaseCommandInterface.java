@@ -35,6 +35,7 @@ import org.mintshell.dispatcher.CommandDispatchException;
 import org.mintshell.dispatcher.CommandDispatcher;
 import org.mintshell.interpreter.CommandInterpreteException;
 import org.mintshell.interpreter.CommandInterpreter;
+import org.mintshell.target.CommandShellExitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,6 +179,9 @@ public abstract class BaseCommandInterface implements CommandInterface {
           return resultCause.isPresent() ? resultCause.get().getMessage() : "Failed for unknown reason";
       }
       return "";
+    } catch (final CommandShellExitException e) {
+      this.deactivate();
+      return "";
     } catch (final CommandInterpreteException e) {
       this.LOG.warn("Failed to interprete command [{}]", commandMessage, e);
       return e.getMessage();
@@ -188,7 +192,9 @@ public abstract class BaseCommandInterface implements CommandInterface {
       this.LOG.error("Failed to perform command [{}]", commandMessage, e);
       return format("%s: command failure: %s", commandMessage, e.getMessage());
     } finally {
-      this.postCommand(result);
+      if (this.isActivated()) {
+        this.postCommand(result);
+      }
     }
   }
 

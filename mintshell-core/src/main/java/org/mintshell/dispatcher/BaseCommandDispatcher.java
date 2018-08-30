@@ -25,6 +25,7 @@ package org.mintshell.dispatcher;
 
 import static java.lang.String.format;
 
+import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Stack;
@@ -36,6 +37,7 @@ import org.mintshell.command.CommandResult;
 import org.mintshell.command.DefaultCommandResult;
 import org.mintshell.target.CommandInvocationException;
 import org.mintshell.target.CommandShell;
+import org.mintshell.target.CommandShellExitException;
 import org.mintshell.target.CommandTarget;
 import org.mintshell.target.CommandTargetAlias;
 import org.mintshell.target.CommandTargetException;
@@ -95,7 +97,7 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
    * @see org.mintshell.dispatcher.CommandDispatcher#dispatch(org.mintshell.command.Command)
    */
   @Override
-  public CommandResult<?> dispatch(final Command command) throws CommandDispatchException {
+  public CommandResult<?> dispatch(final Command command) throws CommandDispatchException, CommandShellExitException {
 
     // handle help
     if (this.getCommandHelp() != null) {
@@ -109,19 +111,36 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
       }
     }
     // dispatch command
-    final CommandShell currentCommandShell = this.commandShells.peek();
-    final CommandTarget commandTarget = this.resolveAliases(currentCommandShell.getTargets().stream() //
-        .filter(target -> target.getName().equals(command.getName())) //
-        .findFirst() //
-        .orElseThrow(() -> new CommandDispatchException(format("%s: command not found", command))));
     try {
+      final CommandShell currentCommandShell = this.commandShells.peek();
+      final CommandTarget commandTarget = this.resolveAliases(currentCommandShell.getTargets().stream() //
+          .filter(target -> target.getName().equals(command.getName())) //
+          .findFirst() //
+          .orElseThrow(() -> new CommandDispatchException(format("%s: command not found", command))));
+
       final Object result = currentCommandShell.invoke(command, commandTarget);
-      // TODO: #11 add subshell support
+      if (result instanceof CommandShell) {
+        this.commandShells.push((CommandShell) result);
+      }
       return new DefaultCommandResult<>(command, Optional.ofNullable(result));
+    } catch (final CommandDispatchException e) {
+      throw e;
     } catch (final CommandInvocationException e) {
       throw new CommandDispatchException(format("%s: command invocation failed", command), e);
     } catch (final CommandTargetException e) {
+      if (e.getCause() instanceof CommandShellExitException) {
+        if (this.commandShells.size() > 1) {
+          this.commandShells.pop();
+        }
+        else {
+          throw (CommandShellExitException) e.getCause();
+        }
+      }
       return new DefaultCommandResult<>(command, e.getCause());
+    } catch (final EmptyStackException e) {
+      throw new CommandDispatchException(format("%s: missing command shell instance", command), e);
+    } catch (final RuntimeException e) {
+      throw new CommandDispatchException(format("%s: failed to dispatch command: %", command, e.getMessage()), e);
     }
   }
 
@@ -205,7 +224,7 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
   /**
    * Iterates over the {@link Stack} of {@link CommandShell}s and builds a path with their prompts using the given
    * separator.
-   * 
+   *
    * @param separator
    *          path separator
    * @return prompt path from the {@link Stack} of {@link CommandShell}s

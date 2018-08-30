@@ -25,8 +25,11 @@ package org.mintshell.target.reflection.annotation;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+import static org.mintshell.target.reflection.annotation.CommandShellExiter.EXIT_METHOD_NAME;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -38,7 +41,9 @@ import org.mintshell.annotation.Param;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.target.CommandShell;
 import org.mintshell.target.CommandTarget;
+import org.mintshell.target.CommandTargetSource;
 import org.mintshell.target.reflection.BaseReflectionCommandShell;
+import org.mintshell.target.reflection.DefaultReflectionCommandTarget;
 import org.mintshell.target.reflection.PrimitiveParameter;
 import org.mintshell.target.reflection.ReflectionCommandTargetParameter;
 import org.mintshell.target.reflection.ReflectionCommandTargetParameterFactory;
@@ -86,6 +91,23 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
   }
 
   /**
+   * Creates a new instance from an {@link org.mintshell.annotation.CommandShell} annotation.
+   *
+   * @param annotation
+   *          annotation
+   * @param commandTargetSource
+   *          command target source
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public AnnotationCommandShell(final org.mintshell.annotation.CommandShell annotation, final CommandTargetSource commandTargetSource) {
+    super(annotation.prompt());
+    this.addCommandTargetSources(commandTargetSource);
+    this.addAnnotatedExitCommands(annotation);
+  }
+
+  /**
    * Creates a new instance.
    *
    * @param prompt
@@ -126,6 +148,41 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
     return stream(target.getMethods()) //
         .filter(method -> method.getAnnotation(org.mintshell.annotation.CommandTarget.class) != null) //
         .collect(toList());
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.target.reflection.BaseReflectionCommandShell#invokeMethod(java.lang.reflect.Method,
+   *      java.lang.Object[], java.lang.Object)
+   */
+  @Override
+  protected Object invokeMethod(final Method method, final Object[] args, final Object source) throws IllegalAccessException, InvocationTargetException {
+    final Object invocationResult = super.invokeMethod(method, args, source);
+    if (invocationResult != null && !(invocationResult instanceof CommandShell)) {
+      final org.mintshell.annotation.CommandShell shellAnnotation = invocationResult.getClass().getAnnotation(org.mintshell.annotation.CommandShell.class);
+      if (shellAnnotation != null) {
+        return new AnnotationCommandShell(shellAnnotation, new CommandTargetSource(invocationResult));
+      }
+    }
+    return invocationResult;
+  }
+
+  private void addAnnotatedExitCommands(final org.mintshell.annotation.CommandShell annotation) {
+    if (annotation.exitCommands().length > 0) {
+      final String exitCommandDescription = annotation.exitCommandDescription().isEmpty() ? null : annotation.exitCommandDescription();
+      final CommandShellExiter exiter = new CommandShellExiter(annotation.exitCommandMessage());
+      for (final String exitCommand : annotation.exitCommands()) {
+        try {
+          final Method exitMethod = exiter.getClass().getMethod(EXIT_METHOD_NAME);
+          final DefaultReflectionCommandTarget target = new DefaultReflectionCommandTarget(exitMethod, exitCommand, exitCommandDescription, emptyList());
+          this.commandTargetSources.put(target, new CommandTargetSource(exiter));
+        } catch (UnsupportedParameterTypeException | NoSuchMethodException | SecurityException e) {
+          LOG.warn("Failed to add annotated exit command [{}]", exitCommand, e);
+        }
+      }
+    }
   }
 
   private ReflectionCommandTargetParameter createCommandParameter(final Parameter parameter, final int index,

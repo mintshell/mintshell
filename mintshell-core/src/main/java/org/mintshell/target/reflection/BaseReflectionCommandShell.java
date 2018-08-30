@@ -121,7 +121,7 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
     try {
       final Object[] args = this.createInvocationArguments(command, commandTarget);
       method.setAccessible(true);
-      return method.invoke(source.isInstance() ? source.getTargetInstance() : null, args);
+      return this.invokeMethod(method, args, source.isInstance() ? source.getTargetInstance() : null);
     } catch (final InvocationTargetException e) {
       throw new CommandTargetException(e.getTargetException());
     } catch (final IllegalAccessException e) {
@@ -149,7 +149,7 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.target.BaseCommandShell#determineCommandTargets(org.mintshell.target.CommandTargetSource)
    */
   @Override
@@ -185,6 +185,29 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
    */
   protected Set<ReflectionCommandTargetParameterFactory> getSupportedParameters() {
     return new HashSet<>(this.supportedCommandParameters);
+  }
+
+  /**
+   * Allows subclasses to handle or maniulate the method invocation.
+   *
+   * @param method
+   *          method to be invoked
+   * @param args
+   *          method arguments
+   * @param source
+   *          source object for the invocatoin
+   * @return invocation result
+   * @throws IllegalAccessException
+   *           if this {@code Method} object is enforcing Java language access control and the underlying method is
+   *           inaccessible.
+   * @throws InvocationTargetException
+   *           if the underlying method throws an exception.
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected Object invokeMethod(final Method method, final Object[] args, final Object source) throws IllegalAccessException, InvocationTargetException {
+    return method.invoke(source, args);
   }
 
   private Object createInvocationArgument(final List<? extends CommandParameter> commandParameters,

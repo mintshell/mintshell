@@ -26,6 +26,7 @@ package org.mintshell.examples.terminal.ssh;
 import org.mintshell.annotation.CommandShell;
 import org.mintshell.annotation.CommandTarget;
 import org.mintshell.annotation.Param;
+import org.mintshell.target.CommandShellExitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +37,15 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-@CommandShell(prompt = "sub>")
+@CommandShell(prompt = "sub")
 public class AnnotationSubCommandShell {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
+
+  @CommandTarget(value = "exit", description = "exits the subshell")
+  public void exit() {
+    throw new CommandShellExitException("Subshell closed");
+  }
 
   /**
    * Adds the given arguments.

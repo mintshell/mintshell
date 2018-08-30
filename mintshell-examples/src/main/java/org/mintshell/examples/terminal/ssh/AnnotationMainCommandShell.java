@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-@CommandShell(prompt = "main")
+@CommandShell(prompt = "main", exitCommands = { "exit" }, exitCommandDescription = "exits the main shell", exitCommandMessage = "Closing ssh session")
 public class AnnotationMainCommandShell {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
@@ -59,11 +59,6 @@ public class AnnotationMainCommandShell {
       final @Param(shortName = 's', name = "second", description = "second summand <int>)") int b) {
     LOG.info("Called add({}, {})", a, b);
     return a + b;
-  }
-
-  @CommandTarget(value = "exit", description = "exits the SSH session")
-  public void exit() {
-    LOG.info("Called exit()");
   }
 
   /**

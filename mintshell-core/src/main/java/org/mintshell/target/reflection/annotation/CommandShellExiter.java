@@ -21,66 +21,56 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.annotation;
+package org.mintshell.target.reflection.annotation;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
+import org.mintshell.assertion.Assert;
 import org.mintshell.target.CommandShellExitException;
 
 /**
- * Annotation to map a type (class) to a {@link org.mintshell.target.CommandShell}
+ * May be used as command target source for command shell exit. It has only one method throwing the necessary
+ * {@link CommandShellExitException}.
+ *
  *
  * @author Noqmar
  * @since 0.2.0
  */
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface CommandShell {
+final class CommandShellExiter {
+
+  static final String EXIT_METHOD_NAME = "exit";
+
+  private final String exitMessage;
 
   /**
-   * Returns the description of the {@link #exitCommands()}, if any.
-   *
-   * @return descrition of the {@link #exitCommands()}
+   * Creates a new instance with empty exit message.
    *
    * @author Noqmar
    * @since 0.2.0
    */
-  String exitCommandDescription() default "";
+  CommandShellExiter() {
+    this("");
+  }
 
   /**
-   * Returns the message to be displayed when exiting the {@link org.mintshell.target.CommandShell}.
-   * 
-   * @return exit message
+   * Creates a new instance with an exit message.
+   *
+   * @param exitMessage
+   *          exit message
    *
    * @author Noqmar
    * @since 0.2.0
    */
-  String exitCommandMessage() default "";
+  CommandShellExiter(final String exitMessage) {
+    this.exitMessage = Assert.ARG.isNotNull(exitMessage, "[exitMessage] must not be [null]");
+  }
 
   /**
-   * Command names, that should be mapped to {@link CommandTarget}s, that exit the
-   * {@link org.mintshell.target.CommandShell} by throwing a {@link CommandShellExitException}.
+   * Exit method.
    *
-   * @return exit command names
    *
    * @author Noqmar
    * @since 0.2.0
    */
-  String[] exitCommands() default {};
-
-  /**
-   * Returns the (static) prompt of the command shell.
-   *
-   * @return (static) propt of the command shell
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  String prompt();
+  public void exit() {
+    throw new CommandShellExitException(this.exitMessage);
+  }
 }
