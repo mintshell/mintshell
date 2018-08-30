@@ -145,7 +145,7 @@ public class DefaultCommandHelp implements CommandHelp {
    */
   @Override
   public String getCommandOverviewText(final CommandTarget command) {
-    return String.format(this.commandOverviewPattern, command.getName(), command.getDescription());
+    return String.format(this.commandOverviewPattern, command.getName(), command.getDescription().orElse("no description available"));
   }
 
   /**

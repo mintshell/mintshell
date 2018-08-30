@@ -47,38 +47,8 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   private Cursor cursor;
 
   /**
-   * Creates a new instance using the given command prompt.
-   *
-   * @param prompt
-   *          command prompt
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public NCursesTerminalCommandInterface(final String prompt) {
-    this(prompt, null);
-  }
-
-  /**
-   * Creates a new instance using the given command prompt and the (optional) welcome banner.
-   *
-   * @param prompt
-   *          command prompt
-   * @param banner
-   *          welcome banner
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public NCursesTerminalCommandInterface(final String prompt, @Nullable final String banner) {
-    this(prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
-  }
-
-  /**
    * Creates a new instance.
    *
-   * @param prompt
-   *          command prompt
    * @param banner
    *          welcome banner
    * @param commandSubmissionKey
@@ -89,9 +59,8 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
    * @author Noqmar
    * @since 0.1.0
    */
-  public NCursesTerminalCommandInterface(final String prompt, @Nullable final String banner, final Key commandSubmissionKey,
-      @Nullable final KeyBinding... keyBindings) {
-    super(prompt, banner, commandSubmissionKey, keyBindings);
+  public NCursesTerminalCommandInterface(@Nullable final String banner, final Key commandSubmissionKey, @Nullable final KeyBinding... keyBindings) {
+    super(DEFAULT_PROMPT_STOP, banner, commandSubmissionKey, keyBindings);
     this.nCurses = NCursesTerminal.getInstance();
     this.cursor = new Cursor(this.nCurses.getCol(), this.nCurses.getRow(), this.nCurses.getMaxCol(), this.nCurses.getMaxRow());
     this.logPositions();
@@ -100,8 +69,6 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    * Creates a new instance.
    *
-   * @param prompt
-   *          command prompt
    * @param banner
    *          welcome banner
    * @param keyBindings
@@ -110,13 +77,20 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
    * @author Noqmar
    * @since 0.1.0
    */
-  public NCursesTerminalCommandInterface(final String prompt, @Nullable final String banner, final KeyBinding... keyBindings) {
-    this(prompt, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
+  public NCursesTerminalCommandInterface(@Nullable final String banner, final KeyBinding... keyBindings) {
+    this(banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
+  }
+
+  @Override
+  public void deactivate() {
+    super.deactivate();
+    System.exit(0);
   }
 
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#eraseNext()
    */
   @Override
@@ -128,6 +102,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#erasePrevious()
    */
   @Override
@@ -141,6 +116,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#moveNext()
    */
   @Override
@@ -153,6 +129,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#movePrevious()
    */
   @Override
@@ -165,6 +142,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#newLine()
    */
   @Override
@@ -176,6 +154,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#print(java.lang.String)
    */
   @Override
@@ -200,6 +179,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.TerminalCommandInterface#readKey()
    */
   @Override
@@ -214,6 +194,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.BaseTerminalCommandInterface#clearScreen()
    */
   @Override
@@ -226,6 +207,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    *
    * {@inheritDoc}
+   *
    * @see org.mintshell.terminal.interfaces.BaseTerminalCommandInterface#moveCursor(int, int)
    */
   @Override

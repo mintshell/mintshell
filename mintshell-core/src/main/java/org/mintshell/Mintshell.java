@@ -270,11 +270,17 @@ public final class Mintshell {
     @Override
     public MintshellDispatcher to(final Object... commandTargetSources) {
       Assert.ARG.isNotNull(commandTargetSources, "[commandTargetSources] must not be [null]");
+      if (commandTargetSources.length == 1 && commandTargetSources[0] != null) {
+        final org.mintshell.annotation.CommandShell annotation = commandTargetSources[0].getClass().getAnnotation(org.mintshell.annotation.CommandShell.class);
+        if (annotation != null) {
+          return this.to(new AnnotationCommandShell(annotation, new CommandTargetSource(commandTargetSources[0])));
+        }
+      }
       final List<CommandTargetSource> sourcesList = stream(commandTargetSources) //
           .map(commandTargetSource -> new CommandTargetSource(commandTargetSource)) //
           .collect(toList());
       final CommandTargetSource[] sources = new CommandTargetSource[sourcesList.size()];
-      final AnnotationCommandShell shell = new AnnotationCommandShell("Mintshell> ");
+      final AnnotationCommandShell shell = new AnnotationCommandShell();
       shell.addCommandTargetSources(sourcesList.toArray(sources));
       return this.to(shell);
     }

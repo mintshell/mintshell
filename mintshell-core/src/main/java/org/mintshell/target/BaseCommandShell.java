@@ -26,8 +26,10 @@ package org.mintshell.target;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 
 /**
@@ -40,10 +42,11 @@ import org.mintshell.assertion.Assert;
 public abstract class BaseCommandShell implements CommandShell {
 
   private final String prompt;
-  private final Map<CommandTarget, CommandTargetSource> commandTargetSources;
+  private final Optional<String> promptPathSeparator;
+  protected final Map<CommandTarget, CommandTargetSource> commandTargetSources;
 
   /**
-   * Creates a new instance and determines all {@link CommandTarget}s from the given command target sources
+   * Creates a new instance without prompt path separator.
    *
    * @param prompt
    *          prompt text
@@ -52,7 +55,23 @@ public abstract class BaseCommandShell implements CommandShell {
    * @since 0.2.0
    */
   protected BaseCommandShell(final String prompt) {
+    this(prompt, null);
+  }
+
+  /**
+   * Creates a new instance.
+   *
+   * @param prompt
+   *          prompt text
+   * @param promptPathSeparator
+   *          (optional) prompt path separator of this shell
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected BaseCommandShell(final String prompt, final @Nullable String promptPathSeparator) {
     this.prompt = Assert.ARG.isNotNull(prompt, "[prompt] must not be [null]");
+    this.promptPathSeparator = Optional.ofNullable(promptPathSeparator);
     this.commandTargetSources = new HashMap<>();
   }
 
@@ -87,6 +106,17 @@ public abstract class BaseCommandShell implements CommandShell {
   @Override
   public String getPrompt() {
     return this.prompt;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.target.CommandShell#getPromptPathSeparator()
+   */
+  @Override
+  public Optional<String> getPromptPathSeparator() {
+    return this.promptPathSeparator;
   }
 
   /**

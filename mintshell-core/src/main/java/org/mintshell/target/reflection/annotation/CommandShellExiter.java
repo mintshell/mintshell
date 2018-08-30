@@ -21,43 +21,56 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.examples.terminal.ssh;
+package org.mintshell.target.reflection.annotation;
 
-import org.mintshell.annotation.CommandShell;
-import org.mintshell.annotation.CommandTarget;
-import org.mintshell.annotation.Param;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mintshell.assertion.Assert;
+import org.mintshell.target.CommandShellExitException;
 
 /**
- * Simple class that can be used as instance command target providing nothing more than (annotated) methods to grab
- * static system information.
+ * May be used as command target source for command shell exit. It has only one method throwing the necessary
+ * {@link CommandShellExitException}.
+ *
  *
  * @author Noqmar
- * @since 0.1.0
+ * @since 0.2.0
  */
-@CommandShell(prompt = "sub>")
-public class AnnotationSubCommandShell {
+final class CommandShellExiter {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
+  static final String EXIT_METHOD_NAME = "exit";
+
+  private final String exitMessage;
 
   /**
-   * Adds the given arguments.
-   *
-   * @param a
-   *          first argument
-   * @param b
-   *          second argument
-   * @return sum of both arguments
+   * Creates a new instance with empty exit message.
    *
    * @author Noqmar
-   * @since 0.1.0
+   * @since 0.2.0
    */
-  @CommandTarget(value = "mul", description = "multiplies two integers")
-  public int mul( //
-      final @Param(shortName = 'f', name = "first", description = "first summand <int>)") int a, //
-      final @Param(shortName = 's', name = "second", description = "second summand <int>)") int b) {
-    LOG.info("Called mul({}, {})", a, b);
-    return a * b;
+  CommandShellExiter() {
+    this("");
+  }
+
+  /**
+   * Creates a new instance with an exit message.
+   *
+   * @param exitMessage
+   *          exit message
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  CommandShellExiter(final String exitMessage) {
+    this.exitMessage = Assert.ARG.isNotNull(exitMessage, "[exitMessage] must not be [null]");
+  }
+
+  /**
+   * Exit method.
+   *
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public void exit() {
+    throw new CommandShellExitException(this.exitMessage);
   }
 }

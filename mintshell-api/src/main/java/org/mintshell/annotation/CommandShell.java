@@ -30,6 +30,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.mintshell.target.CommandShellExitException;
+
 /**
  * Annotation to map a type (class) to a {@link org.mintshell.target.CommandShell}
  *
@@ -42,6 +44,47 @@ import java.lang.annotation.Target;
 public @interface CommandShell {
 
   /**
+   * Returns the message to be displayed when entering the {@link org.mintshell.target.CommandShell}.
+   *
+   * @return enter message
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  String enterMessage() default "";
+
+  /**
+   * Returns the description of the {@link #exitCommands()}, if any.
+   *
+   * @return descrition of the {@link #exitCommands()}
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  String exitCommandDescription() default "";
+
+  /**
+   * Command names, that should be mapped to {@link CommandTarget}s, that exit the
+   * {@link org.mintshell.target.CommandShell} by throwing a {@link CommandShellExitException}.
+   *
+   * @return exit command names
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  String[] exitCommands() default {};
+
+  /**
+   * Returns the message to be displayed when exiting the {@link org.mintshell.target.CommandShell}.
+   *
+   * @return exit message
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  String exitMessage() default "";
+
+  /**
    * Returns the (static) prompt of the command shell.
    *
    * @return (static) propt of the command shell
@@ -50,4 +93,14 @@ public @interface CommandShell {
    * @since 0.2.0
    */
   String prompt();
+
+  /**
+   * Returns a separator to building a prompt path. If the separator is empty no path shall be displayed.
+   *
+   * @return prompt path separator
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  String promptPathSeparator() default "";
 }

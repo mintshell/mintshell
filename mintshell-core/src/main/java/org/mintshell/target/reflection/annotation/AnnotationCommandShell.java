@@ -25,8 +25,11 @@ package org.mintshell.target.reflection.annotation;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+import static org.mintshell.target.reflection.annotation.CommandShellExiter.EXIT_METHOD_NAME;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -34,11 +37,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.annotation.Param;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.target.CommandShell;
 import org.mintshell.target.CommandTarget;
+import org.mintshell.target.CommandTargetSource;
 import org.mintshell.target.reflection.BaseReflectionCommandShell;
+import org.mintshell.target.reflection.DefaultReflectionCommandTarget;
 import org.mintshell.target.reflection.PrimitiveParameter;
 import org.mintshell.target.reflection.ReflectionCommandTargetParameter;
 import org.mintshell.target.reflection.ReflectionCommandTargetParameterFactory;
@@ -72,18 +78,77 @@ import org.slf4j.LoggerFactory;
  */
 public class AnnotationCommandShell extends BaseReflectionCommandShell {
 
+  public static final String DEFAULT_PROMPT = "Mintshell";
   private static final Logger LOG = LoggerFactory.getLogger(AnnotationCommandShell.class);
+
+  private final String enterMessage;
+
+  /**
+   * Creates a new instance with {@link #DEFAULT_PROMPT}.
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public AnnotationCommandShell() {
+    this(DEFAULT_PROMPT);
+  }
+
+  /**
+   * Creates a new instance from an {@link org.mintshell.annotation.CommandShell} annotation.
+   *
+   * @param annotation
+   *          annotation
+   * @param commandTargetSource
+   *          command target source
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public AnnotationCommandShell(final org.mintshell.annotation.CommandShell annotation, final CommandTargetSource commandTargetSource) {
+    super(annotation.prompt(), annotation.promptPathSeparator().isEmpty() ? null : annotation.promptPathSeparator());
+    this.addCommandTargetSources(commandTargetSource);
+    this.addAnnotatedExitCommands(annotation);
+    this.enterMessage = annotation.enterMessage();
+  }
+
+  /**
+   * Creates a new instance without prompt path separator.
+   *
+   * @param prompt
+   *          prompt text
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected AnnotationCommandShell(final String prompt) {
+    this(prompt, null, null);
+  }
 
   /**
    * Creates a new instance.
    *
    * @param prompt
    *          prompt text
+   * @param promptPathSeparator
+   *          (optional) prompt path separator of this shell
+   *
    * @author Noqmar
    * @since 0.2.0
    */
-  public AnnotationCommandShell(final String prompt) {
-    super(prompt);
+  protected AnnotationCommandShell(final String prompt, final @Nullable String promptPathSeparator, final @Nullable String enterMessage) {
+    super(prompt, promptPathSeparator);
+    this.enterMessage = enterMessage == null ? "" : enterMessage;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.enterMessage;
   }
 
   /**
@@ -115,6 +180,41 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
     return stream(target.getMethods()) //
         .filter(method -> method.getAnnotation(org.mintshell.annotation.CommandTarget.class) != null) //
         .collect(toList());
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.target.reflection.BaseReflectionCommandShell#invokeMethod(java.lang.reflect.Method,
+   *      java.lang.Object[], java.lang.Object)
+   */
+  @Override
+  protected Object invokeMethod(final Method method, final Object[] args, final Object source) throws IllegalAccessException, InvocationTargetException {
+    final Object invocationResult = super.invokeMethod(method, args, source);
+    if (invocationResult != null && !(invocationResult instanceof CommandShell)) {
+      final org.mintshell.annotation.CommandShell shellAnnotation = invocationResult.getClass().getAnnotation(org.mintshell.annotation.CommandShell.class);
+      if (shellAnnotation != null) {
+        return new AnnotationCommandShell(shellAnnotation, new CommandTargetSource(invocationResult));
+      }
+    }
+    return invocationResult;
+  }
+
+  private void addAnnotatedExitCommands(final org.mintshell.annotation.CommandShell annotation) {
+    if (annotation.exitCommands().length > 0) {
+      final String exitCommandDescription = annotation.exitCommandDescription().isEmpty() ? null : annotation.exitCommandDescription();
+      final CommandShellExiter exiter = new CommandShellExiter(annotation.exitMessage());
+      for (final String exitCommand : annotation.exitCommands()) {
+        try {
+          final Method exitMethod = exiter.getClass().getMethod(EXIT_METHOD_NAME);
+          final DefaultReflectionCommandTarget target = new DefaultReflectionCommandTarget(exitMethod, exitCommand, exitCommandDescription, emptyList());
+          this.commandTargetSources.put(target, new CommandTargetSource(exiter));
+        } catch (UnsupportedParameterTypeException | NoSuchMethodException | SecurityException e) {
+          LOG.warn("Failed to add annotated exit command [{}]", exitCommand, e);
+        }
+      }
+    }
   }
 
   private ReflectionCommandTargetParameter createCommandParameter(final Parameter parameter, final int index,

@@ -35,6 +35,7 @@ import org.mintshell.dispatcher.CommandDispatchException;
 import org.mintshell.dispatcher.CommandDispatcher;
 import org.mintshell.interpreter.CommandInterpreteException;
 import org.mintshell.interpreter.CommandInterpreter;
+import org.mintshell.target.CommandShellExitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,15 +47,26 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BaseCommandInterface implements CommandInterface {
 
+  public static final String DEFAULT_PROMPT_STOP = ">";
+
   private final Logger LOG = LoggerFactory.getLogger(BaseCommandInterface.class);
 
   private CommandInterpreter commandInterpreter;
   private CommandDispatcher commandDispatcher;
+  private final String promptStop;
+
+  public BaseCommandInterface() {
+    this(DEFAULT_PROMPT_STOP);
+  }
+
+  public BaseCommandInterface(final String promptStop) {
+    this.promptStop = Assert.ARG.isNotNull(promptStop, "[promptStop] must not be [null]");
+  }
 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#activate(org.mintshell.interpreter.CommandInterpreter,
    *      org.mintshell.dispatcher.CommandDispatcher)
    */
@@ -70,7 +82,7 @@ public abstract class BaseCommandInterface implements CommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#deactivate()
    */
   @Override
@@ -82,7 +94,7 @@ public abstract class BaseCommandInterface implements CommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#getCommandDispatcher()
    */
   @Override
@@ -93,7 +105,7 @@ public abstract class BaseCommandInterface implements CommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interfaces.CommandInterface#getCommandInterpreter()
    */
   @Override
@@ -104,12 +116,35 @@ public abstract class BaseCommandInterface implements CommandInterface {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
+   * @see org.mintshell.common.PromptProvider#getPrompt()
+   */
+  @Override
+  public String getPrompt() {
+    return new StringBuilder(this.commandDispatcher != null ? this.commandDispatcher.getPrompt() : "").append(this.getPromptStop()).append(" ").toString();
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
    * @see org.mintshell.interfaces.CommandInterface#isActivated()
    */
   @Override
   public boolean isActivated() {
     return this.commandInterpreter != null && this.commandDispatcher != null;
+  }
+
+  /**
+   * Returns the prompt stop symbol.
+   *
+   * @return prompt stop symbol
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected String getPromptStop() {
+    return this.promptStop;
   }
 
   /**
@@ -144,6 +179,9 @@ public abstract class BaseCommandInterface implements CommandInterface {
           return resultCause.isPresent() ? resultCause.get().getMessage() : "Failed for unknown reason";
       }
       return "";
+    } catch (final CommandShellExitException e) {
+      this.deactivate();
+      return "";
     } catch (final CommandInterpreteException e) {
       this.LOG.warn("Failed to interprete command [{}]", commandMessage, e);
       return e.getMessage();
@@ -154,7 +192,9 @@ public abstract class BaseCommandInterface implements CommandInterface {
       this.LOG.error("Failed to perform command [{}]", commandMessage, e);
       return format("%s: command failure: %s", commandMessage, e.getMessage());
     } finally {
-      this.postCommand(result);
+      if (this.isActivated()) {
+        this.postCommand(result);
+      }
     }
   }
 

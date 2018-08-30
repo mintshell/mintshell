@@ -25,6 +25,8 @@ package org.mintshell.dispatcher;
 
 import static java.lang.String.format;
 
+import java.util.EmptyStackException;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Stack;
 
@@ -35,6 +37,7 @@ import org.mintshell.command.CommandResult;
 import org.mintshell.command.DefaultCommandResult;
 import org.mintshell.target.CommandInvocationException;
 import org.mintshell.target.CommandShell;
+import org.mintshell.target.CommandShellExitException;
 import org.mintshell.target.CommandTarget;
 import org.mintshell.target.CommandTargetAlias;
 import org.mintshell.target.CommandTargetException;
@@ -51,16 +54,15 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
   private final Stack<CommandShell> commandShells;
 
   /**
-   * Creates a new instance with an initial {@link CommandShell} and with {@link DefaultCommandHelp}.
+   * Creates a new instance with an initial {@link CommandShell} but without {@link CommandHelp}.
    *
    * @param initialShell
    *          inital {@link CommandShell}
-   *
    * @author Noqmar
    * @since 0.2.0
    */
   protected BaseCommandDispatcher(final CommandShell initialShell) {
-    this(initialShell, new DefaultCommandHelp());
+    this(initialShell, null);
   }
 
   /**
@@ -70,7 +72,6 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
    *          inital {@link CommandShell}
    * @param commandHelp
    *          (optional) command help facility
-   *
    * @author Noqmar
    * @since 0.2.0
    */
@@ -84,11 +85,11 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.dispatcher.CommandDispatcher#dispatch(org.mintshell.command.Command)
    */
   @Override
-  public CommandResult<?> dispatch(final Command command) throws CommandDispatchException {
+  public CommandResult<?> dispatch(final Command command) throws CommandDispatchException, CommandShellExitException {
 
     // handle help
     if (this.getCommandHelp() != null) {
@@ -102,31 +103,65 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
       }
     }
     // dispatch command
-    final CommandShell currentCommandShell = this.commandShells.peek();
-    final CommandTarget commandTarget = this.resolveAliases(currentCommandShell.getTargets().stream() //
-        .filter(target -> target.getName().equals(command.getName())) //
-        .findFirst() //
-        .orElseThrow(() -> new CommandDispatchException(format("%s: command not found", command))));
     try {
+      final CommandShell currentCommandShell = this.commandShells.peek();
+      final CommandTarget commandTarget = this.resolveAliases(currentCommandShell.getTargets().stream() //
+          .filter(target -> target.getName().equals(command.getName())) //
+          .findFirst() //
+          .orElseThrow(() -> new CommandDispatchException(format("%s: command not found", command))));
+
       final Object result = currentCommandShell.invoke(command, commandTarget);
-      // TODO: #11 add subshell support
+      if (result instanceof CommandShell) {
+        this.commandShells.push((CommandShell) result);
+      }
       return new DefaultCommandResult<>(command, Optional.ofNullable(result));
+    } catch (final CommandDispatchException e) {
+      throw e;
     } catch (final CommandInvocationException e) {
       throw new CommandDispatchException(format("%s: command invocation failed", command), e);
     } catch (final CommandTargetException e) {
+      if (e.getCause() instanceof CommandShellExitException) {
+        if (this.commandShells.size() > 1) {
+          this.commandShells.pop();
+        }
+        else {
+          throw (CommandShellExitException) e.getCause();
+        }
+      }
       return new DefaultCommandResult<>(command, e.getCause());
+    } catch (final EmptyStackException e) {
+      throw new CommandDispatchException(format("%s: missing command shell instance", command), e);
+    } catch (final RuntimeException e) {
+      throw new CommandDispatchException(format("%s: failed to dispatch command: %", command, e.getMessage()), e);
     }
   }
 
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.dispatcher.CommandDispatcher#getCommandHelp()
    */
   @Override
   public @Nullable CommandHelp getCommandHelp() {
     return this.commandHelp;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.common.PromptProvider#getPrompt()
+   */
+  @Override
+  public String getPrompt() {
+    final CommandShell currentShell = this.commandShells.peek();
+    if (currentShell.getPromptPathSeparator().isPresent()) {
+      return this.createPromptPath(currentShell.getPromptPathSeparator().get());
+    }
+    else {
+      return this.commandShells.peek().getPrompt();
+    }
   }
 
   /**
@@ -150,6 +185,29 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
     }
     else {
       builder.append(this.commandHelp.getCommandNotFoundText(commandName));
+    }
+    return builder.toString();
+  }
+
+  /**
+   * Iterates over the {@link Stack} of {@link CommandShell}s and builds a path with their prompts using the given
+   * separator.
+   *
+   * @param separator
+   *          path separator
+   * @return prompt path from the {@link Stack} of {@link CommandShell}s
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected String createPromptPath(final String separator) {
+    final StringBuilder builder = new StringBuilder();
+    final Iterator<CommandShell> it = this.commandShells.iterator();
+    while (it.hasNext()) {
+      builder.append(it.next().getPrompt());
+      if (it.hasNext()) {
+        builder.append(separator);
+      }
     }
     return builder.toString();
   }

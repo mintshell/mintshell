@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.target.BaseCommandShell;
@@ -75,7 +76,7 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
   private final Set<ReflectionCommandTargetParameterFactory> supportedCommandParameters;
 
   /**
-   * Creates a new instance.
+   * Creates a new instance without prompt path separator.
    *
    * @param prompt
    *          prompt text
@@ -83,8 +84,23 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
    * @author Noqmar
    * @since 0.2.0
    */
-  public BaseReflectionCommandShell(final String prompt) {
-    super(prompt);
+  protected BaseReflectionCommandShell(final String prompt) {
+    this(prompt, null);
+  }
+
+  /**
+   * Creates a new instance.
+   *
+   * @param prompt
+   *          prompt text
+   * @param promptPathSeparator
+   *          (optional) prompt path separator of this shell
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected BaseReflectionCommandShell(final String prompt, final @Nullable String promptPathSeparator) {
+    super(prompt, promptPathSeparator);
     this.supportedCommandParameters = new HashSet<>();
     this.addSupportedParameters(DEFAULT_SUPPORTED_PARAMETERS);
   }
@@ -121,7 +137,7 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
     try {
       final Object[] args = this.createInvocationArguments(command, commandTarget);
       method.setAccessible(true);
-      return method.invoke(source.isInstance() ? source.getTargetInstance() : null, args);
+      return this.invokeMethod(method, args, source.isInstance() ? source.getTargetInstance() : null);
     } catch (final InvocationTargetException e) {
       throw new CommandTargetException(e.getTargetException());
     } catch (final IllegalAccessException e) {
@@ -149,7 +165,7 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.target.BaseCommandShell#determineCommandTargets(org.mintshell.target.CommandTargetSource)
    */
   @Override
@@ -185,6 +201,29 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
    */
   protected Set<ReflectionCommandTargetParameterFactory> getSupportedParameters() {
     return new HashSet<>(this.supportedCommandParameters);
+  }
+
+  /**
+   * Allows subclasses to handle or maniulate the method invocation.
+   *
+   * @param method
+   *          method to be invoked
+   * @param args
+   *          method arguments
+   * @param source
+   *          source object for the invocatoin
+   * @return invocation result
+   * @throws IllegalAccessException
+   *           if this {@code Method} object is enforcing Java language access control and the underlying method is
+   *           inaccessible.
+   * @throws InvocationTargetException
+   *           if the underlying method throws an exception.
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected Object invokeMethod(final Method method, final Object[] args, final Object source) throws IllegalAccessException, InvocationTargetException {
+    return method.invoke(source, args);
   }
 
   private Object createInvocationArgument(final List<? extends CommandParameter> commandParameters,

@@ -45,7 +45,7 @@ public class DefaultCommandDispatcher extends BaseCommandDispatcher<CommandTarge
    * @since 0.2.0
    */
   public DefaultCommandDispatcher(final CommandShell initialShell) {
-    super(initialShell);
+    super(initialShell, new DefaultCommandHelp());
   }
 
   /**

@@ -28,7 +28,9 @@ import java.util.Stack;
 import org.mintshell.annotation.Nullable;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandResult;
+import org.mintshell.common.PromptProvider;
 import org.mintshell.target.CommandShell;
+import org.mintshell.target.CommandShellExitException;
 import org.mintshell.target.CommandTarget;
 
 /**
@@ -38,7 +40,7 @@ import org.mintshell.target.CommandTarget;
  * @author Noqmar
  * @since 0.1.0
  */
-public abstract interface CommandDispatcher {
+public abstract interface CommandDispatcher extends PromptProvider {
 
   /**
    * Dispatches the given {@link Command} by determining a matching {@link CommandTarget} from the current
@@ -50,11 +52,13 @@ public abstract interface CommandDispatcher {
    * @return result of dispatching and executing the given {@link Command}
    * @throws CommandDispatchException
    *           if dispatching failed
+   * @throws CommandShellExitException
+   *           if the current {@link CommandShell} was exited and no more {@link CommandShell}s are available
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public abstract CommandResult<?> dispatch(final Command command) throws CommandDispatchException;
+  public abstract CommandResult<?> dispatch(final Command command) throws CommandDispatchException, CommandShellExitException;
 
   /**
    * Returns the configured {@link CommandHelp} facility.

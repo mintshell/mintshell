@@ -24,6 +24,7 @@
 package org.mintshell.examples.terminal.ncurses;
 
 import org.mintshell.Mintshell;
+import org.mintshell.examples.targets.AnnotationMainCommandShell;
 import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.ncurses.interfaces.NCursesTerminalCommandInterface;
@@ -38,14 +39,14 @@ public class NCursesTerminalShell {
 
   public NCursesTerminalShell(final String[] args) throws Exception {
 
-    final NCursesTerminalCommandInterface commandInterface = new NCursesTerminalCommandInterface("Mintshell> ", "Welcome to Mintshell with nCurses\n\r",
+    final NCursesTerminalCommandInterface commandInterface = new NCursesTerminalCommandInterface("Welcome to Mintshell with nCurses\n\r",
         NCursesTerminalCommandInterface.KEYBINDING_EXIT);
     commandInterface.configureCommandHistory(new TerminalCommandHistory());
 
     Mintshell //
         .from(commandInterface) //
         .with(new MclCommandInterpreter()) //
-        .to(new AnnotationCommandTarget()) //
+        .to(new AnnotationMainCommandShell()) //
         .apply();
     Thread.sleep(Long.MAX_VALUE);
   }
