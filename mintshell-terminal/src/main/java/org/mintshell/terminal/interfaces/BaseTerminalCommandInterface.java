@@ -134,17 +134,19 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   public void activate(final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher) throws IllegalStateException {
     super.activate(commandInterpreter, commandDispatcher);
     this.task = this.executor.submit(() -> {
-      while (!Thread.interrupted()) {
+      while (this.isActivated()) {
         try {
           final Key key = this.readKey();
-          this.keyTask = this.executor.submit(() -> {
-            try {
-              this.handleKey(key);
-            } catch (final Exception e) {
-              LOG.error("Failed to handle input [{}]", key, e);
-              this.print(e.getMessage());
-            }
-          });
+          if (this.isActivated()) {
+            this.keyTask = this.executor.submit(() -> {
+              try {
+                this.handleKey(key);
+              } catch (final Exception e) {
+                LOG.error("Failed to handle input [{}]", key, e);
+                this.print(e.getMessage());
+              }
+            });
+          }
         } catch (final Exception e) {
           LOG.error("Failed to read input", e);
           this.print(e.getMessage());
@@ -209,6 +211,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    */
   @Override
   public void deactivate() {
+    super.deactivate();
     if (this.task != null) {
       this.task.cancel(true);
     }
@@ -240,6 +243,17 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   @Override
   public Collection<KeyBinding> getKeyBindings() {
     return new ArrayList<>(this.keyBindings);
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.interfaces.BaseCommandInterface#isActivated()
+   */
+  @Override
+  public boolean isActivated() {
+    return super.isActivated() && !this.executor.isShutdown();
   }
 
   /**

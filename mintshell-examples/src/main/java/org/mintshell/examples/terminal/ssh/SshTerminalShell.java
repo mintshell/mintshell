@@ -26,6 +26,7 @@ package org.mintshell.examples.terminal.ssh;
 import static org.mintshell.terminal.interfaces.BaseTerminalCommandInterface.KEYBINDING_EXIT;
 
 import org.mintshell.Mintshell;
+import org.mintshell.examples.targets.AnnotationMainCommandShell;
 import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.ssh.interfaces.SshCommandInterface;

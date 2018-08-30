@@ -206,6 +206,16 @@ public final class NCursesTerminal {
   }
 
   /**
+   * Shuts down the {@link NCursesTerminal} instance.
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  void shutDown() {
+    endwin();
+  }
+
+  /**
    * Returns the {@link NCursesTerminal} singleton instance.
    *
    * @return {@link NCursesTerminal} singleton instance
@@ -428,6 +438,7 @@ public final class NCursesTerminal {
     /**
      *
      * {@inheritDoc}
+     *
      * @see java.io.InputStream#read()
      */
     @Override
@@ -447,6 +458,7 @@ public final class NCursesTerminal {
     /**
      *
      * {@inheritDoc}
+     *
      * @see java.io.OutputStream#close()
      */
     @Override
@@ -457,6 +469,7 @@ public final class NCursesTerminal {
     /**
      *
      * {@inheritDoc}
+     *
      * @see java.io.OutputStream#flush()
      */
     @Override
@@ -467,6 +480,7 @@ public final class NCursesTerminal {
     /**
      *
      * {@inheritDoc}
+     *
      * @see java.io.OutputStream#write(int)
      */
     @Override

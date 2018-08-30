@@ -21,7 +21,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.examples.terminal.ssh;
+package org.mintshell.examples.targets;
 
 import org.mintshell.annotation.CommandShell;
 import org.mintshell.annotation.CommandTarget;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Noqmar
  * @since 0.1.0
  */
-@CommandShell(prompt = "sub", promptPathSeparator = "/", enterMessage = "Welcome to the subshell")
+@CommandShell(prompt = "Sub", promptPathSeparator = "/", enterMessage = "Welcome to the sub shell")
 public class AnnotationSubCommandShell {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
