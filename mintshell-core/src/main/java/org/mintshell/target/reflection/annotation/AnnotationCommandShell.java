@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.annotation.Param;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.target.CommandShell;
@@ -80,6 +81,8 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
   public static final String DEFAULT_PROMPT = "Mintshell";
   private static final Logger LOG = LoggerFactory.getLogger(AnnotationCommandShell.class);
 
+  private final String enterMessage;
+
   /**
    * Creates a new instance with {@link #DEFAULT_PROMPT}.
    *
@@ -102,9 +105,23 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
    * @since 0.2.0
    */
   public AnnotationCommandShell(final org.mintshell.annotation.CommandShell annotation, final CommandTargetSource commandTargetSource) {
-    super(annotation.prompt());
+    super(annotation.prompt(), annotation.promptPathSeparator().isEmpty() ? null : annotation.promptPathSeparator());
     this.addCommandTargetSources(commandTargetSource);
     this.addAnnotatedExitCommands(annotation);
+    this.enterMessage = annotation.enterMessage();
+  }
+
+  /**
+   * Creates a new instance without prompt path separator.
+   *
+   * @param prompt
+   *          prompt text
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected AnnotationCommandShell(final String prompt) {
+    this(prompt, null, null);
   }
 
   /**
@@ -112,11 +129,26 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
    *
    * @param prompt
    *          prompt text
+   * @param promptPathSeparator
+   *          (optional) prompt path separator of this shell
+   *
    * @author Noqmar
    * @since 0.2.0
    */
-  public AnnotationCommandShell(final String prompt) {
-    super(prompt);
+  protected AnnotationCommandShell(final String prompt, final @Nullable String promptPathSeparator, final @Nullable String enterMessage) {
+    super(prompt, promptPathSeparator);
+    this.enterMessage = enterMessage == null ? "" : enterMessage;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return this.enterMessage;
   }
 
   /**
@@ -172,7 +204,7 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
   private void addAnnotatedExitCommands(final org.mintshell.annotation.CommandShell annotation) {
     if (annotation.exitCommands().length > 0) {
       final String exitCommandDescription = annotation.exitCommandDescription().isEmpty() ? null : annotation.exitCommandDescription();
-      final CommandShellExiter exiter = new CommandShellExiter(annotation.exitCommandMessage());
+      final CommandShellExiter exiter = new CommandShellExiter(annotation.exitMessage());
       for (final String exitCommand : annotation.exitCommands()) {
         try {
           final Method exitMethod = exiter.getClass().getMethod(EXIT_METHOD_NAME);

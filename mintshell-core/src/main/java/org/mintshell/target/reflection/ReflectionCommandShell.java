@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.target.CommandShell;
 import org.mintshell.target.CommandTarget;
@@ -68,7 +69,7 @@ public class ReflectionCommandShell extends BaseReflectionCommandShell {
   private static final Logger LOG = LoggerFactory.getLogger(ReflectionCommandShell.class);
 
   /**
-   * Creates a new instance.
+   * Creates a new instance without prompt path separator.
    *
    * @param prompt
    *          prompt text
@@ -76,8 +77,23 @@ public class ReflectionCommandShell extends BaseReflectionCommandShell {
    * @author Noqmar
    * @since 0.2.0
    */
-  public ReflectionCommandShell(final String prompt) {
-    super(prompt);
+  protected ReflectionCommandShell(final String prompt) {
+    this(prompt, null);
+  }
+
+  /**
+   * Creates a new instance.
+   *
+   * @param prompt
+   *          prompt text
+   * @param promptPathSeparator
+   *          (optional) prompt path separator of this shell
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected ReflectionCommandShell(final String prompt, final @Nullable String promptPathSeparator) {
+    super(prompt, promptPathSeparator);
   }
 
   /**

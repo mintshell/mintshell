@@ -52,20 +52,17 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
 
   private final CommandHelp commandHelp;
   private final Stack<CommandShell> commandShells;
-  private Optional<String> promptPathSeparator;
 
   /**
-   * Creates a new instance with an initial {@link CommandShell} and with {@link DefaultCommandHelp} and without
-   * {@link #getPromptPathSeparator()}.
+   * Creates a new instance with an initial {@link CommandShell} but without {@link CommandHelp}.
    *
    * @param initialShell
    *          inital {@link CommandShell}
-   *
    * @author Noqmar
    * @since 0.2.0
    */
   protected BaseCommandDispatcher(final CommandShell initialShell) {
-    this(initialShell, new DefaultCommandHelp(), null);
+    this(initialShell, null);
   }
 
   /**
@@ -75,19 +72,14 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
    *          inital {@link CommandShell}
    * @param commandHelp
    *          (optional) command help facility
-   * @param promptPathSeparator
-   *          sepearator to divide prompt of different {@link CommandShell}s or {@code null} if prompt pathing should be
-   *          disabled
-   *
    * @author Noqmar
    * @since 0.2.0
    */
-  protected BaseCommandDispatcher(final CommandShell initialShell, final @Nullable CommandHelp commandHelp, final @Nullable String promptPathSeparator) {
+  protected BaseCommandDispatcher(final CommandShell initialShell, final @Nullable CommandHelp commandHelp) {
     Assert.ARG.isNotNull(initialShell, "[initialShell] must not be [null]");
     this.commandShells = new Stack<>();
     this.commandShells.push(initialShell);
     this.commandHelp = commandHelp;
-    this.promptPathSeparator = Optional.ofNullable(promptPathSeparator);
   }
 
   /**
@@ -163,37 +155,13 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
    */
   @Override
   public String getPrompt() {
-    if (this.promptPathSeparator.isPresent()) {
-      return this.createPromptPath(this.promptPathSeparator.get());
+    final CommandShell currentShell = this.commandShells.peek();
+    if (currentShell.getPromptPathSeparator().isPresent()) {
+      return this.createPromptPath(currentShell.getPromptPathSeparator().get());
     }
     else {
       return this.commandShells.peek().getPrompt();
     }
-  }
-
-  /**
-   * Returns the (optional) prompt path seperator.
-   *
-   * @return (optional) prompt path separator or {@link Optional#empty()} if prompt pathing is disabled
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  public Optional<String> getPromptPathSeparator() {
-    return this.promptPathSeparator;
-  }
-
-  /**
-   * Sets a new prompt path separator.
-   *
-   * @param promptPathSeparator
-   *          prompt path seperator or {@code null}, if prompt pathing should be diabled
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  public void setPromptPathSeparator(final @Nullable String promptPathSeparator) {
-    this.promptPathSeparator = Optional.ofNullable(promptPathSeparator);
   }
 
   /**

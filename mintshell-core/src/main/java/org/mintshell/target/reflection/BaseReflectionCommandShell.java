@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mintshell.annotation.Nullable;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.target.BaseCommandShell;
@@ -75,7 +76,7 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
   private final Set<ReflectionCommandTargetParameterFactory> supportedCommandParameters;
 
   /**
-   * Creates a new instance.
+   * Creates a new instance without prompt path separator.
    *
    * @param prompt
    *          prompt text
@@ -83,8 +84,23 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
    * @author Noqmar
    * @since 0.2.0
    */
-  public BaseReflectionCommandShell(final String prompt) {
-    super(prompt);
+  protected BaseReflectionCommandShell(final String prompt) {
+    this(prompt, null);
+  }
+
+  /**
+   * Creates a new instance.
+   *
+   * @param prompt
+   *          prompt text
+   * @param promptPathSeparator
+   *          (optional) prompt path separator of this shell
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected BaseReflectionCommandShell(final String prompt, final @Nullable String promptPathSeparator) {
+    super(prompt, promptPathSeparator);
     this.supportedCommandParameters = new HashSet<>();
     this.addSupportedParameters(DEFAULT_SUPPORTED_PARAMETERS);
   }

@@ -45,7 +45,7 @@ public class DefaultCommandDispatcher extends BaseCommandDispatcher<CommandTarge
    * @since 0.2.0
    */
   public DefaultCommandDispatcher(final CommandShell initialShell) {
-    super(initialShell);
+    super(initialShell, new DefaultCommandHelp());
   }
 
   /**
@@ -55,14 +55,11 @@ public class DefaultCommandDispatcher extends BaseCommandDispatcher<CommandTarge
    *          inital {@link CommandShell}
    * @param commandHelp
    *          (optional) command help facility
-   * @param promptPathSeparator
-   *          sepearator to divide prompt of different {@link CommandShell}s or {@code null} if prompt pathing should be
-   *          disabled
    *
    * @author Noqmar
    * @since 0.2.0
    */
-  public DefaultCommandDispatcher(final CommandShell initialShell, @Nullable final CommandHelp commandHelp, final @Nullable String promptPathSeparator) {
-    super(initialShell, commandHelp, promptPathSeparator);
+  public DefaultCommandDispatcher(final CommandShell initialShell, @Nullable final CommandHelp commandHelp) {
+    super(initialShell, commandHelp);
   }
 }
