@@ -35,7 +35,7 @@ public enum Key {
 
   BACK_SPACE("Backspace"),
 
-  TAB("Tab", KeyCodeClass.WHITESPACE | KeyCodeClass.PRINTABLE),
+  TAB("Tab", KeyCodeClass.WHITESPACE),
 
   CLEAR("Clear"),
 

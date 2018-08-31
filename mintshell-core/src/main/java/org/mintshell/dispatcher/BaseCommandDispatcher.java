@@ -28,7 +28,10 @@ import static java.lang.String.format;
 import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
@@ -48,7 +51,7 @@ import org.mintshell.target.CommandTargetException;
  * @author Noqmar
  * @since 0.2.0
  */
-public abstract class BaseCommandDispatcher<C extends CommandTarget> implements CommandDispatcher {
+public abstract class BaseCommandDispatcher<C extends CommandTarget> implements CommandDispatcher, Completer {
 
   private final CommandHelp commandHelp;
   private final Stack<CommandShell> commandShells;
@@ -80,6 +83,22 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
     this.commandShells = new Stack<>();
     this.commandShells.push(initialShell);
     this.commandHelp = commandHelp;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.dispatcher.Completer#complete(java.lang.String)
+   */
+  @Override
+  public SortedSet<String> complete(final String commandFragment) {
+    final CommandShell currentShell = this.commandShells.peek();
+    return new TreeSet<>(currentShell.getTargets().stream() //
+        .map(target -> target.getName()) //
+        .filter(name -> name.startsWith(commandFragment)) //
+        .sorted() //
+        .collect(Collectors.toList()));
   }
 
   /**
