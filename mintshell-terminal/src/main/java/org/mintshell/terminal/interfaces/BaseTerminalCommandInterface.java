@@ -26,8 +26,10 @@ package org.mintshell.terminal.interfaces;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -37,6 +39,7 @@ import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
 import org.mintshell.dispatcher.CommandDispatcher;
+import org.mintshell.dispatcher.Completer;
 import org.mintshell.interfaces.BaseCommandInterface;
 import org.mintshell.interfaces.CommandInterfaceCommandResult;
 import org.mintshell.interpreter.CommandInterpreter;
@@ -68,6 +71,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   private final LineBuffer lineBuffer;
 
   private TerminalCommandHistory commandHistory;
+  private int completionCounter;
 
   /**
    * Creates a new instance using the given command prompt finished.
@@ -121,6 +125,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
     this.addKeyBindings(keyBindings);
     this.executor = Executors.newCachedThreadPool();
     this.lineBuffer = new LineBuffer();
+    this.completionCounter = 0;
   }
 
   /**
@@ -288,6 +293,40 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   }
 
   /**
+   * Checks if the current {@link CommandDispatcher} is a {@link Completer} and prints completion information, if
+   * available.
+   * 
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  protected void handleCommandCompletion() {
+    if (this.getCommandDispatcher() instanceof Completer) {
+      final String commandFragment = this.lineBuffer.toString();
+      final SortedSet<String> completions = ((Completer) this.getCommandDispatcher()).complete(commandFragment);
+      if (completions.size() == 1) {
+        final String completion = completions.first() + " ";
+        this.eraseCursorToStartOfLine();
+        this.lineBuffer.insertLeft(completion);
+        this.print(completion);
+      }
+      else if (completions.size() > 1) {
+        if (this.completionCounter > 0) {
+          final StringBuffer matches = new StringBuffer();
+          final Iterator<String> it = completions.iterator();
+          while (it.hasNext()) {
+            matches.append(it.next()).append(it.hasNext() ? "    " : "");
+          }
+          this.newLine();
+          this.println(matches.toString());
+          this.printPrompt();
+          this.print(this.lineBuffer.toString());
+        }
+        this.completionCounter = 2;
+      }
+    }
+  }
+
+  /**
    * Checks if the given {@link Command} is related to the given {@link TerminalCommandHistory} and executes it in that
    * case.
    *
@@ -330,7 +369,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   protected boolean handleCommandSubmission(final Key key) {
     if (key.equals(this.commandSubmissionKey)) {
       this.moveCursorToEndOfLine();
-      final String commandMessage = this.lineBuffer.toString();
+      final String commandMessage = this.lineBuffer.toString().trim();
       this.lineBuffer.clear();
       this.newLine();
       if (!commandMessage.isEmpty()) {
@@ -358,7 +397,9 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    * @since 0.1.0
    */
   protected synchronized void handleKey(final Key key) {
+    this.decrementCompletionCounter();
     if (!this.handleCommandSubmission(key) && !this.handleKeyBinding(key)) {
+
       if (key.isPrintableKey()) {
         this.lineBuffer.insertLeft(key.getValue());
         this.print(key.getValue());
@@ -400,6 +441,9 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
               this.lineBuffer.removeRight();
               this.eraseNext();
             }
+            break;
+          case TAB:
+            this.handleCommandCompletion();
             break;
           default:
             LOG.warn("Unsupported key [{}]", key);
@@ -472,6 +516,10 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    */
   protected void printPrompt() {
     this.print(this.getPrompt());
+  }
+
+  private void decrementCompletionCounter() {
+    this.completionCounter = Math.max(0, --this.completionCounter);
   }
 
   private void eraseCursorToStartOfLine() {
