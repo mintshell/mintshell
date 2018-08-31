@@ -26,6 +26,7 @@ package org.mintshell.mcl.interpreter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -33,12 +34,14 @@ import org.mintshell.command.Command;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.command.DefaultCommand;
 import org.mintshell.command.DefaultCommandParameter;
+import org.mintshell.command.DefaultPipedCommand;
 import org.mintshell.interpreter.CommandInterpreteException;
 import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.mcl.MCLLexer;
 import org.mintshell.mcl.MCLParser;
 import org.mintshell.mcl.MCLParser.CommandContext;
 import org.mintshell.mcl.MCLParser.CommandLineContext;
+import org.mintshell.mcl.MCLParser.CommandNameContext;
 import org.mintshell.mcl.MCLParser.CommandParameterContext;
 import org.mintshell.mcl.MCLParser.CommandParameterValueContext;
 import org.mintshell.mcl.MCLParser.LongCommandParameterContext;
@@ -69,17 +72,18 @@ public class MclCommandInterpreter implements CommandInterpreter {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.interpreter.CommandInterpreter#interprete(java.lang.String)
    */
   @Override
   public Command interprete(final String commandMessage) throws CommandInterpreteException {
     try {
       final CommandLineContext parsedCommandLine = this.createParser(commandMessage).commandLine();
-      final CommandContext parsedCommand = parsedCommandLine.command();
-      final List<CommandParameter> commandParameters = this.handleCommandParameters(parsedCommandLine.commandParameter());
-      final Command result = new DefaultCommand(this.extractCommandName(parsedCommand), commandParameters);
-      return result;
+      final List<CommandContext> pipedCommands = new ArrayList<>(parsedCommandLine.pipedCommand().stream() //
+          .map(piped -> piped.command()) //
+          .collect(Collectors.toList()));
+      pipedCommands.add(0, parsedCommandLine.command());
+      return this.handleCommandPipe(pipedCommands);
     } catch (final SyntaxException e) {
       throw new CommandInterpreteException(e.getMessage(), e);
     }
@@ -96,7 +100,7 @@ public class MclCommandInterpreter implements CommandInterpreter {
     return parser;
   }
 
-  private String extractCommandName(final CommandContext parsedCommand) {
+  private String extractCommandName(final CommandNameContext parsedCommand) {
     if (parsedCommand == null) {
       return null;
     }
@@ -134,6 +138,12 @@ public class MclCommandInterpreter implements CommandInterpreter {
     }
   }
 
+  private Command handleCommand(final CommandContext parsedCommand) {
+    final List<CommandParameter> commandParameters = this.handleCommandParameters(parsedCommand.commandParameter());
+    final Command result = new DefaultCommand(this.extractCommandName(parsedCommand.commandName()), commandParameters);
+    return result;
+  }
+
   private List<CommandParameter> handleCommandParameters(final List<CommandParameterContext> parsedCommandParameters) {
     final List<CommandParameter> commandParameters = new ArrayList<>();
     final AtomicInteger indexCounter = new AtomicInteger(0);
@@ -157,11 +167,25 @@ public class MclCommandInterpreter implements CommandInterpreter {
     return commandParameters;
   }
 
+  private Command handleCommandPipe(final List<CommandContext> pipedCommands) {
+    final CommandContext commandContext = pipedCommands.remove(0);
+    if (pipedCommands.isEmpty()) {
+      return this.handleCommand(commandContext);
+    }
+    return this.handlePipedCommand(commandContext, this.handleCommandPipe(pipedCommands));
+  }
+
   private CommandParameter handleLongCommandParameter(final int index, final LongCommandParameterContext parsedCommandParameter,
       final CommandParameterValueContext parsedCommandParameterValue) {
     final String name = parsedCommandParameter.longCommandParameterName().getText();
     final String value = this.extractCommandParameterValue(parsedCommandParameterValue);
     return new DefaultCommandParameter(index, name, null, value == null || value.isEmpty() ? null : value);
+  }
+
+  private Command handlePipedCommand(final CommandContext parsedCommand, final Command target) {
+    final List<CommandParameter> commandParameters = this.handleCommandParameters(parsedCommand.commandParameter());
+    final Command result = new DefaultPipedCommand(this.extractCommandName(parsedCommand.commandName()), commandParameters, target);
+    return result;
   }
 
   private CommandParameter handleShortCommandParameter(final int index, final ShortCommandParameterContext parsedCommandParameter,
