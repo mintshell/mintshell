@@ -42,7 +42,7 @@ import org.mintshell.assertion.Assert;
 public class DefaultCommand implements Command {
 
   private final String name;
-  private final List<CommandParameter> parameters;
+  protected final List<CommandParameter> parameters;
 
   /**
    * Creates a new {@link DefaultCommand}.
@@ -108,7 +108,7 @@ public class DefaultCommand implements Command {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.command.Command#getParameters()
    */
   @Override

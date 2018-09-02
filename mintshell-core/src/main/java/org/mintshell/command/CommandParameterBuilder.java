@@ -77,7 +77,7 @@ public final class CommandParameterBuilder {
    * @author Noqmar
    * @since 0.1.0
    */
-  public CommandParameterBuilder withShortName(final char shortName) {
+  public CommandParameterBuilder withShortName(final Character shortName) {
     this.shortName = shortName;
     return this;
   }

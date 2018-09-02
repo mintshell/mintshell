@@ -31,6 +31,7 @@ import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.Command;
 import org.mintshell.command.CommandResult;
+import org.mintshell.command.PipedCommand;
 import org.mintshell.dispatcher.CommandDispatchException;
 import org.mintshell.dispatcher.CommandDispatcher;
 import org.mintshell.interpreter.CommandInterpreteException;
@@ -162,18 +163,34 @@ public abstract class BaseCommandInterface implements CommandInterface {
    * @since 0.2.0
    */
   protected synchronized String performCommand(final String commandMessage) {
+    try {
+      final Command interpretedCcommand = this.commandInterpreter.interprete(commandMessage);
+      return this.performInterpretedCommand(commandMessage, interpretedCcommand);
+    } catch (final CommandInterpreteException e) {
+      this.LOG.warn("Failed to interprete command [{}]", commandMessage, e);
+      return e.getMessage();
+    }
+  }
+
+  /** TODO: document */
+  protected String performInterpretedCommand(final String commandMessage, final Command interpretedCcommand) {
     CommandResult<?> result = null;
     try {
-      final Command command = this.commandInterpreter.interprete(commandMessage);
-      final CommandInterfaceCommandResult<?> commandInterfaceResult = this.preCommand(command);
+      final CommandInterfaceCommandResult<?> commandInterfaceResult = this.preCommand(interpretedCcommand);
       result = commandInterfaceResult.isCommandConsumed() ? commandInterfaceResult
-          : Assert.ARG.isNotNull(this.commandDispatcher.dispatch(command),
+          : Assert.ARG.isNotNull(this.commandDispatcher.dispatch(interpretedCcommand),
               format("Performing command [%s] doesn't lead to a valid command result", commandMessage));
 
       switch (result.getState()) {
         case SUCCEEDED:
           final Optional<?> resultValue = result.getValue();
-          return resultValue.isPresent() ? resultValue.get().toString() : "";
+          final String resultMessage = resultValue.isPresent() ? resultValue.get().toString() : "";
+          if (interpretedCcommand instanceof PipedCommand) {
+            return this.performInterpretedCommand(commandMessage, ((PipedCommand) interpretedCcommand).createPipeTarget(resultMessage));
+          }
+          else {
+            return resultMessage;
+          }
         case FAILED:
           final Optional<Throwable> resultCause = result.getCause();
           return resultCause.isPresent() ? resultCause.get().getMessage() : "Failed for unknown reason";
@@ -182,9 +199,6 @@ public abstract class BaseCommandInterface implements CommandInterface {
     } catch (final CommandShellExitException e) {
       this.deactivate();
       return "";
-    } catch (final CommandInterpreteException e) {
-      this.LOG.warn("Failed to interprete command [{}]", commandMessage, e);
-      return e.getMessage();
     } catch (final CommandDispatchException e) {
       this.LOG.warn("Failed to dispatch command [{}]", commandMessage, e);
       return e.getMessage();

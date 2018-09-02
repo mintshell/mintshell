@@ -35,8 +35,20 @@ package org.mintshell.command;
 public abstract interface PipedCommand extends Command {
 
   /**
+   * Returns the pipe's target {@link Command} using the given result of the pipe's source.
+   *
+   * @param prevCommandResult
+   *          result of the pipe's source command
+   * @return target {@link Command}
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public abstract Command createPipeTarget(final String prevCommandResult);
+
+  /**
    * Returns the pipe's target {@link Command}.
-   * 
+   *
    * @return target {@link Command}
    *
    * @author Noqmar
