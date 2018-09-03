@@ -105,7 +105,7 @@ public enum AnsiKey {
 
   SMALLER(0x3C, Key.SMALLER),
 
-  EQUALS(0x3D, Key.SMALLER),
+  EQUALS(0x3D, Key.EQUALS),
 
   GREATER(0x3E, Key.GREATER),
 
