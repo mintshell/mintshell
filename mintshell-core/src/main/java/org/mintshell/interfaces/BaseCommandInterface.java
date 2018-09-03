@@ -168,6 +168,7 @@ public abstract class BaseCommandInterface implements CommandInterface {
       return this.performInterpretedCommand(commandMessage, interpretedCcommand);
     } catch (final CommandInterpreteException e) {
       this.LOG.warn("Failed to interprete command [{}]", commandMessage, e);
+      this.postCommand(null);
       return e.getMessage();
     }
   }
