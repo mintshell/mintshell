@@ -1,8 +1,12 @@
 grammar MCL;
 
-commandLine: command (SPACE+ commandParameter)*;
+commandLine: command (pipedCommand)*;
 
-command: CHARACTER | UNQUOTED | QUOTED;
+pipedCommand: SPACE+ PIPE SPACE+ command;
+
+command: commandName (SPACE+ commandParameter)*;
+
+commandName: CHARACTER | UNQUOTED | QUOTED;
 
 commandParameter: ((shortCommandParameter | longCommandParameter) (SPACE+ commandParameterValue)?) | commandParameterValue;
 
@@ -15,6 +19,8 @@ shortCommandParameterName: CHARACTER;
 longCommandParameter: LONG_COMMAND_PARAMETER_PREFIX longCommandParameterName;
 
 longCommandParameterName: CHARACTER | UNQUOTED;
+
+PIPE: '|';
 
 SHORT_COMMAND_PARAMETER_PREFIX: '-';
 

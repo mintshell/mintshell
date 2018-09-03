@@ -46,7 +46,7 @@ public final class CommandBuilder {
   }
 
   /**
-   * Builds the {@link Command} from the current builder state.
+   * Builds a {@link Command} from the current builder state.
    *
    * @return {@link Command} instance
    *
@@ -55,6 +55,18 @@ public final class CommandBuilder {
    */
   public Command build() {
     return new DefaultCommand(this.name, this.parameters);
+  }
+
+  /**
+   * Builds a {@link PipedCommand} from the current builder state.
+   *
+   * @return {@link PipedCommand} instance
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public Command build(final Command target) {
+    return new DefaultPipedCommand(this.name, this.parameters, target);
   }
 
   /**

@@ -1,0 +1,32 @@
+# SIMPLE COMMANDS
+TWO_COMMAND_SINGLE_WORD=first | second
+THREE_COMMAND_SINGLE_WORD=first | second | third
+
+# COMMANDS WITH ANONYMOUS PARAMS
+TWO_COMMAND_SINGLE_ARGUMENT=first foo | second
+TWO_COMMAND_MULTI_ARGUMENT=first foo bar | second
+TWO_COMMAND_SINGLE_ARGUMENT_BOTH=first foo | second foo
+TWO_COMMAND_MULTI_ARGUMENT_BOTH=first foo bar | second foo bar
+THREE_COMMAND_MULTI_ARGUMENT_BOTH=first foo bar | second foo bar | third foo bar
+
+# COMMANDS WITH SHORT PARAMS
+TWO_COMMAND_OPTION_SHORT_SINGLE_SPACE=first -f | second -f
+TWO_COMMAND_OPTION_SHORT_SINGLE_PARAM=first -f foo | second -f foo
+TWO_COMMAND_OPTION_SHORT_SINGLE_PARAM_WITH_SINGLE_CHAR_VALUE=first -f f | second -f f
+TWO_COMMAND_OPTION_SHORT_MULTI_SPACE=first -f -b | second -f -b
+TWO_COMMAND_OPTION_SHORT_MULTI_SPACE_PARAM_SINGLE=first -f foo -b | second -f foo -b
+TWO_COMMAND_OPTION_SHORT_MULTI_SPACE_PARAM_MULTI=first -f foo -b bar | second -f foo -b bar
+THREE_COMMAND_OPTION_SHORT_MULTI_SPACE_PARAM_MULTI=first -f foo -b bar | second -f foo -b bar | third -f foo -b bar
+
+# COMMANDS WITH LONG PARAMS
+TWO_COMMAND_OPTION_LONG_SINGLE=first --foo | second --foo
+TWO_COMMAND_OPTION_LONG_SINGLE_PARAM=first --foo foo | second --foo foo
+TWO_COMMAND_OPTION_LONG_MULTI_SPACE=first --foo --bar | second --foo --bar
+TWO_COMMAND_OPTION_LONG_MULTI_SPACE_PARAM_SINGLE=first --foo foo --bar | second --foo foo --bar
+TWO_COMMAND_OPTION_LONG_MULTI_SPACE_PARAM_MULTI=first --foo foo --bar bar | second --foo foo --bar bar
+THREE_COMMAND_OPTION_LONG_MULTI_SPACE_PARAM_MULTI=first --foo foo --bar bar | second --foo foo --bar bar | third --foo foo --bar bar
+
+# COMMANDS WITH MIXED PARAMS
+TWO_COMMAND_OPTION_MIXED_SPACE=first -f --bar | second -f --bar
+TWO_COMMAND_OPTION_MIXED_SPACE_PARAM=first -f foo --bar bar | second -f foo --bar bar
+THREE_COMMAND_OPTION_MIXED_SPACE_PARAM=first -f foo --bar bar | second -f foo --bar bar | third -f foo --bar bar
