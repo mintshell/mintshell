@@ -33,8 +33,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.mintshell.annotation.Nullable;
@@ -43,6 +43,7 @@ import org.mintshell.command.CommandParameter;
 import org.mintshell.target.CommandShell;
 import org.mintshell.target.CommandTarget;
 import org.mintshell.target.CommandTargetSource;
+import org.mintshell.target.DefaultCommandTargetAlias;
 import org.mintshell.target.reflection.BaseReflectionCommandShell;
 import org.mintshell.target.reflection.DefaultReflectionCommandTarget;
 import org.mintshell.target.reflection.PrimitiveParameter;
@@ -143,7 +144,7 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override
@@ -155,18 +156,25 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
    *
    * {@inheritDoc}
    *
-   * @see org.mintshell.target.reflection.BaseReflectionCommandShell#createCommandTargetFromMethod(java.lang.reflect.Method)
+   * @see org.mintshell.target.reflection.BaseReflectionCommandShell#createCommandTargetsFromMethod(java.lang.reflect.Method)
    */
   @Override
-  protected Optional<CommandTarget> createCommandTargetFromMethod(final Method method) {
+  protected Set<CommandTarget> createCommandTargetsFromMethod(final Method method) {
+    final Set<CommandTarget> result = new HashSet<>();
     try {
       final AnnotationCommandTarget commandTarget = new AnnotationCommandTarget(method, this.createCommandParameters(method, this.getSupportedParameters()));
+      result.add(commandTarget);
+      final org.mintshell.annotation.CommandTarget annotation = method.getAnnotation(org.mintshell.annotation.CommandTarget.class);
+      for (final String alias : annotation.aliases()) {
+        if (alias != null) {
+          result.add(new DefaultCommandTargetAlias(commandTarget, alias, commandTarget.getDescription().orElse(null)));
+        }
+      }
       LOG.trace("Successfully created command [{}] from method [{}]", commandTarget, method);
-      return Optional.of(commandTarget);
     } catch (final UnsupportedParameterTypeException e) {
       LOG.warn("Failed to create command from method [{}]", method, e);
-      return Optional.empty();
     }
+    return result;
   }
 
   /**

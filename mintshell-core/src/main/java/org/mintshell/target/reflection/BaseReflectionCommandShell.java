@@ -160,7 +160,7 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
    * @author Noqmar
    * @since 0.2.0
    */
-  protected abstract Optional<CommandTarget> createCommandTargetFromMethod(final Method method);
+  protected abstract Set<CommandTarget> createCommandTargetsFromMethod(final Method method);
 
   /**
    *
@@ -172,9 +172,7 @@ public abstract class BaseReflectionCommandShell extends BaseCommandShell {
   protected Set<CommandTarget> determineCommandTargets(final CommandTargetSource commandTargetSource) {
     return this.determineSupportedMethods(commandTargetSource.getTargetClass()).stream() //
         .filter(method -> (commandTargetSource.isInstance() || !commandTargetSource.isInstance() && Modifier.isStatic(method.getModifiers()))) //
-        .map(method -> this.createCommandTargetFromMethod(method)) //
-        .filter(targetOptional -> targetOptional.isPresent()) //
-        .map(targetOptional -> targetOptional.get()) //
+        .flatMap(method -> this.createCommandTargetsFromMethod(method).stream()) //
         .collect(Collectors.toSet());
   }
 

@@ -30,8 +30,8 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.mintshell.annotation.Nullable;
@@ -100,19 +100,20 @@ public class ReflectionCommandShell extends BaseReflectionCommandShell {
    *
    * {@inheritDoc}
    *
-   * @see org.mintshell.target.reflection.BaseReflectionCommandShell#createCommandTargetFromMethod(java.lang.reflect.Method)
+   * @see org.mintshell.target.reflection.BaseReflectionCommandShell#createCommandTargetsFromMethod(java.lang.reflect.Method)
    */
   @Override
-  protected Optional<CommandTarget> createCommandTargetFromMethod(final Method method) {
+  protected Set<CommandTarget> createCommandTargetsFromMethod(final Method method) {
+    final Set<CommandTarget> result = new HashSet<>();
     try {
-      final DefaultReflectionCommandTarget commandExecution = new DefaultReflectionCommandTarget(method, method.getName(), null,
+      final DefaultReflectionCommandTarget commandTarget = new DefaultReflectionCommandTarget(method, method.getName(), null,
           this.createCommandParameters(method, this.getSupportedParameters()));
-      LOG.trace("Successfully created command execution [{}] from method [{}]", commandExecution, method);
-      return Optional.of(commandExecution);
+      LOG.trace("Successfully created command target [{}] from method [{}]", commandTarget, method);
+      result.add(commandTarget);
     } catch (final UnsupportedParameterTypeException e) {
-      LOG.warn("Failed to create command execution from method [{}]", method, e);
-      return Optional.empty();
+      LOG.warn("Failed to create command target from method [{}]", method, e);
     }
+    return result;
   }
 
   /**

@@ -53,7 +53,7 @@ public class AnnotationMainCommandShell {
    * @author Noqmar
    * @since 0.1.0
    */
-  @CommandTarget(value = "add", description = "adds two integers")
+  @CommandTarget(name = "add", description = "adds two integers")
   public int add( //
       final @Param(shortName = 'f', name = "first", description = "first summand <int>)") int a, //
       final @Param(shortName = 's', name = "second", description = "second summand <int>)") int b) {
@@ -69,7 +69,7 @@ public class AnnotationMainCommandShell {
    * @author Noqmar
    * @since 0.1.0
    */
-  @CommandTarget(value = "mem", description = "prints the amount of total memory in bytes")
+  @CommandTarget(name = "mem", description = "prints the amount of total memory in bytes")
   public long mem() {
     LOG.info("Called mem()");
     final Runtime runtime = Runtime.getRuntime();
@@ -84,7 +84,7 @@ public class AnnotationMainCommandShell {
    * @author Noqmar
    * @since 0.1.0
    */
-  @CommandTarget(value = "memfree", description = "prints the amount of free memory in bytes")
+  @CommandTarget(name = "memfree", description = "prints the amount of free memory in bytes")
   public long memfree() {
     LOG.info("Called memfree()");
     final Runtime runtime = Runtime.getRuntime();
@@ -99,7 +99,7 @@ public class AnnotationMainCommandShell {
    * @author Noqmar
    * @since 0.1.0
    */
-  @CommandTarget(value = "memused", description = "prints the amount of used memory in bytes")
+  @CommandTarget(name = "memused", description = "prints the amount of used memory in bytes")
   public long memused() {
     LOG.info("Called memused()");
     final Runtime runtime = Runtime.getRuntime();
@@ -118,7 +118,7 @@ public class AnnotationMainCommandShell {
    * @author Noqmar
    * @since 0.1.0
    */
-  @CommandTarget(value = "sub")
+  @CommandTarget(name = "sub")
   public int sub( //
       final @Param int a, //
       final @Param int b) {
@@ -126,7 +126,7 @@ public class AnnotationMainCommandShell {
     return a - b;
   }
 
-  @CommandTarget(value = "subshell", description = "opens the sub shell")
+  @CommandTarget(name = "subshell", description = "opens the sub shell")
   public AnnotationSubCommandShell subshell() {
     return new AnnotationSubCommandShell();
   }

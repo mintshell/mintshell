@@ -49,12 +49,12 @@ public class AnnotationCommandTargetSource {
     return this.invokations.get(methodName).get();
   }
 
-  @CommandTarget("invokeMe")
+  @CommandTarget(name = "invokeMe")
   public void m1() {
     this.trace("invokeMe");
   }
 
-  @CommandTarget("invokeMeWithParams")
+  @CommandTarget(name = "invokeMeWithParams")
   public void m2( //
       final @Param(name = "flag", shortName = 'f', required = true, description = "A simple boolean flag") boolean flag, //
       final @Param(name = "number", shortName = 'n', required = false, description = "A number greater than 0") Integer number, //

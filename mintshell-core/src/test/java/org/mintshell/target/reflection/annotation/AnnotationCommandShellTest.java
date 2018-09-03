@@ -73,7 +73,7 @@ public class AnnotationCommandShellTest {
       public void run() {
       }
 
-      @org.mintshell.annotation.CommandTarget("test")
+      @org.mintshell.annotation.CommandTarget(name = "test")
       public void test(@Param(name = "a") final int a, final int b) {
 
       }

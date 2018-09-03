@@ -42,7 +42,7 @@ public class AnnotationSubCommandShell {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
 
-  @CommandTarget(value = "exit", description = "exits the subshell")
+  @CommandTarget(name = "exit", description = "exits the subshell")
   public void exit() {
     throw new CommandShellExitException("Subshell closed");
   }
@@ -59,7 +59,7 @@ public class AnnotationSubCommandShell {
    * @author Noqmar
    * @since 0.1.0
    */
-  @CommandTarget(value = "mul", description = "multiplies two integers")
+  @CommandTarget(name = "mul", description = "multiplies two integers")
   public int mul( //
       final @Param(shortName = 'f', name = "first", description = "first summand <int>)") int a, //
       final @Param(shortName = 's', name = "second", description = "second summand <int>)") int b) {

@@ -42,6 +42,16 @@ import java.lang.annotation.Target;
 public @interface CommandTarget {
 
   /**
+   * Returns an array of aliases for this {@link CommandTarget}.
+   *
+   * @return array of aliases or an empty array
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  String[] aliases() default {};
+
+  /**
    * Returns the description of the command target.
    *
    * @return description of the command target
@@ -59,5 +69,5 @@ public @interface CommandTarget {
    * @author Noqmar
    * @since 0.2.0
    */
-  String value();
+  String name();
 }

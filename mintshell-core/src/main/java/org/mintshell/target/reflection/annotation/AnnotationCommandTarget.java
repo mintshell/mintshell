@@ -73,6 +73,6 @@ public class AnnotationCommandTarget extends DefaultReflectionCommandTarget {
       throw new UnsupportedParameterTypeException(
           String.format("[@%s] annotation missing at method [%s]", CommandTarget.class.getSimpleName(), method.getName()));
     }
-    return annotation.value();
+    return annotation.name();
   }
 }
