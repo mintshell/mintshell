@@ -60,12 +60,13 @@ public class AnsiKeyFilterInputStream extends FilterInputStream {
    */
   public AnsiKey readKey() throws IOException {
     final int input = this.read();
+    final int moreAvailable = this.available();
     if (input == -1) {
       return AnsiKey.UNDEFINED;
     }
-    final int moreAvailable = this.available();
-    if (moreAvailable == 0) {
-      return AnsiKey.bySequence(new byte[] { (byte) (char) input });
+    final AnsiKey key = AnsiKey.bySequence(new byte[] { (byte) (char) input });
+    if (!AnsiKey.ESCAPE.equals(key) || moreAvailable == 0) {
+      return key;
     }
     else {
       final byte[] sequence = new byte[moreAvailable + 1];

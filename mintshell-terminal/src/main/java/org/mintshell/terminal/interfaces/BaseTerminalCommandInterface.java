@@ -123,7 +123,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
     this.commandSubmissionKey = Assert.ARG.isNotNull(commandSubmissionKey, "[commandSubmissionKey] must not be [null]");
     this.keyBindings = new ArrayList<>();
     this.addKeyBindings(keyBindings);
-    this.executor = Executors.newCachedThreadPool();
+    this.executor = Executors.newFixedThreadPool(2);
     this.lineBuffer = new LineBuffer();
     this.completionCounter = 0;
   }
@@ -295,7 +295,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   /**
    * Checks if the current {@link CommandDispatcher} is a {@link Completer} and prints completion information, if
    * available.
-   * 
+   *
    * @author Noqmar
    * @since 0.2.0
    */
