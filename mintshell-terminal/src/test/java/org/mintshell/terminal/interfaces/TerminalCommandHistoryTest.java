@@ -25,8 +25,15 @@ package org.mintshell.terminal.interfaces;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.UUID;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mintshell.common.FileIoProvider;
 
 /**
  * Tests the functionality of {@link TerminalCommandHistory}.
@@ -36,11 +43,18 @@ import org.junit.Test;
  */
 public class TerminalCommandHistoryTest {
 
+  private File file;
   private TerminalCommandHistory sut;
 
+  @After
+  public void after() throws IOException {
+    Files.delete(this.file.toPath());
+  }
+
   @Before
-  public void before() {
-    this.sut = new TerminalCommandHistory();
+  public void before() throws IOException {
+    this.file = Files.createTempFile(UUID.randomUUID().toString(), "tmp").toFile();
+    this.sut = new TerminalCommandHistory(new FileIoProvider(this.file));
   }
 
   @Test

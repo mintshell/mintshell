@@ -40,11 +40,11 @@ import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.mintshell.annotation.Nullable;
 import org.mintshell.dispatcher.CommandDispatcher;
+import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.interfaces.BaseTerminalCommandInterface;
-import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,13 +68,32 @@ public class SshCommandInterface implements TerminalCommandInterface {
   private CommandDispatcher commandDispatcher;
   private final List<KeyBinding> keyBindings;
   private final SessionRegistry sessionRegistry;
-  private TerminalCommandHistory commandHistory;
+
+  /**
+   * Creates a new instance using the {@link #DEFAULT_PORT} and the
+   * {@link BaseTerminalCommandInterface#DEFAULT_COMMAND_SUBMISSION_KEY}.
+   *
+   * @param commandHistory
+   *          command history
+   * @param banner
+   *          welcome banner
+   * @param keyBindings
+   *          (optional) {@link KeyBinding}s
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public SshCommandInterface(final CommandHistory commandHistory, @Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
+    this(DEFAULT_PORT, commandHistory, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
+  }
 
   /**
    * Creates a new instance.
    *
    * @param port
    *          port number to bind the SSH server to
+   * @param commandHistory
+   *          command history
    * @param banner
    *          welcome banner
    * @param commandSubmissionKey
@@ -85,7 +104,8 @@ public class SshCommandInterface implements TerminalCommandInterface {
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterface(final int port, @Nullable final String banner, final Key commandSubmissionKey, @Nullable final KeyBinding... keyBindings) {
+  public SshCommandInterface(final int port, final CommandHistory commandHistory, @Nullable final String banner, final Key commandSubmissionKey,
+      @Nullable final KeyBinding... keyBindings) {
     this.executor = Executors.newCachedThreadPool();
     this.port = port;
     this.sshServer = SshServer.setUpDefaultServer();
@@ -95,27 +115,11 @@ public class SshCommandInterface implements TerminalCommandInterface {
     this.keyBindings = new ArrayList<>(Arrays.asList(keyBindings));
     this.sessionRegistry = new SessionRegistry();
     this.sshServer.setShellFactory(() -> {
-      final SshCommandInterfaceSession newSession = new SshCommandInterfaceSession(this.sessionRegistry, this.executor, this.getCommandInterpreter(),
-          this.getCommandDispatcher(), banner, commandSubmissionKey, this.getKeyBindingsArray());
-      newSession.configureCommandHistory(this.commandHistory);
+      final SshCommandInterfaceSession newSession = new SshCommandInterfaceSession(this.sessionRegistry, this.executor, commandHistory,
+          this.getCommandInterpreter(), this.getCommandDispatcher(), banner, commandSubmissionKey, this.getKeyBindingsArray());
       return newSession;
     });
-  }
-
-  /**
-   * Creates a new instance using the {@link #DEFAULT_PORT} and the
-   * {@link BaseTerminalCommandInterface#DEFAULT_COMMAND_SUBMISSION_KEY}.
-   *
-   * @param banner
-   *          welcome banner
-   * @param keyBindings
-   *          (optional) {@link KeyBinding}s
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public SshCommandInterface(@Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
-    this(DEFAULT_PORT, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> this.deactivate()));
   }
 
   /**
@@ -162,21 +166,6 @@ public class SshCommandInterface implements TerminalCommandInterface {
   }
 
   /**
-   * Configures the given {@link TerminalCommandHistory} to be used by this {@link SshCommandInterface}.
-   *
-   * @param commandHistory
-   *          new {@link TerminalCommandHistory} or {@code null} to remove an already configured
-   *          {@link TerminalCommandHistory}
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public void configureCommandHistory(final @Nullable TerminalCommandHistory commandHistory) {
-    this.commandHistory = commandHistory;
-    this.sessionRegistry.getSessions().forEach(session -> session.configureCommandHistory(commandHistory));
-  }
-
-  /**
    *
    * {@inheritDoc}
    *
@@ -184,7 +173,11 @@ public class SshCommandInterface implements TerminalCommandInterface {
    */
   @Override
   public void deactivate() {
-    this.sessionRegistry.getSessions().forEach(session -> session.deactivate());
+    if (this.isActivated()) {
+      this.commandDispatcher = null;
+      this.commandInterpreter = null;
+      this.sessionRegistry.getSessions().forEach(session -> session.deactivate());
+    }
   }
 
   /**
@@ -218,6 +211,17 @@ public class SshCommandInterface implements TerminalCommandInterface {
   @Override
   public CommandDispatcher getCommandDispatcher() {
     return this.commandDispatcher;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
+   * @see org.mintshell.interfaces.CommandInterface#getCommandHistory()
+   */
+  @Override
+  public CommandHistory getCommandHistory() {
+    throw new UnsupportedOperationException("Direct invokation is not available on SSH interface but within SSH session.");
   }
 
   /**

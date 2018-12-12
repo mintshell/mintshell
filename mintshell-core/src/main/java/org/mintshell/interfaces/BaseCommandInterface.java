@@ -54,14 +54,21 @@ public abstract class BaseCommandInterface implements CommandInterface {
 
   private CommandInterpreter commandInterpreter;
   private CommandDispatcher commandDispatcher;
-  private final String promptStop;
+  private final CommandHistory commandHistory;
+  private String promptStop;
 
-  public BaseCommandInterface() {
-    this(DEFAULT_PROMPT_STOP);
-  }
-
-  public BaseCommandInterface(final String promptStop) {
-    this.promptStop = Assert.ARG.isNotNull(promptStop, "[promptStop] must not be [null]");
+  /**
+   * Creates a new instance.
+   * 
+   * @param commandHistory
+   *          command history
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public BaseCommandInterface(final CommandHistory commandHistory) {
+    this.commandHistory = Assert.ARG.isNotNull(commandHistory, "[commandHistory] must not be [null]");
+    this.promptStop = DEFAULT_PROMPT_STOP;
   }
 
   /**
@@ -107,6 +114,17 @@ public abstract class BaseCommandInterface implements CommandInterface {
    *
    * {@inheritDoc}
    *
+   * @see org.mintshell.interfaces.CommandInterface#getCommandHistory()
+   */
+  @Override
+  public CommandHistory getCommandHistory() {
+    return this.commandHistory;
+  }
+
+  /**
+   *
+   * {@inheritDoc}
+   *
    * @see org.mintshell.interfaces.CommandInterface#getCommandInterpreter()
    */
   @Override
@@ -126,6 +144,18 @@ public abstract class BaseCommandInterface implements CommandInterface {
   }
 
   /**
+   * Returns the prompt stop symbol.
+   *
+   * @return prompt stop symbol
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public String getPromptStop() {
+    return this.promptStop;
+  }
+
+  /**
    *
    * {@inheritDoc}
    *
@@ -137,15 +167,16 @@ public abstract class BaseCommandInterface implements CommandInterface {
   }
 
   /**
-   * Returns the prompt stop symbol.
+   * Sets the prompt stop symbol.
    *
-   * @return prompt stop symbol
+   * @param promptStop
+   *          prompt stop symbol
    *
    * @author Noqmar
    * @since 0.2.0
    */
-  protected String getPromptStop() {
-    return this.promptStop;
+  public void setPromptStop(final String promptStop) {
+    this.promptStop = promptStop;
   }
 
   /**
@@ -173,7 +204,18 @@ public abstract class BaseCommandInterface implements CommandInterface {
     }
   }
 
-  /** TODO: document */
+  /**
+   * Performts the given, already interpreted command.
+   *
+   * @param commandMessage
+   *          command message before it was interpreted
+   * @param interpretedCcommand
+   *          interpreted command
+   * @return result of the command execution in it's {@link String} representation
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
   protected String performInterpretedCommand(final String commandMessage, final Command interpretedCcommand) {
     CommandResult<?> result = null;
     try {

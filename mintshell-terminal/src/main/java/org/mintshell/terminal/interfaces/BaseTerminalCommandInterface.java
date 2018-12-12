@@ -41,6 +41,7 @@ import org.mintshell.command.Command;
 import org.mintshell.dispatcher.CommandDispatcher;
 import org.mintshell.dispatcher.Completer;
 import org.mintshell.interfaces.BaseCommandInterface;
+import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.interfaces.CommandInterfaceCommandResult;
 import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.terminal.Key;
@@ -74,38 +75,38 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   private int completionCounter;
 
   /**
-   * Creates a new instance using the given command prompt finished.
+   * Creates a new instance using the given command history, no banner and {@link #DEFAULT_COMMAND_SUBMISSION_KEY}.
    *
-   * @param promptStop
-   *          command prompt stop
+   * @param commandHistory
+   *          command history
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final String promptStop) {
-    this(promptStop, null);
+  public BaseTerminalCommandInterface(final CommandHistory commandHistory) {
+    this(commandHistory, null, DEFAULT_COMMAND_SUBMISSION_KEY);
   }
 
   /**
-   * Creates a new instance using the given command prompt and the (optional) welcome banner.
+   * Creates a new instance using the given command history, banner and {@link #DEFAULT_COMMAND_SUBMISSION_KEY}.
    *
-   * @param promptStop
-   *          command prompt stop
+   * @param commandHistory
+   *          command history
    * @param banner
    *          welcome banner
    *
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final String promptStop, final @Nullable String banner) {
-    this(promptStop, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
+  public BaseTerminalCommandInterface(final CommandHistory commandHistory, final @Nullable String banner) {
+    this(commandHistory, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
   }
 
   /**
    * Creates a new instance.
    *
-   * @param promptStop
-   *          command prompt stop
+   * @param commandHistory
+   *          command history
    * @param banner
    *          welcome banner
    * @param commandSubmissionKey
@@ -116,9 +117,9 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final String promptStop, final @Nullable String banner, final Key commandSubmissionKey,
+  public BaseTerminalCommandInterface(final CommandHistory commandHistory, final @Nullable String banner, final Key commandSubmissionKey,
       final @Nullable KeyBinding... keyBindings) {
-    super(promptStop);
+    super(commandHistory);
     this.banner = Optional.ofNullable(banner);
     this.commandSubmissionKey = Assert.ARG.isNotNull(commandSubmissionKey, "[commandSubmissionKey] must not be [null]");
     this.keyBindings = new ArrayList<>();
@@ -189,26 +190,6 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   }
 
   /**
-   * Configures the given {@link TerminalCommandHistory} to be used by this {@link TerminalCommandInterface}.
-   *
-   * @param commandHistory
-   *          new {@link TerminalCommandHistory} or {@code null} to remove an already configured
-   *          {@link TerminalCommandHistory}
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public void configureCommandHistory(final @Nullable TerminalCommandHistory commandHistory) {
-    if (this.getCommandHistory() != null && !this.getCommandHistory().equals(commandHistory)) {
-      // TODO (Noqmar): remove commands
-    }
-    if (commandHistory != null) {
-      // TODO (Noqmar): add commands
-    }
-    this.commandHistory = commandHistory;
-  }
-
-  /**
    *
    * {@inheritDoc}
    *
@@ -235,6 +216,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    * @author Noqmar
    * @since 0.1.0
    */
+  @Override
   public @Nullable TerminalCommandHistory getCommandHistory() {
     return this.commandHistory;
   }
@@ -341,7 +323,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    */
   protected Optional<CommandInterfaceCommandResult<?>> handleCommandHistory(final Command command, final TerminalCommandHistory terminalCommandHistory) {
     if (terminalCommandHistory.getHistoryListCommand().equals(command.getName())) {
-      final int digitCount = Integer.toString(terminalCommandHistory.getMaxCommandLineNumber()).length();
+      final int digitCount = Integer.toString(terminalCommandHistory.getLastCommandLineNumber()).length();
       final StringBuilder builder = new StringBuilder();
       terminalCommandHistory.getCommandLines().entrySet().stream() //
           .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey())) //

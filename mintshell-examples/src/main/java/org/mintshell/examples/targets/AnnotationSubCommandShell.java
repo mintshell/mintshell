@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.1.0
  */
 @CommandShell(prompt = "Sub", promptPathSeparator = "/", enterMessage = "Welcome to the sub shell")
-public class AnnotationSubCommandShell {
+public class AnnotationSubCommandShell extends BaseShell {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
 

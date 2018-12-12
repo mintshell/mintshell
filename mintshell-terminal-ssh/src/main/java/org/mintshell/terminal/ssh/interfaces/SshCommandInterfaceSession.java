@@ -39,6 +39,7 @@ import org.apache.sshd.server.shell.TtyFilterInputStream;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.CommandResult;
 import org.mintshell.dispatcher.CommandDispatcher;
+import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
@@ -69,6 +70,8 @@ public class SshCommandInterfaceSession extends BaseTerminalCommandInterface imp
    *          session registry
    * @param executor
    *          executor service to run within
+   * @param commandHistory
+   *          command history
    * @param commandInterpreter
    *          {@link CommandInterpreter} which would be usually propagated though
    *          {@link #activate(CommandInterpreter, CommandDispatcher)}
@@ -85,9 +88,10 @@ public class SshCommandInterfaceSession extends BaseTerminalCommandInterface imp
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterfaceSession(final SessionRegistry sessionRegistry, final ExecutorService executor, final CommandInterpreter commandInterpreter,
-      final CommandDispatcher commandDispatcher, final String banner, final Key commandSubmissionKey, final KeyBinding... keyBindings) {
-    super(DEFAULT_PROMPT_STOP, banner, commandSubmissionKey, keyBindings);
+  public SshCommandInterfaceSession(final SessionRegistry sessionRegistry, final ExecutorService executor, final CommandHistory commandHistory,
+      final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher, final String banner, final Key commandSubmissionKey,
+      final KeyBinding... keyBindings) {
+    super(commandHistory, banner, commandSubmissionKey, keyBindings);
     this.sessionRegistry = Assert.ARG.isNotNull(sessionRegistry, "[sessionRegistry] must not be [null]");
     this.executor = Assert.ARG.isNotNull(executor, "[executor] must not be [null]");
     this.commandInterpreter = Assert.ARG.isNotNull(commandInterpreter, "[commandInterpreter] must not be [null]");

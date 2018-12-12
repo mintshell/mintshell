@@ -23,13 +23,9 @@
  */
 package org.mintshell.terminal.interfaces;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
+import org.mintshell.common.IoProvider;
+import org.mintshell.interfaces.BasePersistableCommandHistory;
 import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.terminal.Key;
 
@@ -39,7 +35,7 @@ import org.mintshell.terminal.Key;
  * @author Noqmar
  * @since 0.1.0
  */
-public class TerminalCommandHistory implements CommandHistory {
+public class TerminalCommandHistory extends BasePersistableCommandHistory {
 
   public static final String DEFAULT_HISTORY_LIST_COMMAND = "history";
 
@@ -48,72 +44,19 @@ public class TerminalCommandHistory implements CommandHistory {
 
   public static final int FIRST_COMMAND_NUMBER = 1;
 
-  private final Map<Integer, String> commandHistory;
   private final Key keyHistoryNext;
   private final Key keyHistoryPrev;
   private final String historyListCommand;
-  private int commandCounter;
-  private int position;
 
-  public TerminalCommandHistory() {
-    this(DEFAULT_KEY_HISTORY_NEXT, DEFAULT_KEY_HISTORY_PREV, DEFAULT_HISTORY_LIST_COMMAND);
+  public TerminalCommandHistory(final IoProvider ioProvider) {
+    this(ioProvider, DEFAULT_KEY_HISTORY_NEXT, DEFAULT_KEY_HISTORY_PREV, DEFAULT_HISTORY_LIST_COMMAND);
   }
 
-  public TerminalCommandHistory(final Key keyHistoryNext, final Key keyHistoryPrev, final String historyListCommand) {
+  public TerminalCommandHistory(final IoProvider ioProvider, final Key keyHistoryNext, final Key keyHistoryPrev, final String historyListCommand) {
+    super(ioProvider);
     this.keyHistoryNext = Assert.ARG.isNotNull(keyHistoryNext, "[keyHistoryNext] must not be [null]");
     this.keyHistoryPrev = Assert.ARG.isNotNull(keyHistoryPrev, "[keyHistoryPrev] must not be [null]");
     this.historyListCommand = Assert.ARG.isNotNull(historyListCommand, "[historyListCommand] must not be [null]");
-    this.commandHistory = new ConcurrentHashMap<>();
-    this.commandCounter = FIRST_COMMAND_NUMBER - 1;
-    this.position = this.commandCounter + 1;
-  }
-
-  /**
-   *
-   * {@inheritDoc}
-   *
-   * @see org.mintshell.interfaces.CommandHistory#addCommandLine(java.lang.String)
-   */
-  @Override
-  public void addCommandLine(final String commandLine) {
-    this.commandHistory.put(++this.commandCounter, commandLine);
-    this.position = this.commandCounter + 1;
-  }
-
-  /**
-   *
-   * {@inheritDoc}
-   *
-   * @see org.mintshell.interfaces.CommandHistory#clear()
-   */
-  @Override
-  public void clear() {
-    this.commandHistory.clear();
-    this.commandCounter = FIRST_COMMAND_NUMBER - 1;
-    this.position = this.commandCounter + 1;
-
-  }
-
-  /**
-   *
-   * {@inheritDoc}
-   *
-   * @see org.mintshell.interfaces.CommandHistory#getCommandLine(int)
-   */
-  @Override
-  public Optional<String> getCommandLine(final int number) {
-    return Optional.ofNullable(this.commandHistory.get(number));
-  }
-
-  /**
-   *
-   * {@inheritDoc}
-   *
-   * @see org.mintshell.interfaces.CommandHistory#getCommandLines()
-   */
-  @Override
-  public Map<Integer, String> getCommandLines() {
-    return new HashMap<>(this.commandHistory);
   }
 
   /**
@@ -150,46 +93,5 @@ public class TerminalCommandHistory implements CommandHistory {
    */
   public Key getHistoryPrevKey() {
     return this.keyHistoryPrev;
-  }
-
-  /**
-   *
-   * {@inheritDoc}
-   * 
-   * @see org.mintshell.interfaces.CommandHistory#getMaxCommandLineNumber()
-   */
-  @Override
-  public int getMaxCommandLineNumber() {
-    return this.commandCounter;
-  }
-
-  /**
-   *
-   * {@inheritDoc}
-   * 
-   * @see org.mintshell.interfaces.CommandHistory#getNextCommandLine()
-   */
-  @Override
-  public String getNextCommandLine() {
-    if (this.position <= this.commandCounter) {
-      this.position++;
-    }
-    final String commandLine = this.commandHistory.get(this.position);
-    return commandLine != null ? commandLine : "";
-  }
-
-  /**
-   *
-   * {@inheritDoc}
-   * 
-   * @see org.mintshell.interfaces.CommandHistory#getPreviousCommandLine()
-   */
-  @Override
-  public @Nullable String getPreviousCommandLine() {
-    if (this.position > FIRST_COMMAND_NUMBER) {
-      this.position--;
-    }
-    final String commandLine = this.commandHistory.get(this.position);
-    return commandLine != null ? commandLine : "";
   }
 }

@@ -27,9 +27,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The command history provides access to previously provided commands and allows it to list them or step forward or
- * backward through them. Each added command will get a consecutive number assigned. The {@link CommandInterface} is
- * responsible to manage the {@link CommandHistory}.
+ * The command history provides access to previously entered commands and allows it to list them or step forward or
+ * backward through them. Each added command will get a consecutive number assigned starting with {@code 1} . If the
+ * {@link #getMaxCommands()} number of commands is reached, the oldest command will be dropped for each new added
+ * command. The {@link CommandInterface} is responsible to manage the {@link CommandHistory}.
  *
  *
  * @author Noqmar
@@ -39,7 +40,7 @@ public abstract interface CommandHistory {
 
   /**
    * Adds a new command line to the history and sets the internal position to the end. If the given command line is
-   * empty, it is ignored.
+   * empty, it is ignored. If the history contains already {@link #getMaxCommands()}, the oldest one will be dropped.
    *
    * @param commandLine
    *          command line to be added
@@ -80,21 +81,41 @@ public abstract interface CommandHistory {
   public abstract Map<Integer, String> getCommandLines();
 
   /**
-   * Returns the current maximum command line number.
+   * Returns the number of the currently first (oldest) command in the history.
    *
-   * @return current maximum command line number
+   * @return number of the currently first (oldest) command or {@code 0}, if the history is empty
    *
    * @author Noqmar
-   * @since 0.1.0
+   * @since 0.2.0
    */
-  public abstract int getMaxCommandLineNumber();
+  public abstract int getFirstCommandLineNumber();
+
+  /**
+   * Returns the number of the currently last (newest) command in the history.
+   *
+   * @return number of the currently last (newest) command or {@code 0}, if the history is empty
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public abstract int getLastCommandLineNumber();
+
+  /**
+   * Returns the maximum amount of managed commands.
+   *
+   * @return maximum amount of managed commands
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public abstract int getMaxCommands();
 
   /**
    * Returns the next command line relative to the internal position and increases the internal position by one. If the
    * internal position already points to the last command line the last command line is returned and the internal
    * position doesn't change.
    *
-   * @return next command line relative to the internal position or {@code null}, if the history is empty
+   * @return next command line relative to the internal position or an empty {@link String}, if the history is empty
    *
    * @author Noqmar
    * @since 0.1.0
@@ -106,7 +127,7 @@ public abstract interface CommandHistory {
    * the internal position already points to the first command line the first command line is returned and the internal
    * position doesn't change.
    *
-   * @return previous command line relative to the internal position or {@code null}, if the history is empty
+   * @return previous command line relative to the internal position or an empty {@link String}, if the history is empty
    *
    * @author Noqmar
    * @since 0.1.0

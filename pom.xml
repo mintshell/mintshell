@@ -66,6 +66,7 @@
     <version.mvn.source>3.0.1</version.mvn.source>
     <version.mvn.gpg>1.6</version.mvn.gpg>
     <version.mvn.antlr4>4.5</version.mvn.antlr4>
+    <version.mvn.owasp>4.0.0</version.mvn.owasp>
 
     <!-- versioning of technical dependencies -->
     <version.slf4j>1.7.25</version.slf4j>
@@ -98,7 +99,7 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-api</artifactId>
         <version>${project.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mintshell-core</artifactId>
@@ -215,7 +216,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <version>${version.mvn.dependency}</version>
-        </plugin>        
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
@@ -240,6 +241,11 @@
           <groupId>org.antlr</groupId>
           <artifactId>antlr4-maven-plugin</artifactId>
           <version>${version.mvn.antlr4}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>${version.mvn.owasp}</version>
         </plugin>
 
       </plugins>
@@ -378,6 +384,18 @@
             <id>attach-sources</id>
             <goals>
               <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>aggregate</goal>
             </goals>
           </execution>
         </executions>

@@ -61,6 +61,9 @@ public class BaseCommandInterfaceTest {
   private Command commandMock;
 
   @Mock
+  private CommandHistory commandHistoryMock;
+
+  @Mock
   private CommandDispatcher commandDispatcherMock;
 
   @Mock
@@ -72,7 +75,8 @@ public class BaseCommandInterfaceTest {
   public void before() throws Exception {
     this.preCommandCounter = new AtomicInteger(0);
     this.postCommandCounter = new AtomicInteger(0);
-    this.sut = new BaseCommandInterface() {
+    this.sut = new BaseCommandInterface(this.commandHistoryMock) {
+
       @Override
       protected void postCommand(@Nullable final CommandResult<?> result) {
         BaseCommandInterfaceTest.this.postCommandCounter.incrementAndGet();

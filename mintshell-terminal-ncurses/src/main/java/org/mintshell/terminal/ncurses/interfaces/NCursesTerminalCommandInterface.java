@@ -24,6 +24,7 @@
 package org.mintshell.terminal.ncurses.interfaces;
 
 import org.mintshell.annotation.Nullable;
+import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.interfaces.CommandInterface;
 import org.mintshell.terminal.Cursor;
 import org.mintshell.terminal.Key;
@@ -49,6 +50,8 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
   /**
    * Creates a new instance.
    *
+   * @param commandHistory
+   *          command history
    * @param banner
    *          welcome banner
    * @param commandSubmissionKey
@@ -59,8 +62,9 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
    * @author Noqmar
    * @since 0.1.0
    */
-  public NCursesTerminalCommandInterface(@Nullable final String banner, final Key commandSubmissionKey, @Nullable final KeyBinding... keyBindings) {
-    super(DEFAULT_PROMPT_STOP, banner, commandSubmissionKey, keyBindings);
+  public NCursesTerminalCommandInterface(final CommandHistory commandHistory, final @Nullable String banner, final Key commandSubmissionKey,
+      @Nullable final KeyBinding... keyBindings) {
+    super(commandHistory, banner, commandSubmissionKey, keyBindings);
     this.nCurses = NCursesTerminal.getInstance();
     this.cursor = new Cursor(this.nCurses.getCol(), this.nCurses.getRow(), this.nCurses.getMaxCol(), this.nCurses.getMaxRow());
     this.logPositions();
@@ -68,7 +72,9 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
 
   /**
    * Creates a new instance.
-   *
+   * 
+   * @param commandHistory
+   *          command history
    * @param banner
    *          welcome banner
    * @param keyBindings
@@ -77,8 +83,8 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
    * @author Noqmar
    * @since 0.1.0
    */
-  public NCursesTerminalCommandInterface(@Nullable final String banner, final KeyBinding... keyBindings) {
-    this(banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
+  public NCursesTerminalCommandInterface(final CommandHistory commandHistory, final @Nullable String banner, final KeyBinding... keyBindings) {
+    this(commandHistory, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
   }
 
   @Override

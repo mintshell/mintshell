@@ -79,11 +79,21 @@ public abstract interface CommandInterface extends PromptProvider {
   public abstract @Nullable CommandDispatcher getCommandDispatcher();
 
   /**
+   * Returns the {@link CommandHistory} of this {@link CommandInterface}.
+   *
+   * @return command history
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public abstract CommandHistory getCommandHistory();
+
+  /**
    * Returns the internally used {@link CommandInterpreter}.
    *
    * @return internally used {@link CommandInterpreter} or {@code null}, if the {@link CommandInterface} isn't active
    *
-   * @author Noqmar
+   *         // * @author Noqmar
    * @since 0.1.0
    * @see #activate(CommandInterpreter, CommandDispatcher)
    */
