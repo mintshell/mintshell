@@ -2,6 +2,7 @@
 logs/
 
 ### Maven ###
+/target
 /*/target
 
 dependency-reduced-pom.xml
@@ -20,4 +21,5 @@ Desktop.ini
 /run.sh
 /ncurses.sh
 /ssh.sh
+command.history
 
