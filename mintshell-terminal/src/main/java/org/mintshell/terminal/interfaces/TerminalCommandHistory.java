@@ -24,6 +24,7 @@
 package org.mintshell.terminal.interfaces;
 
 import org.mintshell.assertion.Assert;
+import org.mintshell.common.IoProvider;
 import org.mintshell.interfaces.BasePersistableCommandHistory;
 import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.terminal.Key;
@@ -47,11 +48,12 @@ public class TerminalCommandHistory extends BasePersistableCommandHistory {
   private final Key keyHistoryPrev;
   private final String historyListCommand;
 
-  public TerminalCommandHistory() {
-    this(DEFAULT_KEY_HISTORY_NEXT, DEFAULT_KEY_HISTORY_PREV, DEFAULT_HISTORY_LIST_COMMAND);
+  public TerminalCommandHistory(final IoProvider ioProvider) {
+    this(ioProvider, DEFAULT_KEY_HISTORY_NEXT, DEFAULT_KEY_HISTORY_PREV, DEFAULT_HISTORY_LIST_COMMAND);
   }
 
-  public TerminalCommandHistory(final Key keyHistoryNext, final Key keyHistoryPrev, final String historyListCommand) {
+  public TerminalCommandHistory(final IoProvider ioProvider, final Key keyHistoryNext, final Key keyHistoryPrev, final String historyListCommand) {
+    super(ioProvider);
     this.keyHistoryNext = Assert.ARG.isNotNull(keyHistoryNext, "[keyHistoryNext] must not be [null]");
     this.keyHistoryPrev = Assert.ARG.isNotNull(keyHistoryPrev, "[keyHistoryPrev] must not be [null]");
     this.historyListCommand = Assert.ARG.isNotNull(historyListCommand, "[historyListCommand] must not be [null]");

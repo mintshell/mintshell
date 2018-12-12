@@ -132,6 +132,8 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
    *          prompt text
    * @param promptPathSeparator
    *          (optional) prompt path separator of this shell
+   * @param enterMessage
+   *          (optional) message to be displayed when entering the shell
    *
    * @author Noqmar
    * @since 0.2.0

@@ -25,7 +25,10 @@ package org.mintshell.examples.terminal.ssh;
 
 import static org.mintshell.terminal.interfaces.BaseTerminalCommandInterface.KEYBINDING_EXIT;
 
+import java.io.File;
+
 import org.mintshell.Mintshell;
+import org.mintshell.common.FileIoProvider;
 import org.mintshell.examples.targets.AnnotationMainCommandShell;
 import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.interfaces.TerminalCommandHistory;
@@ -41,8 +44,8 @@ public class SshTerminalShell {
 
   public SshTerminalShell(final String[] args) throws Exception {
 
-    final SshCommandInterface commandInterface = new SshCommandInterface("Welcome to Mintshell with SSH\r\n", KEYBINDING_EXIT);
-    commandInterface.configureCommandHistory(new TerminalCommandHistory());
+    final SshCommandInterface commandInterface = new SshCommandInterface(new TerminalCommandHistory(new FileIoProvider(new File("command.history"))),
+        "Welcome to Mintshell with SSH\r\n", KEYBINDING_EXIT);
 
     Mintshell //
         .from(commandInterface) //

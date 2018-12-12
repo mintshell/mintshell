@@ -59,7 +59,9 @@ public final class CommandBuilder {
 
   /**
    * Builds a {@link PipedCommand} from the current builder state.
-   *
+   * 
+   * @param target
+   *          command target
    * @return {@link PipedCommand} instance
    *
    * @author Noqmar

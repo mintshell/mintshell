@@ -23,7 +23,10 @@
  */
 package org.mintshell.examples.terminal.ncurses;
 
+import java.io.File;
+
 import org.mintshell.Mintshell;
+import org.mintshell.common.FileIoProvider;
 import org.mintshell.examples.targets.AnnotationMainCommandShell;
 import org.mintshell.mcl.interpreter.MclCommandInterpreter;
 import org.mintshell.terminal.interfaces.TerminalCommandHistory;
@@ -39,9 +42,9 @@ public class NCursesTerminalShell {
 
   public NCursesTerminalShell(final String[] args) throws Exception {
 
-    final NCursesTerminalCommandInterface commandInterface = new NCursesTerminalCommandInterface("Welcome to Mintshell with nCurses\n\r",
+    final NCursesTerminalCommandInterface commandInterface = new NCursesTerminalCommandInterface(
+        new TerminalCommandHistory(new FileIoProvider(new File("command.history"))), "Welcome to Mintshell with nCurses\n\r",
         NCursesTerminalCommandInterface.KEYBINDING_EXIT);
-    commandInterface.configureCommandHistory(new TerminalCommandHistory());
 
     Mintshell //
         .from(commandInterface) //

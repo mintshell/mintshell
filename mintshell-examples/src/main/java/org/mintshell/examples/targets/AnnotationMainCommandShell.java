@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.1.0
  */
 @CommandShell(prompt = "Main", exitCommands = { "exit" }, exitCommandDescription = "exits the main shell", exitMessage = "Closing ssh session")
-public class AnnotationMainCommandShell {
+public class AnnotationMainCommandShell extends BaseShell {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimpleCommandTarget.class);
 
