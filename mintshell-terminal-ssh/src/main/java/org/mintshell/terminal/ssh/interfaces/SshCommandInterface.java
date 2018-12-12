@@ -45,6 +45,7 @@ import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.interfaces.BaseTerminalCommandInterface;
+import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,24 +71,6 @@ public class SshCommandInterface implements TerminalCommandInterface {
   private final SessionRegistry sessionRegistry;
 
   /**
-   * Creates a new instance using the {@link #DEFAULT_PORT} and the
-   * {@link BaseTerminalCommandInterface#DEFAULT_COMMAND_SUBMISSION_KEY}.
-   *
-   * @param commandHistory
-   *          command history
-   * @param banner
-   *          welcome banner
-   * @param keyBindings
-   *          (optional) {@link KeyBinding}s
-   *
-   * @author Noqmar
-   * @since 0.1.0
-   */
-  public SshCommandInterface(final CommandHistory commandHistory, @Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
-    this(DEFAULT_PORT, commandHistory, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
-  }
-
-  /**
    * Creates a new instance.
    *
    * @param port
@@ -104,7 +87,7 @@ public class SshCommandInterface implements TerminalCommandInterface {
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterface(final int port, final CommandHistory commandHistory, @Nullable final String banner, final Key commandSubmissionKey,
+  public SshCommandInterface(final int port, final TerminalCommandHistory commandHistory, @Nullable final String banner, final Key commandSubmissionKey,
       @Nullable final KeyBinding... keyBindings) {
     this.executor = Executors.newCachedThreadPool();
     this.port = port;
@@ -120,6 +103,24 @@ public class SshCommandInterface implements TerminalCommandInterface {
       return newSession;
     });
     Runtime.getRuntime().addShutdownHook(new Thread(() -> this.deactivate()));
+  }
+
+  /**
+   * Creates a new instance using the {@link #DEFAULT_PORT} and the
+   * {@link BaseTerminalCommandInterface#DEFAULT_COMMAND_SUBMISSION_KEY}.
+   *
+   * @param commandHistory
+   *          command history
+   * @param banner
+   *          welcome banner
+   * @param keyBindings
+   *          (optional) {@link KeyBinding}s
+   *
+   * @author Noqmar
+   * @since 0.1.0
+   */
+  public SshCommandInterface(final TerminalCommandHistory commandHistory, @Nullable final String banner, final @Nullable KeyBinding... keyBindings) {
+    this(DEFAULT_PORT, commandHistory, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
   }
 
   /**
