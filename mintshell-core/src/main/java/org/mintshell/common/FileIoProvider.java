@@ -31,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 import org.mintshell.assertion.Assert;
 
@@ -42,10 +43,43 @@ import org.mintshell.assertion.Assert;
  */
 public class FileIoProvider implements IoProvider {
 
+  public static final boolean DEFAULT_CREATE = true;
+
   private final File file;
 
+  /**
+   * Creates a new file based {@link IoProvider}, that tries to create the file, if it doesn't exist.
+   *
+   * @param file
+   *          file to be used for I/O
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
   public FileIoProvider(final File file) {
+    this(file, DEFAULT_CREATE);
+  }
+
+  /**
+   * Creates a new file based {@link IoProvider}.
+   *
+   * @param file
+   *          file to be used for I/O
+   * @param create
+   *          {@code true} if the provider should try to create the file, if it doesn't exist, false otherwise
+   *
+   * @author Noqmar
+   * @since 0.2.0
+   */
+  public FileIoProvider(final File file, final boolean create) {
     this.file = Assert.ARG.isNotNull(file, "[file] must not be [null]");
+    if (create && !file.exists()) {
+      try {
+        Files.createFile(file.toPath());
+      } catch (final IOException e) {
+        throw new IllegalArgumentException(format("Failed to create file [%s]", file), e);
+      }
+    }
     Assert.ARG.isTrue(file.exists(), format("[%s] must exist", file));
     Assert.ARG.isTrue(file.canRead(), format("[%s] must be readable", file));
     Assert.ARG.isTrue(file.canWrite(), format("[%s] must writable", file));
@@ -66,7 +100,7 @@ public class FileIoProvider implements IoProvider {
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.common.IoProvider#createOut()
    */
   @Override

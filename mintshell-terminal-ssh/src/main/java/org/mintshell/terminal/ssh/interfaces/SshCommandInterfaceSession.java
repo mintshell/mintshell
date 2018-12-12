@@ -39,11 +39,11 @@ import org.apache.sshd.server.shell.TtyFilterInputStream;
 import org.mintshell.assertion.Assert;
 import org.mintshell.command.CommandResult;
 import org.mintshell.dispatcher.CommandDispatcher;
-import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.interfaces.BaseTerminalCommandInterface;
+import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 
 /**
@@ -88,7 +88,7 @@ public class SshCommandInterfaceSession extends BaseTerminalCommandInterface imp
    * @author Noqmar
    * @since 0.1.0
    */
-  public SshCommandInterfaceSession(final SessionRegistry sessionRegistry, final ExecutorService executor, final CommandHistory commandHistory,
+  public SshCommandInterfaceSession(final SessionRegistry sessionRegistry, final ExecutorService executor, final TerminalCommandHistory commandHistory,
       final CommandInterpreter commandInterpreter, final CommandDispatcher commandDispatcher, final String banner, final Key commandSubmissionKey,
       final KeyBinding... keyBindings) {
     super(commandHistory, banner, commandSubmissionKey, keyBindings);

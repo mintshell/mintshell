@@ -24,12 +24,12 @@
 package org.mintshell.terminal.ncurses.interfaces;
 
 import org.mintshell.annotation.Nullable;
-import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.interfaces.CommandInterface;
 import org.mintshell.terminal.Cursor;
 import org.mintshell.terminal.Key;
 import org.mintshell.terminal.KeyBinding;
 import org.mintshell.terminal.interfaces.BaseTerminalCommandInterface;
+import org.mintshell.terminal.interfaces.TerminalCommandHistory;
 import org.mintshell.terminal.interfaces.TerminalCommandInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
    * @author Noqmar
    * @since 0.1.0
    */
-  public NCursesTerminalCommandInterface(final CommandHistory commandHistory, final @Nullable String banner, final Key commandSubmissionKey,
+  public NCursesTerminalCommandInterface(final TerminalCommandHistory commandHistory, final @Nullable String banner, final Key commandSubmissionKey,
       @Nullable final KeyBinding... keyBindings) {
     super(commandHistory, banner, commandSubmissionKey, keyBindings);
     this.nCurses = NCursesTerminal.getInstance();
@@ -72,7 +72,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
 
   /**
    * Creates a new instance.
-   * 
+   *
    * @param commandHistory
    *          command history
    * @param banner
@@ -83,7 +83,7 @@ public class NCursesTerminalCommandInterface extends BaseTerminalCommandInterfac
    * @author Noqmar
    * @since 0.1.0
    */
-  public NCursesTerminalCommandInterface(final CommandHistory commandHistory, final @Nullable String banner, final KeyBinding... keyBindings) {
+  public NCursesTerminalCommandInterface(final TerminalCommandHistory commandHistory, final @Nullable String banner, final KeyBinding... keyBindings) {
     this(commandHistory, banner, DEFAULT_COMMAND_SUBMISSION_KEY, keyBindings);
   }
 

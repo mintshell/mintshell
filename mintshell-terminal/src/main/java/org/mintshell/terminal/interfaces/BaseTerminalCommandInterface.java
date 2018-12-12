@@ -41,7 +41,6 @@ import org.mintshell.command.Command;
 import org.mintshell.dispatcher.CommandDispatcher;
 import org.mintshell.dispatcher.Completer;
 import org.mintshell.interfaces.BaseCommandInterface;
-import org.mintshell.interfaces.CommandHistory;
 import org.mintshell.interfaces.CommandInterfaceCommandResult;
 import org.mintshell.interpreter.CommandInterpreter;
 import org.mintshell.terminal.Key;
@@ -71,7 +70,6 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
   private final Key commandSubmissionKey;
   private final LineBuffer lineBuffer;
 
-  private TerminalCommandHistory commandHistory;
   private int completionCounter;
 
   /**
@@ -83,7 +81,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final CommandHistory commandHistory) {
+  public BaseTerminalCommandInterface(final TerminalCommandHistory commandHistory) {
     this(commandHistory, null, DEFAULT_COMMAND_SUBMISSION_KEY);
   }
 
@@ -98,7 +96,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final CommandHistory commandHistory, final @Nullable String banner) {
+  public BaseTerminalCommandInterface(final TerminalCommandHistory commandHistory, final @Nullable String banner) {
     this(commandHistory, banner, DEFAULT_COMMAND_SUBMISSION_KEY);
   }
 
@@ -117,7 +115,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    * @author Noqmar
    * @since 0.1.0
    */
-  public BaseTerminalCommandInterface(final CommandHistory commandHistory, final @Nullable String banner, final Key commandSubmissionKey,
+  public BaseTerminalCommandInterface(final TerminalCommandHistory commandHistory, final @Nullable String banner, final Key commandSubmissionKey,
       final @Nullable KeyBinding... keyBindings) {
     super(commandHistory);
     this.banner = Optional.ofNullable(banner);
@@ -218,7 +216,7 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    */
   @Override
   public @Nullable TerminalCommandHistory getCommandHistory() {
-    return this.commandHistory;
+    return (TerminalCommandHistory) super.getCommandHistory();
   }
 
   /**
@@ -355,8 +353,8 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
       this.lineBuffer.clear();
       this.newLine();
       if (!commandMessage.isEmpty()) {
-        if (this.commandHistory != null) {
-          this.commandHistory.addCommandLine(commandMessage);
+        if (this.getCommandHistory() != null) {
+          this.getCommandHistory().addCommandLine(commandMessage);
         }
       }
       if (!commandMessage.trim().isEmpty()) {
@@ -386,13 +384,13 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
         this.lineBuffer.insertLeft(key.getValue());
         this.print(key.getValue());
       }
-      else if (this.commandHistory != null && key.equals(this.commandHistory.getHistoryPrevKey())) {
+      else if (this.getCommandHistory() != null && key.equals(this.getCommandHistory().getHistoryPrevKey())) {
         this.eraseCursorToStartOfLine();
         final String previousCommandMessage = this.getCommandHistory().getPreviousCommandLine();
         this.lineBuffer.insertLeft(previousCommandMessage);
         this.print(previousCommandMessage);
       }
-      else if (this.commandHistory != null && key.equals(this.commandHistory.getHistoryNextKey())) {
+      else if (this.getCommandHistory() != null && key.equals(this.getCommandHistory().getHistoryNextKey())) {
         this.eraseCursorToStartOfLine();
         final String nextCommandMessage = this.getCommandHistory().getNextCommandLine();
         this.lineBuffer.insertLeft(nextCommandMessage);
@@ -481,8 +479,8 @@ public abstract class BaseTerminalCommandInterface extends BaseCommandInterface 
    */
   @Override
   protected CommandInterfaceCommandResult<?> preCommand(final Command command) {
-    if (this.commandHistory != null) {
-      final Optional<CommandInterfaceCommandResult<?>> commandHistoryResult = this.handleCommandHistory(command, this.commandHistory);
+    if (this.getCommandHistory() != null) {
+      final Optional<CommandInterfaceCommandResult<?>> commandHistoryResult = this.handleCommandHistory(command, this.getCommandHistory());
       if (commandHistoryResult.isPresent()) {
         return commandHistoryResult.get();
       }
