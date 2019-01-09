@@ -21,56 +21,29 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.target.reflection.annotation;
+package org.mintshell.examples.targets;
 
-import org.mintshell.assertion.Assert;
+import org.mintshell.annotation.CommandShell;
+import org.mintshell.annotation.CommandTarget;
 import org.mintshell.target.CommandShellExitException;
 
 /**
- * May be used as command target source for command shell exit. It has only one method throwing the necessary
- * {@link CommandShellExitException}.
- *
+ * Simple class that can be used as instance command target providing nothing more than (annotated) methods to grab
+ * static system information.
  *
  * @author Noqmar
- * @since 0.2.0
+ * @since 0.1.0
  */
-final class CommandShellExiter {
+@CommandShell(prompt = "Leaf", promptPathSeparator = "/", enterMessage = "Welcome to the leaf shell")
+public class AnnotationLeafCommandShell extends BaseShell {
 
-  static final String EXIT_METHOD_NAME = "exit";
-
-  private final String exitMessage;
-
-  /**
-   * Creates a new instance with empty exit message.
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  CommandShellExiter() {
-    this("");
-  }
-
-  /**
-   * Creates a new instance with an exit message.
-   *
-   * @param exitMessage
-   *          exit message
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  CommandShellExiter(final String exitMessage) {
-    this.exitMessage = Assert.ARG.isNotNull(exitMessage, "[exitMessage] must not be [null]");
-  }
-
-  /**
-   * Exit method.
-   *
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
+  @CommandTarget(name = "exit", description = "exits the leafshell")
   public void exit() {
-    throw CommandShellExitException.createExit(this.exitMessage);
+    throw CommandShellExitException.createExit("Leafshell closed");
+  }
+
+  @CommandTarget(name = "exitall", description = "exits to the main shell")
+  public void exitall() {
+    throw CommandShellExitException.createExitAll("Subshells closed");
   }
 }

@@ -21,56 +21,60 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.target.reflection.annotation;
+package org.mintshell.target;
 
-import org.mintshell.assertion.Assert;
-import org.mintshell.target.CommandShellExitException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
- * May be used as command target source for command shell exit. It has only one method throwing the necessary
- * {@link CommandShellExitException}.
- *
+ * Default implementation of a {@link CommandShellList} wrapper.
  *
  * @author Noqmar
- * @since 0.2.0
+ * @since 0.3.0
  */
-final class CommandShellExiter {
+public class DefaultCommandShellList<S extends CommandShell> extends ArrayList<S> implements CommandShellList<S> {
 
-  static final String EXIT_METHOD_NAME = "exit";
+  private static final long serialVersionUID = -6713286179690275261L;
 
-  private final String exitMessage;
+  private final String resultMessage;
 
   /**
-   * Creates a new instance with empty exit message.
+   * Constructs an empty list with an initial capacity of ten.
+   *
+   * @param resultMessage
+   *          result message text
+   * @param shells
+   *          shell instances
    *
    * @author Noqmar
-   * @since 0.2.0
+   * @since 0.3.0
    */
-  CommandShellExiter() {
-    this("");
+  @SafeVarargs
+  public DefaultCommandShellList(final String resultMessage, final S... shells) {
+    super();
+    this.resultMessage = resultMessage;
+    Arrays.stream(shells).forEach(this::add);
   }
 
   /**
-   * Creates a new instance with an exit message.
    *
-   * @param exitMessage
-   *          exit message
+   * {@inheritDoc}
    *
-   * @author Noqmar
-   * @since 0.2.0
+   * @see org.mintshell.target.CommandShellList#getResultMessage()
    */
-  CommandShellExiter(final String exitMessage) {
-    this.exitMessage = Assert.ARG.isNotNull(exitMessage, "[exitMessage] must not be [null]");
+  @Override
+  public String getResultMessage() {
+    return this.resultMessage;
   }
 
   /**
-   * Exit method.
    *
+   * {@inheritDoc}
    *
-   * @author Noqmar
-   * @since 0.2.0
+   * @see java.util.AbstractCollection#toString()
    */
-  public void exit() {
-    throw CommandShellExitException.createExit(this.exitMessage);
+  @Override
+  public String toString() {
+    return this.getResultMessage();
   }
 }

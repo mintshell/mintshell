@@ -33,14 +33,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mintshell.annotation.Nullable;
 import org.mintshell.annotation.Param;
 import org.mintshell.command.CommandParameter;
 import org.mintshell.target.CommandShell;
+import org.mintshell.target.CommandShellList;
 import org.mintshell.target.CommandTarget;
 import org.mintshell.target.CommandTargetSource;
 import org.mintshell.target.DefaultCommandTargetAlias;
@@ -202,13 +205,7 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
   @Override
   protected Object invokeMethod(final Method method, final Object[] args, final Object source) throws IllegalAccessException, InvocationTargetException {
     final Object invocationResult = super.invokeMethod(method, args, source);
-    if (invocationResult != null && !(invocationResult instanceof CommandShell)) {
-      final org.mintshell.annotation.CommandShell shellAnnotation = invocationResult.getClass().getAnnotation(org.mintshell.annotation.CommandShell.class);
-      if (shellAnnotation != null) {
-        return new AnnotationCommandShell(shellAnnotation, new CommandTargetSource(invocationResult));
-      }
-    }
-    return invocationResult;
+    return this.checkAndConvertAnnotatedCommandShell(invocationResult);
   }
 
   private void addAnnotatedExitCommands(final org.mintshell.annotation.CommandShell annotation) {
@@ -225,6 +222,40 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
         }
       }
     }
+  }
+
+  private Object checkAndConvertAnnotatedCommandShell(final Object invocationResult) {
+    if (invocationResult instanceof CommandShellList<?>) {
+      return invocationResult;
+    }
+    else if (invocationResult instanceof Object[]) {
+      return Arrays.stream((Object[]) invocationResult) //
+          .map(element -> this.checkAndConvertAnnotatedCommandShell(element)) //
+          .collect(Collectors.toList()).toArray();
+    }
+    else if (invocationResult instanceof List<?>) {
+      return ((List<?>) invocationResult).stream() //
+          .map(element -> this.checkAndConvertAnnotatedCommandShell(element)) //
+          .collect(Collectors.toList());
+    }
+    else if (invocationResult instanceof Set<?>) {
+      return ((List<?>) invocationResult).stream() //
+          .map(element -> this.checkAndConvertAnnotatedCommandShell(element)) //
+          .collect(Collectors.toSet());
+    }
+    else {
+      return this.checkAndConvertAnnotatedCommandShellObject(invocationResult);
+    }
+  }
+
+  private Object checkAndConvertAnnotatedCommandShellObject(final Object obj) {
+    if (obj != null && !(obj instanceof CommandShell)) {
+      final org.mintshell.annotation.CommandShell shellAnnotation = obj.getClass().getAnnotation(org.mintshell.annotation.CommandShell.class);
+      if (shellAnnotation != null) {
+        return new AnnotationCommandShell(shellAnnotation, new CommandTargetSource(obj));
+      }
+    }
+    return obj;
   }
 
   private ReflectionCommandTargetParameter createCommandParameter(final Parameter parameter, final int index,
