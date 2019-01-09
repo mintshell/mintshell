@@ -21,56 +21,25 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.mintshell.target.reflection.annotation;
+package org.mintshell.target;
 
-import org.mintshell.assertion.Assert;
-import org.mintshell.target.CommandShellExitException;
+import java.util.List;
 
 /**
- * May be used as command target source for command shell exit. It has only one method throwing the necessary
- * {@link CommandShellExitException}.
- *
+ * {@link List} of {@link CommandShell}s containing a message to be displayed as result.
  *
  * @author Noqmar
- * @since 0.2.0
+ * @since 0.3.0
  */
-final class CommandShellExiter {
-
-  static final String EXIT_METHOD_NAME = "exit";
-
-  private final String exitMessage;
+public abstract interface CommandShellList<S extends CommandShell> extends List<S> {
 
   /**
-   * Creates a new instance with empty exit message.
+   * Returns the result message to be displayed as command result.
+   *
+   * @return result message
    *
    * @author Noqmar
-   * @since 0.2.0
+   * @since 0.3.0
    */
-  CommandShellExiter() {
-    this("");
-  }
-
-  /**
-   * Creates a new instance with an exit message.
-   *
-   * @param exitMessage
-   *          exit message
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  CommandShellExiter(final String exitMessage) {
-    this.exitMessage = Assert.ARG.isNotNull(exitMessage, "[exitMessage] must not be [null]");
-  }
-
-  /**
-   * Exit method.
-   *
-   *
-   * @author Noqmar
-   * @since 0.2.0
-   */
-  public void exit() {
-    throw CommandShellExitException.createExit(this.exitMessage);
-  }
+  public abstract String getResultMessage();
 }

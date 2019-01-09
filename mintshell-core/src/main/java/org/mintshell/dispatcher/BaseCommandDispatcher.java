@@ -24,7 +24,9 @@
 package org.mintshell.dispatcher;
 
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
 
+import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.Optional;
@@ -41,6 +43,7 @@ import org.mintshell.command.DefaultCommandResult;
 import org.mintshell.target.CommandInvocationException;
 import org.mintshell.target.CommandShell;
 import org.mintshell.target.CommandShellExitException;
+import org.mintshell.target.CommandShellList;
 import org.mintshell.target.CommandTarget;
 import org.mintshell.target.CommandTargetAlias;
 import org.mintshell.target.CommandTargetException;
@@ -133,6 +136,29 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
       if (result instanceof CommandShell) {
         this.commandShells.push((CommandShell) result);
       }
+      else if (result instanceof CommandShellList<?>) {
+        final CommandShellList<?> shells = (CommandShellList<?>) result;
+        if (shells.size() > 0) {
+          this.commandShells.addAll(shells);
+          return new DefaultCommandResult<>(command, Optional.ofNullable(shells.getResultMessage()));
+        }
+      }
+      else if (result instanceof Object[]) {
+        final Object[] shellCandidates = (Object[]) result;
+        final long shellInstancesNumber = stream(shellCandidates).filter(element -> CommandShell.class.isInstance(element)).count();
+        if (shellInstancesNumber > 0 && shellInstancesNumber == shellCandidates.length) {
+          stream(shellCandidates).map(element -> CommandShell.class.cast(element)).forEach(this.commandShells::push);
+          return new DefaultCommandResult<>(command, Optional.ofNullable(this.commandShells.peek()));
+        }
+      }
+      else if (result instanceof Collection<?>) {
+        final Collection<?> shellCandidates = (Collection<?>) result;
+        final long shellInstancesNumber = shellCandidates.stream().filter(element -> CommandShell.class.isInstance(element)).count();
+        if (shellInstancesNumber > 0 && shellInstancesNumber == shellCandidates.size()) {
+          shellCandidates.stream().map(element -> CommandShell.class.cast(element)).forEach(this.commandShells::push);
+          return new DefaultCommandResult<>(command, Optional.ofNullable(this.commandShells.peek()));
+        }
+      }
       return new DefaultCommandResult<>(command, Optional.ofNullable(result));
     } catch (final CommandDispatchException e) {
       throw e;
@@ -140,11 +166,11 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
       throw new CommandDispatchException(format("%s: command invocation failed", command), e);
     } catch (final CommandTargetException e) {
       if (e.getCause() instanceof CommandShellExitException) {
-        if (this.commandShells.size() > 1) {
+        final CommandShellExitException exitException = (CommandShellExitException) e.getCause();
+        int count = Math.max(exitException.getCount(), -1);
+        while (count != 0 && this.commandShells.size() > 1) {
           this.commandShells.pop();
-        }
-        else {
-          throw (CommandShellExitException) e.getCause();
+          count--;
         }
       }
       return new DefaultCommandResult<>(command, e.getCause());

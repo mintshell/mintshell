@@ -26,6 +26,8 @@ package org.mintshell.examples.targets;
 import org.mintshell.annotation.CommandShell;
 import org.mintshell.annotation.CommandTarget;
 import org.mintshell.annotation.Param;
+import org.mintshell.target.CommandShellList;
+import org.mintshell.target.reflection.annotation.AnnotationCommandShellList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +61,16 @@ public class AnnotationMainCommandShell extends BaseShell {
       final @Param(shortName = 's', name = "second", description = "second summand <int>)") int b) {
     LOG.info("Called add({}, {})", a, b);
     return a + b;
+  }
+
+  @CommandTarget(name = "leafshella", description = "opens the shell path to the leaf shell")
+  public BaseShell[] leafshellArray() {
+    return new BaseShell[] { new AnnotationSubCommandShell(), new AnnotationLeafCommandShell() };
+  }
+
+  @CommandTarget(name = "leafshelll", description = "opens the shell path to the leaf shell")
+  public CommandShellList<?> leafshellList() {
+    return new AnnotationCommandShellList("Welcome to the instant leaf shell", new AnnotationSubCommandShell(), new AnnotationLeafCommandShell());
   }
 
   /**

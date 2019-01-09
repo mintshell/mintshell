@@ -26,7 +26,9 @@ package org.mintshell.target;
 import org.mintshell.assertion.Assert;
 
 /**
- * Exception that indicates that the originating shell closes.
+ * Exception that indicates that {@link #getCount()} subshells shall be closed.<br>
+ * <b>Note</b>:The first (main) shell cannot be closed so if {@link #getCount()} exceeds the number of subshells, all
+ * subshells are closed except of the main shell.
  *
  * @author Noqmar
  * @since 0.2.0
@@ -34,6 +36,8 @@ import org.mintshell.assertion.Assert;
 public class CommandShellExitException extends RuntimeException {
 
   private static final long serialVersionUID = -5020533993505239924L;
+
+  private final int count;
 
   /**
    * Constructs a new runtime exception with the specified detail message. The cause is not initialized, and may
@@ -45,7 +49,48 @@ public class CommandShellExitException extends RuntimeException {
    * @author Noqmar
    * @since 0.2.0
    */
-  public CommandShellExitException(final String message) {
+  public CommandShellExitException(final String message, final int count) {
     super(Assert.ARG.isNotNull(message, "[messge] must not be [null]"));
+    this.count = count;
+  }
+
+  /**
+   * Returns the number of shells to be exited.
+   *
+   * @return number of subshells to exit, a negative value means to exit all subshells
+   *
+   * @author Noqmar
+   * @since 0.3.0
+   */
+  public int getCount() {
+    return this.count;
+  }
+
+  /**
+   * Creates an exception to close only the current subshell.
+   * 
+   * @param message
+   *          message to be displayed
+   * @return exception
+   *
+   * @author Noqmar
+   * @since 0.3.0
+   */
+  public static CommandShellExitException createExit(final String message) {
+    return new CommandShellExitException(message, 1);
+  }
+
+  /**
+   * Creates an exception to close all subshells.
+   * 
+   * @param message
+   *          message to be displayed
+   * @return exception
+   *
+   * @author Noqmar
+   * @since 0.3.0
+   */
+  public static CommandShellExitException createExitAll(final String message) {
+    return new CommandShellExitException(message, -1);
   }
 }

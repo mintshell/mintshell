@@ -44,7 +44,7 @@ public class AnnotationSubCommandShell extends BaseShell {
 
   @CommandTarget(name = "exit", description = "exits the subshell")
   public void exit() {
-    throw new CommandShellExitException("Subshell closed");
+    throw CommandShellExitException.createExit("Subshell closed");
   }
 
   /**
@@ -65,5 +65,10 @@ public class AnnotationSubCommandShell extends BaseShell {
       final @Param(shortName = 's', name = "second", description = "second summand <int>)") int b) {
     LOG.info("Called mul({}, {})", a, b);
     return a * b;
+  }
+
+  @CommandTarget(name = "leafshell", description = "opens the leaf shell")
+  public AnnotationLeafCommandShell subshell() {
+    return new AnnotationLeafCommandShell();
   }
 }

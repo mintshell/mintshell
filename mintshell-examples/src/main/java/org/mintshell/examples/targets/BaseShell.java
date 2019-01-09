@@ -31,7 +31,7 @@ import org.mintshell.annotation.CommandTarget;
  * @author Noqmar
  * @since 0.2.0
  */
-abstract class BaseShell {
+public abstract class BaseShell {
 
   /**
    * Quits the whole application by calling {@link System#exit(int)}.
