@@ -239,7 +239,7 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
           .collect(Collectors.toList());
     }
     else if (invocationResult instanceof Set<?>) {
-      return ((List<?>) invocationResult).stream() //
+      return ((Set<?>) invocationResult).stream() //
           .map(element -> this.checkAndConvertAnnotatedCommandShell(element)) //
           .collect(Collectors.toSet());
     }
