@@ -26,9 +26,9 @@ SHORT_COMMAND_PARAMETER_PREFIX: '-';
 
 LONG_COMMAND_PARAMETER_PREFIX: '--';
 
-CHARACTER: LETTER_OR_DIGIT;
+CHARACTER: SIGN;
 
-UNQUOTED: LETTER_OR_DIGIT+;
+UNQUOTED: SIGN+ (SIGN | '-')*;
 
 QUOTED: '"' (~["\\\r\n] | ESC_SEQUENCE)* '"';
 
@@ -36,9 +36,8 @@ SPACE: [ \t];
 
 fragment ESC_SEQUENCE : '\\' [btnfr"'\\];
 
-fragment LETTER_OR_DIGIT: LETTER | [0-9];
+fragment SIGN: [\u0021\u0023-\u0026\u0028-\u002C\u002E-\u007E\u00A1-\u00FF];
 
-fragment LETTER: [a-zA-Z$_];
 
 
 
