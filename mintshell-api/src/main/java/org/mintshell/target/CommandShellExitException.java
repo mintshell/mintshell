@@ -46,6 +46,8 @@ public class CommandShellExitException extends RuntimeException {
    * @param message
    *          the detail message. The detail message is saved for later retrieval by the {@link #getMessage()} method.
    *          The message must not be {@code null} but may be empty.
+   * @param count
+   *          maximum number of subshells to be exited or {@code -1} for all
    * @author Noqmar
    * @since 0.2.0
    */
@@ -68,7 +70,7 @@ public class CommandShellExitException extends RuntimeException {
 
   /**
    * Creates an exception to close only the current subshell.
-   * 
+   *
    * @param message
    *          message to be displayed
    * @return exception
@@ -82,7 +84,7 @@ public class CommandShellExitException extends RuntimeException {
 
   /**
    * Creates an exception to close all subshells.
-   * 
+   *
    * @param message
    *          message to be displayed
    * @return exception
