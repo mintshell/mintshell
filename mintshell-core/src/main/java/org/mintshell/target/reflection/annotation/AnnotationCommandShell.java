@@ -234,14 +234,32 @@ public class AnnotationCommandShell extends BaseReflectionCommandShell {
           .collect(Collectors.toList()).toArray();
     }
     else if (invocationResult instanceof List<?>) {
-      return ((List<?>) invocationResult).stream() //
+      @SuppressWarnings("unchecked")
+      final List<Object> original = (List<Object>) invocationResult;
+      final List<Object> converted = original.stream() //
           .map(element -> this.checkAndConvertAnnotatedCommandShell(element)) //
           .collect(Collectors.toList());
+      try {
+        original.clear();
+        original.addAll(converted);
+      } catch (final UnsupportedOperationException e) {
+        LOG.warn("Failed to inspect and convert list of [{}] elements to AnnotatedCommandShells", original);
+      }
+      return original;
     }
     else if (invocationResult instanceof Set<?>) {
-      return ((Set<?>) invocationResult).stream() //
+      @SuppressWarnings("unchecked")
+      final Set<Object> original = (Set<Object>) invocationResult;
+      final Set<Object> converted = original.stream() //
           .map(element -> this.checkAndConvertAnnotatedCommandShell(element)) //
           .collect(Collectors.toSet());
+      try {
+        original.clear();
+        original.addAll(converted);
+      } catch (final UnsupportedOperationException e) {
+        LOG.warn("Failed to inspect and convert set of [{}] elements to AnnotatedCommandShells", original);
+      }
+      return original;
     }
     else {
       return this.checkAndConvertAnnotatedCommandShellObject(invocationResult);
