@@ -80,18 +80,8 @@ public class DefaultPipedCommand extends DefaultCommand implements PipedCommand 
    */
   @Override
   public Command createPipeTarget(final String prevCommandResult) {
-    final List<CommandParameter> parameters = new ArrayList<>();
-    parameters.add(CommandParameterBuilder.create(0).withValue(prevCommandResult).build());
-    for (int index = 1; index <= this.pipeTarget.getParameters().size(); index++) {
-      final CommandParameter originalParameter = this.pipeTarget.getParameters().get(index - 1);
-
-      parameters.add(CommandParameterBuilder.create(index) //
-          .withName(originalParameter.getName().orElse(null)) //
-          .withShortName(originalParameter.getShortName().orElse(null)) //
-          .withValue(originalParameter.getValue().orElse(null)) //
-          .build()  //
-      );
-    }
+    final List<CommandParameter> parameters = new ArrayList<>(this.pipeTarget.getParameters());
+    parameters.add(CommandParameterBuilder.create(parameters.size()).withValue(prevCommandResult).build());
     final CommandBuilder builder = CommandBuilder.create(this.pipeTarget.getName()).withParameters(parameters);
     return this.pipeTarget instanceof PipedCommand ? builder.build(((PipedCommand) this.pipeTarget).getPipeTarget()) : builder.build();
   }
