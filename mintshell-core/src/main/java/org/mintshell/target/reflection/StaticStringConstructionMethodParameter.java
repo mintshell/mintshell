@@ -99,7 +99,7 @@ public class StaticStringConstructionMethodParameter extends BaseReflectionComma
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.target.reflection.ReflectionCommandTargetParameter#isTypeSupported(java.lang.Class)
    */
   @Override
@@ -110,7 +110,7 @@ public class StaticStringConstructionMethodParameter extends BaseReflectionComma
   /**
    *
    * {@inheritDoc}
-   * 
+   *
    * @see org.mintshell.target.reflection.ReflectionCommandTargetParameter#of(java.lang.String)
    */
   @Override
@@ -121,7 +121,7 @@ public class StaticStringConstructionMethodParameter extends BaseReflectionComma
       }
       for (final Method candidate : this.candidates) {
         try {
-          return this.getType().cast(candidate.invoke(null, value));
+          return this.getType().cast(candidate.invoke(null, value != null && this.getType().isEnum() ? value.toUpperCase() : value));
         } catch (final IllegalAccessException | RuntimeException e) {
           throw new ParameterConversionException("Conversion of [%s] into instance of [%s] failed", e);
         } catch (final InvocationTargetException e) {
