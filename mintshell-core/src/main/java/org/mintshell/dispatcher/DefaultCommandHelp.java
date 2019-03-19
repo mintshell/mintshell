@@ -23,7 +23,10 @@
  */
 package org.mintshell.dispatcher;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.mintshell.annotation.Nullable;
 import org.mintshell.assertion.Assert;
@@ -40,7 +43,7 @@ public class DefaultCommandHelp implements CommandHelp {
 
   public static final String DEFAULT_HELP_COMMAND_NAME = "help";
   public static final String DEFAULT_HELP_COMMAND_PARAMETER_NAME = "help";
-  public static final String DEFAULT_COMMAND_OVERVIEW_PATTERN = "%s\t\t%s";
+  public static final String DEFAULT_COMMAND_OVERVIEW_PATTERN = "%s\t%s";
   public static final String DEFAULT_COMMAND_OVERVIEW_FOOTER_PATTERN = "\n\rFor detailed command description use: %s <command>";
   public static final String DEFAULT_COMMAND_DETAIL_PATTERN = "%s\n\n\r%s\n\r%s";
   public static final String DEFAULT_COMMAND_USAGE_PATTERN = "usage: %s%s";
@@ -109,8 +112,20 @@ public class DefaultCommandHelp implements CommandHelp {
   public String getCommandDetailText(final CommandTarget commandExecution) {
     final StringBuilder builder = new StringBuilder();
     if (this.hasAtLeastOneParameterADescription(commandExecution)) {
-      commandExecution.getParameters().stream() //
-          .forEach(parameter -> builder.append("\n\r").append(this.getCommandParameterText(parameter)));
+
+      final List<String> lines = commandExecution.getParameters().stream() //
+          .map(parameter -> this.getCommandParameterText(parameter)) //
+          .collect(Collectors.toList());
+
+      final AtomicInteger maxLength = new AtomicInteger(0);
+      lines.forEach(line -> maxLength.set(Math.max(maxLength.get(), line.indexOf("\t"))));
+      lines.forEach(line -> {
+        final StringBuffer buffer = new StringBuffer("    ");
+        for (int i = 0; i < maxLength.get() - line.indexOf("\t"); i++) {
+          buffer.append(" ");
+        }
+        builder.append("\n\r").append(line.replace("\t", buffer.toString()));
+      });
     }
     return String.format(this.commandDetailPattern, this.getCommandOverviewText(commandExecution), this.getUsageText(commandExecution), builder.toString());
   }
@@ -196,7 +211,7 @@ public class DefaultCommandHelp implements CommandHelp {
         builder.append(" --").append(commandTargetParameter.getName().get());
       }
     }
-    builder.append("\t\t").append(commandTargetParameter.getDescription().orElse("no description available"));
+    builder.append("\t").append(commandTargetParameter.getDescription().orElse("no description available"));
     return builder.toString();
   }
 

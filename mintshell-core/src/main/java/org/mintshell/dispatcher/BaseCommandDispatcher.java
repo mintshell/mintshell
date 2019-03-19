@@ -29,10 +29,12 @@ import static java.util.Arrays.stream;
 import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.mintshell.annotation.Nullable;
@@ -274,10 +276,19 @@ public abstract class BaseCommandDispatcher<C extends CommandTarget> implements 
     final StringBuilder builder = new StringBuilder();
     if (command.getParameters().size() == 0 || !command.getParameters().get(0).getValue().isPresent()
         || command.getParameters().get(0).getValue().get().trim().isEmpty()) {
-      currentCommandShell.getTargets().stream() //
+      final List<String> lines = currentCommandShell.getTargets().stream() //
           .sorted((cmd1, cmd2) -> cmd1.getName().compareTo(cmd2.getName())) //
           .map(cmd -> commandHelp.getCommandOverviewText(cmd)) //
-          .forEach(line -> builder.append(line).append("\n\r"));
+          .collect(Collectors.toList());
+      final AtomicInteger maxLength = new AtomicInteger(0);
+      lines.forEach(line -> maxLength.set(Math.max(maxLength.get(), line.indexOf("\t"))));
+      lines.forEach(line -> {
+        final StringBuffer buffer = new StringBuffer("    ");
+        for (int i = 0; i < maxLength.get() - line.indexOf("\t"); i++) {
+          buffer.append(" ");
+        }
+        builder.append(line.replace("\t", buffer.toString())).append("\n\r");
+      });
       builder.append(commandHelp.getCommandOverviewFooterText().orElse(""));
     }
     else {
